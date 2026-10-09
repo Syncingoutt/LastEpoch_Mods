@@ -9,6 +9,7 @@ public sealed class CustomUniqueSpecsTests
     [InlineData("Mjolner", 501, 7, 10, false, 78, false, 60)]
     [InlineData("Sands of Silk", 502, 1, -1, true, 16, true, 0)]
     [InlineData("Essentia Sanguis", 503, 4, -1, true, 52, true, 0)]
+    [InlineData("Mageblood", 504, 2, -1, true, 44, true, 0)]
     public void Spec_HoldsTodaysValues(
         string name,
         int uniqueId,
@@ -41,6 +42,7 @@ public sealed class CustomUniqueSpecsTests
                 CustomUniqueSpecs.Mjolner,
                 CustomUniqueSpecs.SandsOfSilk,
                 CustomUniqueSpecs.EssentiaSanguis,
+                CustomUniqueSpecs.Mageblood,
             },
             CustomUniqueSpecs.All
         );
@@ -86,6 +88,7 @@ public sealed class CustomUniqueSpecsTests
     [InlineData("Mjolner", "/mjolner.png")]
     [InlineData("Sands of Silk", "/sandsofsilk/texture2d/icon.png")]
     [InlineData("Essentia Sanguis", "/essentiasanguis/texture2d/icon.png")]
+    [InlineData("Mageblood", "/mageblood/texture2d/icon.png")]
     public void IconAsset_HoldsTodaysValue(string name, string suffix)
     {
         CustomUniqueSpec spec = CustomUniqueSpecs.All.Single(s => s.Name == name);
@@ -117,6 +120,17 @@ public sealed class CustomUniqueSpecsTests
                     pair.a.IconAsset.EndsWith(pair.b.IconAsset, StringComparison.OrdinalIgnoreCase)
                 )
         );
+    }
+
+    [Fact]
+    public void IconFallback_OnlyMagebloodBorrowsHeadhunter()
+    {
+        var borrowing = CustomUniqueSpecs
+            .All.Where(s => s.IconFallbackUniqueId != 0)
+            .Select(s => (s.Name, s.IconFallbackUniqueId))
+            .ToList();
+
+        Assert.Equal(new[] { ("Mageblood", (ushort)500) }, borrowing);
     }
 
     [Fact]

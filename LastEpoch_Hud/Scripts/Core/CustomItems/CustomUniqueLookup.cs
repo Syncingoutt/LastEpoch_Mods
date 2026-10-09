@@ -41,6 +41,18 @@ public static class CustomUniqueLookup
         return -1;
     }
 
+    /// <summary>Index of the spec whose icon this spec borrows while its own is missing, -1 if none.</summary>
+    public static int IconFallbackIndexOf(int index)
+    {
+        if (index < 0 || index >= CustomUniqueSpecs.All.Count)
+        {
+            return -1;
+        }
+
+        ushort fallbackId = CustomUniqueSpecs.All[index].IconFallbackUniqueId;
+        return fallbackId == 0 ? -1 : IndexOf(fallbackId);
+    }
+
     /// <summary>Visual borrowed by our registered unique matching all keys, null if none.</summary>
     public static CustomItemVisualSource VisualSource(
         int equipmentType,
