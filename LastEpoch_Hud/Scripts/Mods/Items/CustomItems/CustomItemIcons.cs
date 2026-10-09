@@ -65,6 +65,7 @@ public static class CustomItemIcons
 
         for (int i = 0; i < _sprites.Length; i++)
         {
+            LoadFallback(i);
             LogUnavailable(i);
         }
     }
@@ -84,7 +85,22 @@ public static class CustomItemIcons
 
     private static void LoadIcon(string name)
     {
-        int index = CustomUniqueLookup.IconIndexOf(name);
+        LoadInto(CustomUniqueLookup.IconIndexOf(name), name);
+    }
+
+    private static void LoadFallback(int index)
+    {
+        int fallback = CustomUniqueLookup.IconFallbackIndexOf(index);
+        if (fallback < 0 || !_sprites[index].IsNullOrDestroyed() || _assetNames[fallback] == null)
+        {
+            return;
+        }
+
+        LoadInto(index, _assetNames[fallback]);
+    }
+
+    private static void LoadInto(int index, string name)
+    {
         if (index < 0 || !_sprites[index].IsNullOrDestroyed())
         {
             return;
@@ -160,7 +176,7 @@ public static class CustomItemIcons
         _assetNames[index] = null;
         if (!Hud_Manager.asset_bundle.IsNullOrDestroyed())
         {
-            LoadIcon(name);
+            LoadInto(index, name);
         }
 
         LogUnavailable(index);

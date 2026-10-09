@@ -1,6 +1,7 @@
 using System.Text.Json;
 using LastEpoch_Hud.Scripts.Core.CustomItems;
 using LastEpoch_Hud.Scripts.Core.CustomItems.Headhunter;
+using LastEpoch_Hud.Scripts.Core.CustomItems.Mageblood;
 using LastEpoch_Hud.Scripts.Core.CustomItems.Mjolner;
 using LastEpoch_Hud.Tests.Support;
 
@@ -52,6 +53,10 @@ public sealed class CustomItemLocaleTests
             [CustomItemLocaleKeys.HeadhunterDescription] = (
                 HeadhunterDescription.Text(texts, 7001f, 7002),
                 ["7001", "7002"]
+            ),
+            [CustomItemLocaleKeys.MagebloodDescription] = (
+                MagebloodDescription.Text(texts),
+                [MagebloodFlaskSlots.RangeText]
             ),
             [CustomItemLocaleKeys.MjolnerDescriptionProc] = (
                 MjolnerDescription.LightningProc(texts, 7004, 7005, 1f, 0.5f),
