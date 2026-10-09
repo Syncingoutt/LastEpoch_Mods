@@ -18,6 +18,9 @@ public sealed class CustomUniqueSpec
     /// <summary>Lowercase '/'-path suffix of the icon in the HUD bundle.</summary>
     public string IconAsset { get; init; }
 
+    /// <summary>Unique whose icon shows while this item's own icon is missing; 0 = none.</summary>
+    public ushort IconFallbackUniqueId { get; init; }
+
     /// <summary>Game item whose 3D visual is borrowed; null uses the game's own lookup.</summary>
     public CustomItemVisualSource VisualSource { get; init; }
 }
