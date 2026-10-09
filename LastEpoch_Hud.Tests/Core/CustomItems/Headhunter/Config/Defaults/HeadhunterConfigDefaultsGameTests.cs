@@ -3,7 +3,6 @@ using LastEpoch_Hud.Scripts.Core.CustomItems.Headhunter.Config.Defaults;
 using LastEpoch_Hud.Scripts.Core.CustomItems.Headhunter.Config.Json;
 using LastEpoch_Hud.Scripts.Core.CustomItems.Headhunter.Config.Resolve;
 using LastEpoch_Hud.Tests.Support;
-using Mono.Cecil;
 
 namespace LastEpoch_Hud.Tests.Core.CustomItems.Headhunter.Config.Defaults;
 
@@ -29,8 +28,8 @@ public sealed class HeadhunterConfigDefaultsGameTests
     public void DefaultStats_ResolveAgainstGameStatsAndTags()
     {
         GameEnvironment.SkipWithoutGame();
-        Dictionary<string, int> spIds = ReadEnumIds("SP");
-        Dictionary<string, int> atIds = ReadEnumIds("AT");
+        Dictionary<string, int> spIds = GameEnumIds.Read("SP");
+        Dictionary<string, int> atIds = GameEnumIds.Read("AT");
         var problems = new List<HeadhunterConfigProblem>();
 
         HeadhunterResolvedConfig resolved = HeadhunterConfigResolver.Resolve(
@@ -47,25 +46,6 @@ public sealed class HeadhunterConfigDefaultsGameTests
 
     private static HashSet<string> ReadStatNames()
     {
-        return ReadEnumIds("SP").Keys.ToHashSet(StringComparer.Ordinal);
-    }
-
-    private static Dictionary<string, int> ReadEnumIds(string typeName)
-    {
-        var resolver = new DefaultAssemblyResolver();
-        resolver.AddSearchDirectory(GameEnvironment.Il2CppDir);
-        using var module = ModuleDefinition.ReadModule(
-            Path.Combine(GameEnvironment.Il2CppDir, "Il2CppLE.dll"),
-            new ReaderParameters { AssemblyResolver = resolver }
-        );
-        TypeDefinition type = module.GetType("Il2Cpp", typeName);
-        Assert.NotNull(type);
-        return type
-            .Fields.Where(field => field.IsStatic && field.IsLiteral)
-            .ToDictionary(
-                field => field.Name,
-                field => Convert.ToInt32(field.Constant),
-                StringComparer.Ordinal
-            );
+        return GameEnumIds.Read("SP").Keys.ToHashSet(StringComparer.Ordinal);
     }
 }

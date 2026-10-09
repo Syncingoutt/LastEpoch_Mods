@@ -15,9 +15,15 @@ public class Items_Mageblood : MonoBehaviour
     public Items_Mageblood(System.IntPtr ptr)
         : base(ptr) { }
 
+    private void Awake()
+    {
+        MagebloodConfigLoader.Load();
+    }
+
     private void Update()
     {
         _registrar.Update();
+        MagebloodConfigLoader.ReloadIfChanged(Time.unscaledTime);
     }
 
     private static CustomUniqueDefinition CreateDefinition()
