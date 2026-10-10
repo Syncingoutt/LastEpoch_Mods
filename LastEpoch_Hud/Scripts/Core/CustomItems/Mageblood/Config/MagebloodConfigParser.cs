@@ -26,6 +26,34 @@ public static class MagebloodConfigParser
         return Result(config, problems, true);
     }
 
+    /// <summary>The flask object the parser keeps for this name, or null.</summary>
+    internal static JObject FindFlask(JArray flasks, string name)
+    {
+        var problems = new List<MagebloodConfigProblem>();
+        foreach ((int index, MagebloodFlaskEntry flask) in KeptFlasks(flasks, problems))
+        {
+            if (string.Equals(flask.Name, name, StringComparison.Ordinal))
+            {
+                return (JObject)flasks[index];
+            }
+        }
+        return null;
+    }
+
+    /// <summary>The row object the parser keeps for this row text, or null.</summary>
+    internal static JObject FindRow(JArray stats, string rowText)
+    {
+        var problems = new List<MagebloodConfigProblem>();
+        foreach ((int index, MagebloodStatEntry row) in KeptRows(stats, "", problems))
+        {
+            if (string.Equals(row.RowText, rowText, StringComparison.Ordinal))
+            {
+                return (JObject)stats[index];
+            }
+        }
+        return null;
+    }
+
     private static MagebloodConfigParseResult Result(
         MagebloodConfig config,
         List<MagebloodConfigProblem> problems,
@@ -165,6 +193,19 @@ public static class MagebloodConfigParser
         }
 
         var flasks = new List<MagebloodFlaskEntry>();
+        foreach ((int _, MagebloodFlaskEntry flask) in KeptFlasks(list, problems))
+        {
+            flasks.Add(flask);
+        }
+        return flasks;
+    }
+
+    private static List<(int Index, MagebloodFlaskEntry Flask)> KeptFlasks(
+        JArray list,
+        List<MagebloodConfigProblem> problems
+    )
+    {
+        var kept = new List<(int Index, MagebloodFlaskEntry Flask)>();
         var names = new HashSet<string>(StringComparer.Ordinal);
         for (int i = 0; i < list.Count; i++)
         {
@@ -174,9 +215,9 @@ public static class MagebloodConfigParser
                 continue;
             }
             names.Add(flask.Name);
-            flasks.Add(flask);
+            kept.Add((i, flask));
         }
-        return flasks;
+        return kept;
     }
 
     private static bool TryReadFlask(
@@ -311,6 +352,20 @@ public static class MagebloodConfigParser
     )
     {
         var rows = new List<MagebloodStatEntry>();
+        foreach ((int _, MagebloodStatEntry row) in KeptRows(list, statsPath, problems))
+        {
+            rows.Add(row);
+        }
+        return rows;
+    }
+
+    private static List<(int Index, MagebloodStatEntry Row)> KeptRows(
+        JArray list,
+        string statsPath,
+        List<MagebloodConfigProblem> problems
+    )
+    {
+        var kept = new List<(int Index, MagebloodStatEntry Row)>();
         var seen = new HashSet<(string Stat, string Tag)>();
         for (int i = 0; i < list.Count; i++)
         {
@@ -329,9 +384,9 @@ public static class MagebloodConfigParser
                 );
                 continue;
             }
-            rows.Add(row);
+            kept.Add((i, row));
         }
-        return rows;
+        return kept;
     }
 
     private static bool TryReadRow(

@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace LastEpoch_Hud.Scripts.Core.CustomItems;
@@ -31,6 +32,25 @@ public static class ConfigJson
         }
         value = Convert.ToSingle(number.Value, CultureInfo.InvariantCulture);
         return float.IsFinite(value);
+    }
+
+    /// <summary>Parses text to a root object. False on blank, invalid JSON or a non-object root.</summary>
+    public static bool TryParseObject(string json, out JObject root)
+    {
+        root = null;
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return false;
+        }
+        try
+        {
+            root = JToken.Parse(json) as JObject;
+        }
+        catch (JsonReaderException)
+        {
+            return false;
+        }
+        return root != null;
     }
 
     public static bool TryReadBool(JToken token, out bool value)
