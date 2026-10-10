@@ -5,19 +5,20 @@ public sealed class HeadhunterActiveSceneGate
 {
     private int _handle;
 
+    /// <summary>True when the handle is a valid scene other than the last entered one; remembers nothing.</summary>
+    public bool IsNew(int handle)
+    {
+        return handle != 0 && handle != _handle;
+    }
+
     public bool TryEnter(int handle, string sceneName)
     {
-        if (handle == 0)
+        if (!IsNew(handle))
         {
             return false;
         }
 
         if (string.IsNullOrEmpty(sceneName))
-        {
-            return false;
-        }
-
-        if (handle == _handle)
         {
             return false;
         }
