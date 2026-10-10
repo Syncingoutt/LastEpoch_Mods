@@ -22,4 +22,20 @@ public sealed class GameConstantTests
         Assert.True(field.IsLiteral);
         Assert.Equal(MagebloodMaxResistance.GameCap, (float)field.Constant);
     }
+
+    [Fact]
+    public void UncappedResistanceColour_MatchesGame()
+    {
+        GameEnvironment.SkipWithoutGame();
+        GameEnvironment.SkipWithoutCpp2IlOut();
+        ModuleDefinition game = GameEnvironment.ReadGameModule(
+            Path.Combine(GameEnvironment.Cpp2IlOutDir, "LE.dll")
+        );
+
+        FieldDefinition field = game.GetType("CharacterSheet")
+            .Fields.Single(f => f.Name == "uncappedResistanceColour");
+
+        Assert.True(field.IsLiteral);
+        Assert.Equal(MagebloodResistanceText.UncappedColour, (string)field.Constant);
+    }
 }
