@@ -40,9 +40,9 @@ public static class MagebloodConfigDefaults
             Since1("Basalt", new MagebloodStatEntry("DamageTaken", More: -15f, Tag: "Physical")),
             Since1(
                 "Amethyst",
-                new MagebloodStatEntry("VoidResistance", Added: 0.35f),
-                new MagebloodStatEntry("NecroticResistance", Added: 0.35f),
-                new MagebloodStatEntry("PoisonResistance", Added: 0.35f)
+                new MagebloodStatEntry("VoidResistance", Added: 0.7f),
+                new MagebloodStatEntry("NecroticResistance", Added: 0.7f),
+                new MagebloodStatEntry("PoisonResistance", Added: 0.7f)
             ),
             Since1(
                 "Quartz",
