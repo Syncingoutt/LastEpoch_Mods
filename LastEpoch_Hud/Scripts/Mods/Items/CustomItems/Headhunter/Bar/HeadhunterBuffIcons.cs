@@ -31,6 +31,30 @@ internal static class HeadhunterBuffIcons
         return sprite;
     }
 
+    /// <summary>Icon of the bar prefab child with this name; null when the prefab or child is missing.</summary>
+    internal static Sprite FromBar(string childName)
+    {
+        GameObject prefab = HeadhunterBuffBarAssets.BarPrefab;
+        if (prefab.IsNullOrDestroyed())
+        {
+            return null;
+        }
+
+        GameObject child = Functions.GetChild(prefab, childName, false);
+        if (child.IsNullOrDestroyed())
+        {
+            return null;
+        }
+
+        Image image = child.GetComponent<Image>();
+        if (image.IsNullOrDestroyed() || image.sprite.IsNullOrDestroyed())
+        {
+            return null;
+        }
+
+        return Protect(image.sprite);
+    }
+
     private static Sprite Resolve(HeadhunterStatKey key, out bool isFinal)
     {
         if (key.Tags != 0)
@@ -38,7 +62,7 @@ internal static class HeadhunterBuffIcons
             return ResolveTagged(key, out isFinal);
         }
 
-        Sprite sprite = FromBundle(key.StatId);
+        Sprite sprite = FromBar(((SP)key.StatId).ToString());
         if (!sprite.IsNullOrDestroyed())
         {
             isFinal = true;
@@ -75,24 +99,6 @@ internal static class HeadhunterBuffIcons
     {
         int index = CustomUniqueLookup.IndexOf(CustomUniqueSpecs.Headhunter.UniqueId);
         return CustomItemIcons.Get(index);
-    }
-
-    private static Sprite FromBundle(int statId)
-    {
-        GameObject prefab = HeadhunterBuffBarAssets.BarPrefab;
-        GameObject child = Functions.GetChild(prefab, ((SP)statId).ToString(), false);
-        if (child.IsNullOrDestroyed())
-        {
-            return null;
-        }
-
-        Image image = child.GetComponent<Image>();
-        if (image.IsNullOrDestroyed() || image.sprite.IsNullOrDestroyed())
-        {
-            return null;
-        }
-
-        return Protect(image.sprite);
     }
 
     private static Sprite Protect(Sprite sprite)
