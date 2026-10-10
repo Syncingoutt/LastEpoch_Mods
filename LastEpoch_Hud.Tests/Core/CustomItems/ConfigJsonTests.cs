@@ -98,4 +98,27 @@ public sealed class ConfigJsonTests
     {
         Assert.False(ConfigJson.TryReadText(JToken.Parse(json), out _));
     }
+
+    [Fact]
+    public void TryParseObject_Object_ReturnsRoot()
+    {
+        bool ok = ConfigJson.TryParseObject("""{"k":1}""", out JObject root);
+
+        Assert.True(ok);
+        Assert.Equal(1, (int)root["k"]);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("  ")]
+    [InlineData("{")]
+    [InlineData("[]")]
+    [InlineData("5")]
+    public void TryParseObject_NotObject_ReturnsFalse(string json)
+    {
+        bool ok = ConfigJson.TryParseObject(json, out JObject root);
+
+        Assert.False(ok);
+        Assert.Null(root);
+    }
 }

@@ -15,8 +15,7 @@ public static class MagebloodConfigMerger
         int defaultsVersion
     )
     {
-        JObject root = TryParseRoot(json);
-        if (root == null)
+        if (!ConfigJson.TryParseObject(json, out JObject root))
         {
             return new MagebloodMergeResult(json, false, 0);
         }
@@ -33,22 +32,6 @@ public static class MagebloodConfigMerger
         int added = AddFlasks(root, flasks, stamp) + AddMaxResistances(root, maxResistances, stamp);
         root[MagebloodConfigKeys.DefaultsVersion] = defaultsVersion;
         return new MagebloodMergeResult(root.ToString(Formatting.Indented), true, added);
-    }
-
-    private static JObject TryParseRoot(string json)
-    {
-        if (string.IsNullOrWhiteSpace(json))
-        {
-            return null;
-        }
-        try
-        {
-            return JToken.Parse(json) as JObject;
-        }
-        catch (JsonReaderException)
-        {
-            return null;
-        }
     }
 
     private static int ReadStamp(JObject root)
