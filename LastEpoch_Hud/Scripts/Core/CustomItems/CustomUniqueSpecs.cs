@@ -59,11 +59,26 @@ public static class CustomUniqueSpecs
         VisualSource = new CustomItemVisualSource { SubType = 0, UniqueId = 22 },
     };
 
+    public static readonly CustomUniqueSpec Mageblood = new()
+    {
+        Name = "Mageblood",
+        UniqueId = 505, // 504 is taken by Temporalis (Items_Temporalis.txt)
+        BaseType = 2, // Belt
+        BaseId = CustomUniqueSpec.AllocateBaseId,
+        AddsBase = true,
+        LevelRequirement = 44,
+        OverrideLevelRequirement = true,
+        EffectiveLevelForLegendaryPotential = 0,
+        IconAsset = "/mageblood/texture2d/icon.png",
+        IconFallbackUniqueId = 500,
+    };
+
     public static readonly IReadOnlyList<CustomUniqueSpec> All = new[]
     {
         Headhunter,
         Mjolner,
         SandsOfSilk,
         EssentiaSanguis,
+        Mageblood,
     };
 }

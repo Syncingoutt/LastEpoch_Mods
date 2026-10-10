@@ -180,6 +180,7 @@ public static class HudTheme
     public const float SearchResultsWidth = 590f;
     public const float SearchResultHeight = 58f;
     public const float SearchCornerRadius = 8f;
+    public const float DimmedAlpha = 0.45f;
 
     public const int BrandFontSize = 34;
     public const int SectionFontSize = 24;

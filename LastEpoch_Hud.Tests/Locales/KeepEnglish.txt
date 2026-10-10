@@ -28,3 +28,10 @@ fr:Runes
 # Custom item proper names kept in English in French.
 fr:CustomItem.Mjolner.Name
 fr:CustomItem.EssentiaSanguis.Name
+fr:CustomItem.Mageblood.Name
+fr:Mageblood
+
+# Mageblood flask names identical in French.
+fr:Mageblood.Flask.Jade
+fr:Mageblood.Flask.Bismuth
+fr:Mageblood.Flask.Quartz

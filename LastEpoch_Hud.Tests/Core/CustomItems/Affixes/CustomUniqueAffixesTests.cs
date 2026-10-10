@@ -122,6 +122,32 @@ public sealed class CustomUniqueAffixesTests
     }
 
     [Fact]
+    public void MagebloodImplicits_HoldTodaysValues()
+    {
+        CustomBaseImplicit[] expected =
+        [
+            new(CustomItemStat.Strength, N, Add, 0, 25f, 35f),
+            new(CustomItemStat.Dexterity, N, Add, 0, 30f, 50f),
+        ];
+
+        Assert.Equal(expected, CustomUniqueAffixes.MagebloodImplicits);
+    }
+
+    [Fact]
+    public void MagebloodMods_AreEmpty()
+    {
+        Assert.Empty(CustomUniqueAffixes.MagebloodMods);
+    }
+
+    [Fact]
+    public void MagebloodTooltip_IsDescriptionOnly()
+    {
+        byte[] expected = [128];
+
+        Assert.Equal(expected, CustomUniqueAffixes.MagebloodTooltip);
+    }
+
+    [Fact]
     public void AllImplicits_ValueNotAboveMax()
     {
         IEnumerable<CustomBaseImplicit> all = CustomUniqueAffixes

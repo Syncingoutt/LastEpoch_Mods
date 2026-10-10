@@ -62,4 +62,50 @@ public sealed class ConfigChangeDetectorTests
 
         Assert.True(detector.HasChanged(_t1));
     }
+
+    [Fact]
+    public void ForceNext_IsCheckDueInsideInterval_True()
+    {
+        var detector = new ConfigChangeDetector(1.0);
+        detector.IsCheckDue(0);
+        detector.ForceNext();
+
+        Assert.True(detector.IsCheckDue(0.5));
+    }
+
+    [Fact]
+    public void ForceNext_SameStamp_ChangedOnce()
+    {
+        var detector = new ConfigChangeDetector(1.0);
+        detector.Remember(_t1);
+        detector.ForceNext();
+
+        Assert.True(detector.HasChanged(_t1));
+        Assert.False(detector.HasChanged(_t1));
+    }
+
+    [Fact]
+    public void ForceNext_NullStamp_FalseAndCleared()
+    {
+        var detector = new ConfigChangeDetector(1.0);
+        detector.Remember(_t1);
+        detector.IsCheckDue(0);
+        detector.ForceNext();
+
+        Assert.False(detector.HasChanged(null));
+        Assert.False(detector.IsCheckDue(0.5));
+        Assert.False(detector.HasChanged(_t1));
+    }
+
+    [Fact]
+    public void ForceNext_AfterConsumed_GateRules()
+    {
+        var detector = new ConfigChangeDetector(1.0);
+        detector.Remember(_t1);
+        detector.IsCheckDue(0);
+        detector.ForceNext();
+        detector.HasChanged(_t1);
+
+        Assert.False(detector.IsCheckDue(0.5));
+    }
 }

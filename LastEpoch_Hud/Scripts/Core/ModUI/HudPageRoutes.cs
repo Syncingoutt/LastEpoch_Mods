@@ -13,6 +13,7 @@ public static class HudPageRoutes
             HudPageId.UtilitiesQol => "Utilities_QOL",
             HudPageId.ItemsDrop => "Items_Drop",
             HudPageId.ItemsCraftingSlot => "Items_CraftingSlot",
+            HudPageId.ItemsCustomItems => "Items_CustomItems",
             HudPageId.WorldDifficulty => "World_Difficulty",
             HudPageId.WorldMonoliths => "World_Monoliths",
             HudPageId.WorldMisc => "World_Misc",

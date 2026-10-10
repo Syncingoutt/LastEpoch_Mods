@@ -1,6 +1,8 @@
 using System.Text.Json;
 using LastEpoch_Hud.Scripts.Core.CustomItems;
 using LastEpoch_Hud.Scripts.Core.CustomItems.Headhunter;
+using LastEpoch_Hud.Scripts.Core.CustomItems.Mageblood;
+using LastEpoch_Hud.Scripts.Core.CustomItems.Mageblood.Menu;
 using LastEpoch_Hud.Scripts.Core.CustomItems.Mjolner;
 using LastEpoch_Hud.Tests.Support;
 
@@ -19,7 +21,7 @@ public sealed class CustomItemLocaleTests
     public void AllKeys_InBaseJson()
     {
         Dictionary<string, string>.KeyCollection keys = Read("base").Keys;
-        var missing = CustomItemLocaleKeys.All.Where(key => !keys.Contains(key)).ToList();
+        var missing = CheckedKeys().Where(key => !keys.Contains(key)).ToList();
 
         Assert.True(missing.Count == 0, $"base.json misses: {string.Join(", ", missing)}");
     }
@@ -32,8 +34,8 @@ public sealed class CustomItemLocaleTests
     public void Language_TranslatesEveryCustomItemKey(string language)
     {
         Dictionary<string, string> texts = Read(language);
-        var missing = CustomItemLocaleKeys
-            .All.Where(key => string.IsNullOrWhiteSpace(texts.GetValueOrDefault(key)))
+        var missing = CheckedKeys()
+            .Where(key => string.IsNullOrWhiteSpace(texts.GetValueOrDefault(key)))
             .ToList();
 
         Assert.True(missing.Count == 0, $"{language}.json misses: {string.Join(", ", missing)}");
@@ -53,6 +55,15 @@ public sealed class CustomItemLocaleTests
                 HeadhunterDescription.Text(texts, 7001f, 7002),
                 ["7001", "7002"]
             ),
+            [CustomItemLocaleKeys.MagebloodDescription] = (
+                MagebloodDescription.Text(texts, 7008f),
+                [MagebloodFlaskSlots.RangeText, "7008"]
+            ),
+            [MagebloodFlasksTexts.Slot] = (MagebloodFlasksTexts.SlotLabel(texts, 0, false), ["1"]),
+            [MagebloodFlasksTexts.SlotInactive] = (
+                MagebloodFlasksTexts.SlotLabel(texts, 3, true),
+                ["4"]
+            ),
             [CustomItemLocaleKeys.MjolnerDescriptionProc] = (
                 MjolnerDescription.LightningProc(texts, 7004, 7005, 1f, 0.5f),
                 ["7004", "7005", "100", "50"]
@@ -70,6 +81,12 @@ public sealed class CustomItemLocaleTests
 
         Assert.True(broken.Count == 0, $"{language}: wrong fill of {string.Join(", ", broken)}");
     }
+
+    private static IEnumerable<string> CheckedKeys() =>
+        CustomItemLocaleKeys
+            .All.Concat(MagebloodFlaskNames.Keys)
+            .Concat(MagebloodMenuTexts.All)
+            .Concat(MagebloodFlasksTexts.All);
 
     private static bool IsFilled(string text, string[] expected) =>
         text != null && !text.Contains('{') && expected.All(text.Contains);

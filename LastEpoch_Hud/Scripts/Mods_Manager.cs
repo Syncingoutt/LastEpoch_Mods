@@ -171,6 +171,14 @@ public class Mods_Manager : MonoBehaviour
         items_essentiasanguis_obj.AddComponent<Mods.Items.CustomItems.EssentiaSanguis.Items_EssentiaSanguis>();
         Mods_Objects.Add(items_essentiasanguis_obj);
 
+        GameObject magebloodObj = Object.Instantiate(
+            new GameObject { name = "Mod_Items_Mageblood" },
+            Vector3.zero,
+            Quaternion.identity
+        );
+        magebloodObj.AddComponent<Mods.Items.CustomItems.Mageblood.Items_Mageblood>();
+        Mods_Objects.Add(magebloodObj);
+
         GameObject customIconsObj = Object.Instantiate(
             new GameObject { name = "Mod_Items_CustomItemIcons" },
             Vector3.zero,
