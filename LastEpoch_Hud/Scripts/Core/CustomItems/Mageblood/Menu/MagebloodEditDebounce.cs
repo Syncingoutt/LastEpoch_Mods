@@ -42,6 +42,15 @@ public sealed class MagebloodEditDebounce
         return true;
     }
 
+    /// <summary>Takes the pending edit now, before its quiet time is over.</summary>
+    public bool TryTakeAny(out MagebloodValueEdit edit)
+    {
+        edit = _pending;
+        bool had = _hasPending;
+        _hasPending = false;
+        return had;
+    }
+
     public void Discard()
     {
         _hasPending = false;

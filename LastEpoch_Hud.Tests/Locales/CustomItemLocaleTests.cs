@@ -59,6 +59,11 @@ public sealed class CustomItemLocaleTests
                 MagebloodDescription.Text(texts, 7008f),
                 [MagebloodFlaskSlots.RangeText, "7008"]
             ),
+            [MagebloodFlasksTexts.Slot] = (MagebloodFlasksTexts.SlotLabel(texts, 0, false), ["1"]),
+            [MagebloodFlasksTexts.SlotInactive] = (
+                MagebloodFlasksTexts.SlotLabel(texts, 3, true),
+                ["4"]
+            ),
             [CustomItemLocaleKeys.MjolnerDescriptionProc] = (
                 MjolnerDescription.LightningProc(texts, 7004, 7005, 1f, 0.5f),
                 ["7004", "7005", "100", "50"]
@@ -78,7 +83,10 @@ public sealed class CustomItemLocaleTests
     }
 
     private static IEnumerable<string> CheckedKeys() =>
-        CustomItemLocaleKeys.All.Concat(MagebloodFlaskNames.Keys).Concat(MagebloodMenuTexts.All);
+        CustomItemLocaleKeys
+            .All.Concat(MagebloodFlaskNames.Keys)
+            .Concat(MagebloodMenuTexts.All)
+            .Concat(MagebloodFlasksTexts.All);
 
     private static bool IsFilled(string text, string[] expected) =>
         text != null && !text.Contains('{') && expected.All(text.Contains);

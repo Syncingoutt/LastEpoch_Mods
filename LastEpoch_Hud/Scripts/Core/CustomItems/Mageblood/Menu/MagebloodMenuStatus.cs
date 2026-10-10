@@ -19,6 +19,18 @@ public readonly record struct MagebloodMenuStatus(
         return new MagebloodMenuStatus(worn, active, WarningFor(readable, problemCount), readable);
     }
 
+    /// <summary>True when a belt is worn and this slot is past its flask count.</summary>
+    public bool IsSlotInactive(int slot)
+    {
+        return Worn && slot >= ActiveFlasks;
+    }
+
+    /// <summary>True when the file is readable and the value's unit is known.</summary>
+    public bool CanEdit(bool unitKnown)
+    {
+        return Editable && unitKnown;
+    }
+
     private static MagebloodFileWarning WarningFor(bool readable, int problemCount)
     {
         if (!readable)

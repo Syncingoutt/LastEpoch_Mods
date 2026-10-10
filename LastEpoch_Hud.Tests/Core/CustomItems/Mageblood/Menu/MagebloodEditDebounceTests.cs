@@ -127,6 +127,27 @@ public sealed class MagebloodEditDebounceTests
     }
 
     [Fact]
+    public void TryTakeAny_BeforeQuiet_ReturnsOnce()
+    {
+        var debounce = new MagebloodEditDebounce(Quiet);
+        var edit = new MagebloodValueEdit(_maxRes, 7);
+        debounce.Set(edit, 0, out _);
+
+        Assert.True(debounce.TryTakeAny(out MagebloodValueEdit taken));
+        Assert.Equal(edit, taken);
+        Assert.False(debounce.TryTakeAny(out _));
+        Assert.False(debounce.TryTakeDue(1, out _));
+    }
+
+    [Fact]
+    public void TryTakeAny_Empty_False()
+    {
+        var debounce = new MagebloodEditDebounce(Quiet);
+
+        Assert.False(debounce.TryTakeAny(out _));
+    }
+
+    [Fact]
     public void TryTakeDue_Empty_False()
     {
         var debounce = new MagebloodEditDebounce(Quiet);
