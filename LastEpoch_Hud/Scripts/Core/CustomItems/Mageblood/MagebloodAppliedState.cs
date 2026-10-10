@@ -40,6 +40,18 @@ public sealed class MagebloodAppliedState
         _dirty = false;
     }
 
+    /// <summary>Marks a nothing-worn, nothing-applied pass clean. True when it was idle.</summary>
+    public bool RecordIfIdle(bool worn)
+    {
+        if (worn || Worn || _names.Count > 0)
+        {
+            return false;
+        }
+
+        _dirty = false;
+        return true;
+    }
+
     public void Clear()
     {
         _names.Clear();

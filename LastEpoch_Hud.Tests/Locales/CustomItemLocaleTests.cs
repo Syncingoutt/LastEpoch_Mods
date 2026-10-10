@@ -55,8 +55,8 @@ public sealed class CustomItemLocaleTests
                 ["7001", "7002"]
             ),
             [CustomItemLocaleKeys.MagebloodDescription] = (
-                MagebloodDescription.Text(texts),
-                [MagebloodFlaskSlots.RangeText]
+                MagebloodDescription.Text(texts, 7008f),
+                [MagebloodFlaskSlots.RangeText, "7008"]
             ),
             [CustomItemLocaleKeys.MjolnerDescriptionProc] = (
                 MjolnerDescription.LightningProc(texts, 7004, 7005, 1f, 0.5f),

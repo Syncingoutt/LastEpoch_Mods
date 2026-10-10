@@ -5,6 +5,7 @@ internal static class MagebloodConfigKeys
 {
     public const string Version = "version";
     public const string DefaultsVersion = "defaultsVersion";
+    public const string MaxResistances = "maxResistances";
     public const string Flasks = "flasks";
     public const string Name = "name";
     public const string Icon = "icon";

@@ -21,6 +21,7 @@ public static class MagebloodConfigParser
         {
             Version = ReadVersion(root, problems),
             Flasks = ReadFlasks(root, problems),
+            MaxResistances = ReadMaxResistances(root, problems),
         };
         return Result(config, problems, true);
     }
@@ -110,6 +111,36 @@ public static class MagebloodConfigParser
             );
         }
         return version;
+    }
+
+    private static float ReadMaxResistances(JObject root, List<MagebloodConfigProblem> problems)
+    {
+        JToken token = root[MagebloodConfigKeys.MaxResistances];
+        if (token == null)
+        {
+            return MagebloodConfigDefaults.MaxResistances.Value;
+        }
+        if (!ConfigJson.TryReadNumber(token, out float value))
+        {
+            Report(
+                problems,
+                MagebloodConfigProblemCode.NotFiniteNumber,
+                MagebloodConfigKeys.MaxResistances,
+                "Must be a finite number."
+            );
+            return MagebloodConfigDefaults.MaxResistances.Value;
+        }
+        if (value < 0f)
+        {
+            Report(
+                problems,
+                MagebloodConfigProblemCode.Negative,
+                MagebloodConfigKeys.MaxResistances,
+                "Must not be negative."
+            );
+            return MagebloodConfigDefaults.MaxResistances.Value;
+        }
+        return value;
     }
 
     private static IReadOnlyList<MagebloodFlaskEntry> ReadFlasks(

@@ -16,12 +16,28 @@ public sealed class MagebloodConfigWriterTests
         Assert.True(result.IsReadable);
         Assert.Empty(result.Problems);
         Assert.Equal(MagebloodConfigDefaults.Config.Version, result.Config.Version);
+        Assert.Equal(MagebloodConfigDefaults.Config.MaxResistances, result.Config.MaxResistances);
         Assert.Equal(expected.Select(f => f.Name), result.Config.Flasks.Select(f => f.Name));
         Assert.Equal(expected.Select(f => f.Icon), result.Config.Flasks.Select(f => f.Icon));
         Assert.Equal(
             expected.SelectMany(f => f.Stats),
             result.Config.Flasks.SelectMany(f => f.Stats)
         );
+    }
+
+    [Fact]
+    public void Write_MaxResistances_Written()
+    {
+        var config = new MagebloodConfig
+        {
+            Version = 1,
+            Flasks = Array.Empty<MagebloodFlaskEntry>(),
+            MaxResistances = 7.5f,
+        };
+
+        var root = JObject.Parse(MagebloodConfigWriter.Write(config));
+
+        Assert.Equal(7.5f, (float)root["maxResistances"]);
     }
 
     [Fact]

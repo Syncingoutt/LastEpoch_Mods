@@ -85,9 +85,28 @@ public sealed class MagebloodConfigDefaultsTests
     }
 
     [Fact]
+    public void MaxResistances_IsFiveSinceTwo()
+    {
+        Assert.Equal(new MagebloodVersionedValue(5f, 2), MagebloodConfigDefaults.MaxResistances);
+        Assert.Equal(5f, MagebloodConfigDefaults.Config.MaxResistances);
+    }
+
+    [Fact]
+    public void DefaultsVersion_CoversEverySince()
+    {
+        Assert.All(
+            MagebloodConfigDefaults.VersionedFlasks,
+            flask => Assert.True(flask.Since <= MagebloodConfigDefaults.DefaultsVersion)
+        );
+        Assert.True(
+            MagebloodConfigDefaults.MaxResistances.Since <= MagebloodConfigDefaults.DefaultsVersion
+        );
+    }
+
+    [Fact]
     public void Versions()
     {
-        Assert.Equal(1, MagebloodConfigDefaults.DefaultsVersion);
+        Assert.Equal(2, MagebloodConfigDefaults.DefaultsVersion);
         Assert.Equal(1, MagebloodConfigDefaults.CurrentVersion);
         Assert.Equal(1, MagebloodConfigDefaults.UnstampedDefaultsVersion);
         Assert.Equal(

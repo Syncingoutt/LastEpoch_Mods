@@ -6,8 +6,10 @@ namespace LastEpoch_Hud.Scripts.Core.CustomItems.Mageblood.Config;
 public static class MagebloodConfigDefaults
 {
     public const int CurrentVersion = 1;
-    public const int DefaultsVersion = 1;
+    public const int DefaultsVersion = 2;
     public const int UnstampedDefaultsVersion = 1;
+
+    public static readonly MagebloodVersionedValue MaxResistances = new(5f, 2);
 
     public static readonly IReadOnlyList<MagebloodVersionedFlask> VersionedFlasks = BuildTable();
 
@@ -17,6 +19,7 @@ public static class MagebloodConfigDefaults
     {
         Version = CurrentVersion,
         Flasks = Flasks,
+        MaxResistances = MaxResistances.Value,
     };
 
     private static MagebloodVersionedFlask[] BuildTable()

@@ -76,6 +76,7 @@ internal static class MagebloodConfigLoader
         MagebloodMergeResult merge = MagebloodConfigMerger.Merge(
             text,
             MagebloodConfigDefaults.VersionedFlasks,
+            MagebloodConfigDefaults.MaxResistances,
             MagebloodConfigDefaults.DefaultsVersion
         );
         if (!merge.Changed)

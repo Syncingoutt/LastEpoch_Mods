@@ -20,4 +20,5 @@ public enum MagebloodConfigProblemCode
     NoStats,
     UnknownStat,
     UnknownTag,
+    Negative,
 }

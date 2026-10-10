@@ -46,7 +46,8 @@ public class Items_Mageblood : MonoBehaviour
             SubtypeNameKey = CustomItemLocaleKeys.MagebloodSubtype,
             UniqueNameKey = CustomItemLocaleKeys.MagebloodName,
             LoreKey = CustomItemLocaleKeys.MagebloodLore,
-            Description = MagebloodDescription.Text,
+            Description = texts =>
+                MagebloodDescription.Text(texts, MagebloodConfigLoader.Current.MaxResistances),
             Flags = () => CustomUniqueFlags.NoSettings,
             Implicits = CustomUniqueAffixes.MagebloodImplicits,
             Mods = CustomUniqueAffixes.MagebloodMods,
