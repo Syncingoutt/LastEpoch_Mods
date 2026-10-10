@@ -56,6 +56,39 @@ public static class CustomItemIcons
         image.sprite = sprite;
     }
 
+    /// <summary>Loads a bundle asset as a sprite kept across scene changes. texture is null when the asset is a Sprite.</summary>
+    internal static Sprite LoadBundleSprite(string assetName, out Texture2D texture)
+    {
+        // Load the texture explicitly and create a runtime sprite;
+        // this avoids ambiguous PNG subassets and imported atlas bindings.
+        // The hide flag keeps Unity from unloading the assets on scene change.
+        texture = Hud_Manager
+            .asset_bundle.LoadAsset(assetName, Il2CppType.Of<Texture2D>())
+            ?.TryCast<Texture2D>();
+        if (!texture.IsNullOrDestroyed())
+        {
+            texture.hideFlags |= HideFlags.DontUnloadUnusedAsset;
+            var created = Sprite.Create(
+                texture,
+                new Rect(0, 0, texture.width, texture.height),
+                new Vector2(0.5f, 0.5f)
+            );
+            created.hideFlags |= HideFlags.DontUnloadUnusedAsset;
+            return created;
+        }
+
+        texture = null;
+        Sprite loaded = Hud_Manager
+            .asset_bundle.LoadAsset(assetName, Il2CppType.Of<Sprite>())
+            ?.TryCast<Sprite>();
+        if (!loaded.IsNullOrDestroyed())
+        {
+            loaded.hideFlags |= HideFlags.DontUnloadUnusedAsset;
+        }
+
+        return loaded;
+    }
+
     private static void LoadAll()
     {
         foreach (string name in AssetNames())
@@ -108,7 +141,8 @@ public static class CustomItemIcons
 
         try
         {
-            _sprites[index] = LoadSprite(index, name);
+            _sprites[index] = LoadBundleSprite(name, out Texture2D texture);
+            _textures[index] = texture;
             _assetNames[index] = _sprites[index].IsNullOrDestroyed() ? null : name;
             LogLoaded(index, name);
         }
@@ -116,38 +150,6 @@ public static class CustomItemIcons
         {
             ErrorLog.Report(ex, $"{CustomUniqueSpecs.All[index].Name} icon");
         }
-    }
-
-    private static Sprite LoadSprite(int index, string name)
-    {
-        // Load the texture explicitly and create a runtime sprite;
-        // this avoids ambiguous PNG subassets and imported atlas bindings.
-        // The hide flag keeps Unity from unloading the assets on scene change.
-        Texture2D texture = Hud_Manager
-            .asset_bundle.LoadAsset(name, Il2CppType.Of<Texture2D>())
-            ?.TryCast<Texture2D>();
-        if (!texture.IsNullOrDestroyed())
-        {
-            texture.hideFlags |= HideFlags.DontUnloadUnusedAsset;
-            _textures[index] = texture;
-            var created = Sprite.Create(
-                texture,
-                new Rect(0, 0, texture.width, texture.height),
-                new Vector2(0.5f, 0.5f)
-            );
-            created.hideFlags |= HideFlags.DontUnloadUnusedAsset;
-            return created;
-        }
-
-        Sprite loaded = Hud_Manager
-            .asset_bundle.LoadAsset(name, Il2CppType.Of<Sprite>())
-            ?.TryCast<Sprite>();
-        if (!loaded.IsNullOrDestroyed())
-        {
-            loaded.hideFlags |= HideFlags.DontUnloadUnusedAsset;
-        }
-
-        return loaded;
     }
 
     private static bool IsUnloaded(int index)

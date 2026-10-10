@@ -5,7 +5,9 @@ using LastEpoch_Hud.Scripts.Core.CustomItems;
 using LastEpoch_Hud.Scripts.Core.CustomItems.Headhunter;
 using LastEpoch_Hud.Scripts.Core.CustomItems.Headhunter.Buffs;
 using LastEpoch_Hud.Scripts.Core.CustomItems.Mageblood;
+using LastEpoch_Hud.Scripts.Mods.Items.CustomItems.Headhunter;
 using LastEpoch_Hud.Scripts.Mods.Items.CustomItems.Headhunter.Buffs;
+using LastEpoch_Hud.Scripts.Mods.Items.CustomItems.Mageblood.Bar;
 using LastEpoch_Hud.Scripts.ModUI;
 using UnityEngine.SceneManagement;
 
@@ -57,11 +59,18 @@ internal static class MagebloodBuffs
         if (buffs == null || !Scenes.IsGameScene())
         {
             _state.MarkDirty();
+            MagebloodBar.Hide();
             return;
         }
 
         bool worn = IsWorn();
         MagebloodCapSync.Sync(worn);
+        SyncBuffs(buffs, worn);
+        ShowBar();
+    }
+
+    private static void SyncBuffs(StatBuffs buffs, bool worn)
+    {
         if (_state.RecordIfIdle(worn))
         {
             return;
@@ -74,6 +83,22 @@ internal static class MagebloodBuffs
         }
 
         Sync(buffs, worn, reason);
+    }
+
+    private static void ShowBar()
+    {
+        try
+        {
+            MagebloodBar.Sync(
+                MagebloodConfigLoader.Flasks,
+                _state.ActiveFlasks,
+                HeadhunterConfigLoader.Current.Bar
+            );
+        }
+        catch (Exception ex)
+        {
+            ErrorLog.Report(ex, "Mageblood flask bar");
+        }
     }
 
     private static bool AllLive(StatBuffs buffs)
@@ -147,5 +172,6 @@ internal static class MagebloodBuffs
         }
 
         _state.Clear();
+        MagebloodBar.Hide();
     }
 }
