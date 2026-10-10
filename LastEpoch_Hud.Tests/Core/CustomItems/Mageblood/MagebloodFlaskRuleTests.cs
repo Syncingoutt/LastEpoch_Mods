@@ -9,6 +9,17 @@ public sealed class MagebloodFlaskRuleTests
     private static readonly string[] _none = Array.Empty<string>();
 
     [Theory]
+    [InlineData(5, -1, 0)]
+    [InlineData(5, 0, 0)]
+    [InlineData(5, 3, 3)]
+    [InlineData(2, 4, 2)]
+    [InlineData(0, 4, 0)]
+    public void ActiveCount_Clamps(int flaskCount, int slots, int expected)
+    {
+        Assert.Equal(expected, MagebloodFlaskRule.ActiveCount(flaskCount, slots));
+    }
+
+    [Theory]
     [InlineData(2)]
     [InlineData(3)]
     [InlineData(4)]

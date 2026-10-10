@@ -25,6 +25,11 @@ public static class MagebloodFlaskRule
         return actions;
     }
 
+    public static int ActiveCount(int flaskCount, int slots)
+    {
+        return Math.Min(Math.Max(slots, 0), flaskCount);
+    }
+
     private static void AddActions(
         IReadOnlyList<MagebloodFlask> flasks,
         int slots,
@@ -35,7 +40,7 @@ public static class MagebloodFlaskRule
         {
             return;
         }
-        int count = Math.Min(Math.Max(slots, 0), flasks.Count);
+        int count = ActiveCount(flasks.Count, slots);
         for (int i = 0; i < count; i++)
         {
             foreach (MagebloodBuffStat row in flasks[i].Stats)
