@@ -18,6 +18,7 @@ public static class MagebloodConfigWriter
         {
             [MagebloodConfigKeys.Version] = config.Version,
             [MagebloodConfigKeys.DefaultsVersion] = MagebloodConfigDefaults.DefaultsVersion,
+            [MagebloodConfigKeys.MaxResistances] = config.MaxResistances,
             [MagebloodConfigKeys.Flasks] = flasks,
         };
         return root.ToString(Formatting.Indented);

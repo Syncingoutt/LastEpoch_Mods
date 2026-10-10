@@ -140,6 +140,74 @@ public sealed class MagebloodAppliedStateTests
         Assert.Equal(MagebloodSyncReason.Dirty, state.NeedsSync(false, true));
     }
 
+    [Fact]
+    public void RecordIfIdle_New_TrueAndClean()
+    {
+        var state = new MagebloodAppliedState();
+
+        bool idle = state.RecordIfIdle(false);
+
+        Assert.True(idle);
+        Assert.Equal(MagebloodSyncReason.None, state.NeedsSync(false, true));
+    }
+
+    [Fact]
+    public void RecordIfIdle_Worn_FalseAndStateUntouched()
+    {
+        var state = new MagebloodAppliedState();
+
+        bool idle = state.RecordIfIdle(true);
+
+        Assert.False(idle);
+        Assert.Equal(MagebloodSyncReason.Dirty, state.NeedsSync(false, true));
+    }
+
+    [Fact]
+    public void RecordIfIdle_RecordedWorn_False()
+    {
+        var state = new MagebloodAppliedState();
+        state.Record(Array.Empty<BuffAction>(), true, 2);
+
+        MagebloodSyncReason before = state.NeedsSync(false, true);
+
+        Assert.False(state.RecordIfIdle(false));
+        Assert.Equal(MagebloodSyncReason.WornChanged, before);
+        Assert.Equal(before, state.NeedsSync(false, true));
+    }
+
+    [Fact]
+    public void RecordIfIdle_NamesApplied_False()
+    {
+        var state = new MagebloodAppliedState();
+        state.Record(new[] { Action(BuffActionKind.Add, "MB_A") }, false, 1);
+
+        Assert.False(state.RecordIfIdle(false));
+        Assert.Equal(MagebloodSyncReason.BuffsLost, state.NeedsSync(false, false));
+    }
+
+    [Fact]
+    public void RecordIfIdle_AfterClear_True()
+    {
+        var state = new MagebloodAppliedState();
+        state.Record(new[] { Action(BuffActionKind.Add, "MB_A") }, true, 1);
+        state.Clear();
+
+        Assert.True(state.RecordIfIdle(false));
+    }
+
+    [Fact]
+    public void RecordIfIdle_AfterMarkDirty_TrueAndClean()
+    {
+        var state = new MagebloodAppliedState();
+        state.Record(Array.Empty<BuffAction>(), false, 0);
+        state.MarkDirty();
+
+        bool idle = state.RecordIfIdle(false);
+
+        Assert.True(idle);
+        Assert.Equal(MagebloodSyncReason.None, state.NeedsSync(false, true));
+    }
+
     private static BuffAction Action(BuffActionKind kind, string name)
     {
         return new BuffAction(kind, name, 1, 1f, 0f, 1f, 1);

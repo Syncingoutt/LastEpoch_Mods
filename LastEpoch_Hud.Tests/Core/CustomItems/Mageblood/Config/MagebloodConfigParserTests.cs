@@ -308,6 +308,78 @@ public sealed class MagebloodConfigParserTests
         Assert.Null(result.Config.Flasks[0].Icon);
     }
 
+    [Fact]
+    public void Parse_MaxResistances_Read()
+    {
+        MagebloodConfigParseResult result = MagebloodConfigParser.Parse(
+            """{"version":1,"maxResistances":7.5,"flasks":[]}"""
+        );
+
+        Assert.Equal(7.5f, result.Config.MaxResistances);
+        Assert.Empty(result.Problems);
+    }
+
+    [Fact]
+    public void Parse_MaxResistancesMissing_Default()
+    {
+        MagebloodConfigParseResult result = MagebloodConfigParser.Parse(
+            """{"version":1,"flasks":[]}"""
+        );
+
+        Assert.Equal(5f, result.Config.MaxResistances);
+        Assert.Empty(result.Problems);
+    }
+
+    [Theory]
+    [InlineData("\"x\"")]
+    [InlineData("null")]
+    [InlineData("true")]
+    public void Parse_MaxResistancesNotNumber_Reports(string value)
+    {
+        MagebloodConfigParseResult result = MagebloodConfigParser.Parse(
+            $$"""{"version":1,"maxResistances":{{value}},"flasks":[]}"""
+        );
+
+        Assert.Contains(
+            result.Problems,
+            p => p.Code == Code.NotFiniteNumber && p.Path == "maxResistances"
+        );
+        Assert.Equal(5f, result.Config.MaxResistances);
+    }
+
+    [Fact]
+    public void Parse_MaxResistancesNegative_Reports()
+    {
+        MagebloodConfigParseResult result = MagebloodConfigParser.Parse(
+            """{"version":1,"maxResistances":-1,"flasks":[]}"""
+        );
+
+        Assert.Contains(
+            result.Problems,
+            p => p.Code == Code.Negative && p.Path == "maxResistances"
+        );
+        Assert.Equal(5f, result.Config.MaxResistances);
+    }
+
+    [Fact]
+    public void Parse_MaxResistancesZero_Kept()
+    {
+        MagebloodConfigParseResult result = MagebloodConfigParser.Parse(
+            """{"version":1,"maxResistances":0,"flasks":[]}"""
+        );
+
+        Assert.Equal(0f, result.Config.MaxResistances);
+        Assert.Empty(result.Problems);
+    }
+
+    [Fact]
+    public void Parse_Unusable_DefaultMaxResistances()
+    {
+        MagebloodConfigParseResult result = MagebloodConfigParser.Parse("");
+
+        Assert.Equal(5f, result.Config.MaxResistances);
+    }
+
     private static string[] Names(MagebloodConfigParseResult result)
     {
         return result.Config.Flasks.Select(flask => flask.Name).ToArray();

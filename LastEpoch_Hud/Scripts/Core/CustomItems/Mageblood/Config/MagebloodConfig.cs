@@ -7,4 +7,5 @@ public sealed class MagebloodConfig
 {
     public int Version { get; init; }
     public IReadOnlyList<MagebloodFlaskEntry> Flasks { get; init; }
+    public float MaxResistances { get; init; }
 }
