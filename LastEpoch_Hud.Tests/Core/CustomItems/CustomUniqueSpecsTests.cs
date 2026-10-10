@@ -9,7 +9,7 @@ public sealed class CustomUniqueSpecsTests
     [InlineData("Mjolner", 501, 7, 10, false, 78, false, 60)]
     [InlineData("Sands of Silk", 502, 1, -1, true, 16, true, 0)]
     [InlineData("Essentia Sanguis", 503, 4, -1, true, 52, true, 0)]
-    [InlineData("Mageblood", 504, 2, -1, true, 44, true, 0)]
+    [InlineData("Mageblood", 505, 2, -1, true, 44, true, 0)]
     public void Spec_HoldsTodaysValues(
         string name,
         int uniqueId,

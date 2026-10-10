@@ -9,7 +9,7 @@ public sealed class CustomUniqueLookupTests
     [InlineData(501)]
     [InlineData(502)]
     [InlineData(503)]
-    [InlineData(504)]
+    [InlineData(505)]
     public void IndexOf_CustomId_ReturnsItsSpec(int uniqueId)
     {
         int index = CustomUniqueLookup.IndexOf(uniqueId);
@@ -21,7 +21,7 @@ public sealed class CustomUniqueLookupTests
     [InlineData(0)]
     [InlineData(22)]
     [InlineData(499)]
-    [InlineData(505)]
+    [InlineData(506)]
     [InlineData(-1)]
     public void IndexOf_OtherId_ReturnsMinusOne(int uniqueId)
     {
@@ -100,7 +100,7 @@ public sealed class CustomUniqueLookupTests
     [InlineData(4, 40, 0)]
     [InlineData(2, 42, 500)]
     [InlineData(7, 10, 501)]
-    [InlineData(2, 43, 504)]
+    [InlineData(2, 43, 505)]
     public void VisualSource_NoMatch_ReturnsNull(int equipmentType, int subType, int uniqueId)
     {
         Assert.Null(
@@ -111,7 +111,7 @@ public sealed class CustomUniqueLookupTests
     [Fact]
     public void IconFallbackIndexOf_Mageblood_ReturnsHeadhunter()
     {
-        int magebloodIndex = CustomUniqueLookup.IndexOf(504);
+        int magebloodIndex = CustomUniqueLookup.IndexOf(505);
 
         int fallback = CustomUniqueLookup.IconFallbackIndexOf(magebloodIndex);
 
@@ -121,7 +121,7 @@ public sealed class CustomUniqueLookupTests
     [Fact]
     public void IconFallbackIndexOf_OtherSpecs_ReturnsMinusOne()
     {
-        int magebloodIndex = CustomUniqueLookup.IndexOf(504);
+        int magebloodIndex = CustomUniqueLookup.IndexOf(505);
         IEnumerable<int> others = Enumerable
             .Range(0, CustomUniqueSpecs.All.Count)
             .Where(i => i != magebloodIndex);
@@ -150,7 +150,7 @@ public sealed class CustomUniqueLookupTests
         table.Set(502, 41);
         table.Set(500, 42);
         table.Set(501, 10);
-        table.Set(504, 43);
+        table.Set(505, 43);
         return table;
     }
 }

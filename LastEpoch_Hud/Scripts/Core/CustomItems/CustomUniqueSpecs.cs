@@ -62,7 +62,7 @@ public static class CustomUniqueSpecs
     public static readonly CustomUniqueSpec Mageblood = new()
     {
         Name = "Mageblood",
-        UniqueId = 504,
+        UniqueId = 505, // 504 is taken by Temporalis (Items_Temporalis.txt)
         BaseType = 2, // Belt
         BaseId = CustomUniqueSpec.AllocateBaseId,
         AddsBase = true,
