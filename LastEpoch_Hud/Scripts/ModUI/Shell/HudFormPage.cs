@@ -961,7 +961,7 @@ internal sealed class HudFormPage : IHudSearchPage
         HudStyler.ApplyDropdown(dropdown);
         Prefab.BindDropdown(
             dropdown,
-            new Action<int>(value =>
+            new Action<int>(_ =>
             {
                 if (refreshing)
                 {
@@ -971,7 +971,8 @@ internal sealed class HudFormPage : IHudSearchPage
                     return;
                 }
 
-                write?.Invoke(value);
+                // The Il2Cpp event argument is unreliable; read the control's own index.
+                write?.Invoke(dropdown.value);
             })
         );
         dropdowns.Add(
