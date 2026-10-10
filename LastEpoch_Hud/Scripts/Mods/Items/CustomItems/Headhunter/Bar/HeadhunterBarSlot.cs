@@ -7,12 +7,8 @@ namespace LastEpoch_Hud.Scripts.Mods.Items.CustomItems.Headhunter.Bar;
 /// <summary>One icon entry of the buff bar: framed icon plus countdown digits.</summary>
 internal sealed class HeadhunterBarSlot
 {
-    private static readonly Color _frameColor = new(1f, 0.55f, 0.1f, 1f);
-    private static readonly Color _backingColor = new(0.06f, 0.04f, 0.02f, 0.85f);
     private static readonly Color _outlineColor = new(0f, 0f, 0f, 1f);
-    private static readonly Vector2 _frameDistance = new(3f, 3f);
     private static readonly SecondsTextCache _numberTexts = new();
-    private static readonly Vector2 _bottomCenter = new(0.5f, 0f);
     private static readonly Vector2 _badgeSize = new(24f, 20f);
 
     private readonly GameObject _root;
@@ -32,7 +28,7 @@ internal sealed class HeadhunterBarSlot
     public HeadhunterBarSlot(GameObject entry)
     {
         _root = entry;
-        ConfigureRect(entry.GetComponent<RectTransform>());
+        BuffSlotStyle.FitEntry(entry.GetComponent<RectTransform>());
         GameObject iconPanel = Functions.GetChild(entry, "Panel_Icon");
         _icon = Functions.GetChild(iconPanel, "Icon").GetComponent<Image>();
         _timer = Functions.GetChild(iconPanel, "Timer").GetComponent<Image>();
@@ -40,7 +36,7 @@ internal sealed class HeadhunterBarSlot
         _stackPanel = Functions.GetChild(entry, "Panel_Stack");
         _stackText = _stackPanel.GetComponentInChildren<Text>(true);
         PlaceStackBadge(_stackPanel, iconPanel);
-        ApplyFrame(Functions.GetChild(iconPanel, "Background"));
+        BuffSlotStyle.ApplyFrame(Functions.GetChild(iconPanel, "Background"), _icon);
         ApplyTextStyle(_text);
         ApplyTextStyle(_stackText);
         _timer.gameObject.SetActive(true);
@@ -80,28 +76,6 @@ internal sealed class HeadhunterBarSlot
     public void PlaceAt(float centerX, float bottom)
     {
         _root.GetComponent<RectTransform>().anchoredPosition = new Vector2(centerX, bottom);
-    }
-
-    private static void ConfigureRect(RectTransform rect)
-    {
-        rect.anchorMin = _bottomCenter;
-        rect.anchorMax = _bottomCenter;
-        rect.pivot = _bottomCenter;
-        rect.sizeDelta = new Vector2(HeadhunterBarLayout.EntrySize, HeadhunterBarLayout.EntrySize);
-    }
-
-    private void ApplyFrame(GameObject background)
-    {
-        Image image = background.GetComponent<Image>();
-        image.sprite = null;
-        image.color = _backingColor;
-        background.transform.SetAsFirstSibling();
-        background.GetComponent<RectTransform>().sizeDelta = _icon
-            .GetComponent<RectTransform>()
-            .sizeDelta;
-        Outline outline = background.AddComponent<Outline>();
-        outline.effectColor = _frameColor;
-        outline.effectDistance = _frameDistance;
     }
 
     private static void PlaceStackBadge(GameObject stackPanel, GameObject iconPanel)

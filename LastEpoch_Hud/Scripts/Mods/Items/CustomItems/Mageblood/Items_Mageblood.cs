@@ -2,6 +2,7 @@ using Il2Cpp;
 using LastEpoch_Hud.Scripts.Core.CustomItems;
 using LastEpoch_Hud.Scripts.Core.CustomItems.Affixes;
 using LastEpoch_Hud.Scripts.Core.CustomItems.Mageblood;
+using LastEpoch_Hud.Scripts.Mods.Items.CustomItems.Mageblood.Bar;
 using MelonLoader;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -36,6 +37,7 @@ public class Items_Mageblood : MonoBehaviour
         }
 
         MagebloodBuffs.Tick(Time.unscaledTime);
+        MagebloodBarHover.Tick();
     }
 
     private static CustomUniqueDefinition CreateDefinition()
