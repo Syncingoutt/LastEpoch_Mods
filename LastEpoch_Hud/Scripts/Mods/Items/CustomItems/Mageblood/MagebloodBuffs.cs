@@ -67,7 +67,6 @@ internal static class MagebloodBuffs
         }
 
         bool worn = IsWorn();
-        MagebloodCapSync.Sync(worn);
         SyncBuffs(buffs, worn);
         ShowBar();
     }
@@ -167,7 +166,6 @@ internal static class MagebloodBuffs
 
     private static void ClearAll()
     {
-        MagebloodCapSync.Sync(false);
         StatBuffs buffs = HeadhunterBuffSink.PlayerBuffs();
         if (buffs != null)
         {
