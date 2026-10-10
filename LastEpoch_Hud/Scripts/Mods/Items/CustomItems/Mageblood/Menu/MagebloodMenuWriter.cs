@@ -32,6 +32,36 @@ internal static class MagebloodMenuWriter
         }
     }
 
+    /// <summary>Writes a pending edit first, then swaps two flasks in the file. False when nothing was written.</summary>
+    public static bool Swap(string first, string second)
+    {
+        if (_debounce.TryTakeAny(out MagebloodValueEdit pending))
+        {
+            Write(pending);
+        }
+
+        CustomItemConfigStore store = MagebloodConfigLoader.Store;
+        string json = store.Read();
+        if (json == null)
+        {
+            return false;
+        }
+
+        if (!MagebloodFileEditor.TrySwapFlasks(json, first, second, out string text))
+        {
+            Main.logger_instance?.Warning("Mageblood swap refused: " + first + " / " + second);
+            return false;
+        }
+
+        if (!store.Write(text))
+        {
+            return false;
+        }
+
+        MagebloodConfigLoader.RequestReload();
+        return true;
+    }
+
     /// <summary>Writes the defaults. True when the old file was saved as a backup first.</summary>
     public static bool Restore()
     {

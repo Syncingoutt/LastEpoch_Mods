@@ -72,7 +72,8 @@ public sealed class MagebloodFlaskRuleTests
         var flask = new MagebloodFlask(
             "FakeX",
             "FakeX",
-            new[] { new MagebloodBuffStat(5, 2, "MB_X_A", 1.5f, 0.25f, -0.5f) }
+            new[] { new MagebloodBuffStat(5, 2, "MB_X_A", 1.5f, 0.25f, -0.5f) },
+            new[] { new MagebloodStatEntry("FakeA", 1.5f, 25f, -50f) }
         );
 
         IReadOnlyList<BuffAction> actions = MagebloodFlaskRule.Plan(new[] { flask }, 1, _none);
@@ -191,6 +192,11 @@ public sealed class MagebloodFlaskRuleTests
             {
                 new MagebloodBuffStat(1, 0, $"MB_F{index}_A", 1f, 0f, 0f),
                 new MagebloodBuffStat(2, 0, $"MB_F{index}_B", 1f, 0f, 0f),
+            },
+            new[]
+            {
+                new MagebloodStatEntry("FakeA", Added: 1f),
+                new MagebloodStatEntry("FakeB", Added: 1f),
             }
         );
     }

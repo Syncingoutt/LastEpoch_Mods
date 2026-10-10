@@ -123,6 +123,40 @@ public sealed class MagebloodConfigResolverTests
         Assert.Contains(problems, p => p.Code == Code.UnknownStat);
     }
 
+    [Fact]
+    public void Resolve_Rows_ParallelToStats()
+    {
+        var a = new MagebloodStatEntry("FakeA", Increased: 30f);
+        var b = new MagebloodStatEntry("FakeB", Added: 5f);
+
+        MagebloodFlask flask = Assert.Single(
+            Resolve(out _, MagebloodTestData.Flask("FakeFlask", a, b))
+        );
+
+        Assert.Equal(new[] { a, b }, flask.Rows);
+        Assert.Equal(flask.Stats.Count, flask.Rows.Count);
+    }
+
+    [Fact]
+    public void Resolve_Rows_SkipDroppedRows()
+    {
+        var kept = new MagebloodStatEntry("FakeA", Added: 1f);
+
+        MagebloodFlask flask = Assert.Single(
+            Resolve(
+                out _,
+                MagebloodTestData.Flask(
+                    "FakeFlask",
+                    new MagebloodStatEntry("FakeNope", Added: 1f),
+                    kept
+                )
+            )
+        );
+
+        Assert.Equal(new[] { kept }, flask.Rows);
+        Assert.Equal(flask.Stats.Count, flask.Rows.Count);
+    }
+
     private static IReadOnlyList<MagebloodFlask> Resolve(
         out List<MagebloodConfigProblem> problems,
         params MagebloodFlaskEntry[] entries
