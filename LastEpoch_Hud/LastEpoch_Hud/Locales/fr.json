@@ -368,7 +368,7 @@
   "CustomItem.Mageblood.Subtype": "Ceinture lourde",
   "CustomItem.Mageblood.Name": "Mageblood",
   "CustomItem.Mageblood.Lore": "Des rivières de puissance parcourent vos veines.",
-  "CustomItem.Mageblood.Description": "+5 % aux résistances maximales\nLes {0} premières potions à gauche appliquent constamment leurs effets sur vous\nLes potions ne peuvent être ni utilisées ni retirées",
+  "CustomItem.Mageblood.Description": "+{1} % aux résistances maximales\nLes {0} premières potions à gauche appliquent constamment leurs effets sur vous\nLes potions ne peuvent être ni utilisées ni retirées",
   "CustomItem.SandsOfSilk.Subtype": "Veste voilée",
   "CustomItem.SandsOfSilk.Name": "Sables de soie",
   "CustomItem.SandsOfSilk.Lore": "Le désert coule sans cesse.",

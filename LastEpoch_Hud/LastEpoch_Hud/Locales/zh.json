@@ -379,7 +379,7 @@
   "CustomItem.Mageblood.Subtype": "重型腰带",
   "CustomItem.Mageblood.Name": "法师之血",
   "CustomItem.Mageblood.Lore": "力量之河在你的血管中奔流。",
-  "CustomItem.Mageblood.Description": "+5% 最大抗性\n最左侧的{0}个药剂持续对你生效\n药剂无法使用或移除",
+  "CustomItem.Mageblood.Description": "+{1}% 最大抗性\n最左侧的{0}个药剂持续对你生效\n药剂无法使用或移除",
   "CustomItem.SandsOfSilk.Subtype": "遮蔽长衣",
   "CustomItem.SandsOfSilk.Name": "流丝之沙",
   "CustomItem.SandsOfSilk.Lore": "沙漠永远在流动。",

@@ -368,7 +368,7 @@
   "CustomItem.Mageblood.Subtype": "Heavy Belt",
   "CustomItem.Mageblood.Name": "Mageblood",
   "CustomItem.Mageblood.Lore": "Rivers of power course through your veins.",
-  "CustomItem.Mageblood.Description": "+5% to Maximum Resistances\nLeftmost {0} Flasks constantly apply their effects to you\nFlasks cannot be used or removed",
+  "CustomItem.Mageblood.Description": "+{1}% to Maximum Resistances\nLeftmost {0} Flasks constantly apply their effects to you\nFlasks cannot be used or removed",
   "CustomItem.SandsOfSilk.Subtype": "Shrouded Vest",
   "CustomItem.SandsOfSilk.Name": "Sands of Silk",
   "CustomItem.SandsOfSilk.Lore": "The desert is ever flowing.",

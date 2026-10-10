@@ -379,7 +379,7 @@
   "CustomItem.Mageblood.Subtype": "묵직한 허리띠",
   "CustomItem.Mageblood.Name": "메이지블러드",
   "CustomItem.Mageblood.Lore": "힘의 강이 당신의 혈관을 타고 흐른다.",
-  "CustomItem.Mageblood.Description": "+5% 최대 저항\n가장 왼쪽의 물약 {0}개가 효과를 지속적으로 적용합니다\n물약은 사용하거나 제거할 수 없습니다",
+  "CustomItem.Mageblood.Description": "+{1}% 최대 저항\n가장 왼쪽의 물약 {0}개가 효과를 지속적으로 적용합니다\n물약은 사용하거나 제거할 수 없습니다",
   "CustomItem.SandsOfSilk.Subtype": "가려진 조끼",
   "CustomItem.SandsOfSilk.Name": "비단의 모래",
   "CustomItem.SandsOfSilk.Lore": "사막은 끝없이 흐른다.",

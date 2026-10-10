@@ -123,9 +123,90 @@ public sealed class MagebloodConfigMergerTests
         Assert.True(result.Changed);
     }
 
+    [Fact]
+    public void Merge_MaxResistancesMissing_Added()
+    {
+        MagebloodMergeResult result = MergeWithMax("""{"defaultsVersion":1,"flasks":[]}""");
+
+        var root = JObject.Parse(result.Text);
+        Assert.Equal(7f, (float)root["maxResistances"]);
+        Assert.Equal(Version, (int)root["defaultsVersion"]);
+        Assert.Equal(3, result.Added);
+    }
+
+    [Theory]
+    [InlineData("null")]
+    [InlineData("\"x\"")]
+    [InlineData("-1")]
+    public void Merge_MaxResistancesAnyValue_Kept(string value)
+    {
+        MagebloodMergeResult result = MergeWithMax(
+            $$"""{"defaultsVersion":1,"maxResistances":{{value}},"flasks":[]}"""
+        );
+
+        JToken expected = JObject.Parse($$"""{"v":{{value}}}""")["v"];
+        Assert.True(JToken.DeepEquals(expected, JObject.Parse(result.Text)["maxResistances"]));
+        Assert.Equal(2, result.Added);
+    }
+
+    [Fact]
+    public void Merge_FlasksNotList_MaxResistancesNotAdded()
+    {
+        const string json = """{"defaultsVersion":1,"flasks":5}""";
+
+        MagebloodMergeResult result = MergeWithMax(json);
+
+        Assert.Equal(json, result.Text);
+        Assert.False(result.Changed);
+        Assert.Equal(0, result.Added);
+    }
+
+    [Fact]
+    public void Merge_MaxResistancesPresent_Kept()
+    {
+        MagebloodMergeResult result = MergeWithMax(
+            """{"defaultsVersion":1,"maxResistances":9,"flasks":[]}"""
+        );
+
+        Assert.Equal(9f, (float)JObject.Parse(result.Text)["maxResistances"]);
+        Assert.Equal(2, result.Added);
+    }
+
+    [Fact]
+    public void Merge_MaxResistancesAtStamp_NotAdded()
+    {
+        MagebloodMergeResult result = MergeWithMax("""{"defaultsVersion":2,"flasks":[]}""");
+
+        Assert.Null(JObject.Parse(result.Text)["maxResistances"]);
+    }
+
+    [Fact]
+    public void Merge_FlasksMissing_StillAddsMaxResistances()
+    {
+        MagebloodMergeResult result = MergeWithMax("""{"defaultsVersion":1}""");
+
+        Assert.Equal(7f, (float)JObject.Parse(result.Text)["maxResistances"]);
+        Assert.Equal(1, result.Added);
+    }
+
     private static MagebloodMergeResult Merge(string json)
     {
-        return MagebloodConfigMerger.Merge(json, _flasks, Version);
+        return MagebloodConfigMerger.Merge(
+            json,
+            _flasks,
+            new MagebloodVersionedValue(7f, 0),
+            Version
+        );
+    }
+
+    private static MagebloodMergeResult MergeWithMax(string json)
+    {
+        return MagebloodConfigMerger.Merge(
+            json,
+            _flasks,
+            new MagebloodVersionedValue(7f, 2),
+            Version
+        );
     }
 
     private static MagebloodVersionedFlask Versioned(string name, int since)

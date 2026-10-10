@@ -11,6 +11,7 @@ public static class MagebloodConfigMerger
     public static MagebloodMergeResult Merge(
         string json,
         IReadOnlyList<MagebloodVersionedFlask> flasks,
+        MagebloodVersionedValue maxResistances,
         int defaultsVersion
     )
     {
@@ -29,7 +30,7 @@ public static class MagebloodConfigMerger
             return new MagebloodMergeResult(json, false, 0);
         }
 
-        int added = AddFlasks(root, flasks, stamp);
+        int added = AddFlasks(root, flasks, stamp) + AddMaxResistances(root, maxResistances, stamp);
         root[MagebloodConfigKeys.DefaultsVersion] = defaultsVersion;
         return new MagebloodMergeResult(root.ToString(Formatting.Indented), true, added);
     }
@@ -83,6 +84,16 @@ public static class MagebloodConfigMerger
             added++;
         }
         return added;
+    }
+
+    private static int AddMaxResistances(JObject root, MagebloodVersionedValue value, int stamp)
+    {
+        if (value.Since <= stamp || root[MagebloodConfigKeys.MaxResistances] != null)
+        {
+            return 0;
+        }
+        root[MagebloodConfigKeys.MaxResistances] = value.Value;
+        return 1;
     }
 
     private static bool ContainsName(JArray list, string name)
