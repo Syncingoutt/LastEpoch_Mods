@@ -164,9 +164,10 @@ public static class Prefab
         toggle.onValueChanged.AddListener(action);
     }
 
-    public static void BindDropdown(Dropdown dropdown, UnityAction<int> action)
+    public static void BindDropdown(Dropdown dropdown, Action<int> action)
     {
-        dropdown.onValueChanged.AddListener(action);
+        // The Il2Cpp UnityEvent<int> argument arrives as garbage; read the value from the dropdown.
+        dropdown.onValueChanged.AddListener((Action<int>)(_ => action(dropdown.value)));
     }
 
     // Sliders use SliderHook (Harmony) -- AddListener doesn't fire in IL2CPP.
