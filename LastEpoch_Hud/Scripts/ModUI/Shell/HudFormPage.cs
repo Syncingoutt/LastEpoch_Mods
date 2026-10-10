@@ -963,8 +963,15 @@ internal sealed class HudFormPage : IHudSearchPage
             dropdown,
             new Action<int>(value =>
             {
-                if (!refreshing)
-                    write?.Invoke(value);
+                if (refreshing)
+                {
+                    ModSettings.Trace(
+                        "HudFormPage: dropdown " + id + " change skipped while refreshing"
+                    );
+                    return;
+                }
+
+                write?.Invoke(value);
             })
         );
         dropdowns.Add(

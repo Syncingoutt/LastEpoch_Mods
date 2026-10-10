@@ -1,5 +1,6 @@
 using LastEpoch_Hud.Scripts.Core.CustomItems.Mageblood.Config;
 using LastEpoch_Hud.Scripts.Core.CustomItems.Mageblood.Menu;
+using LastEpoch_Hud.Scripts.ModUI;
 
 namespace LastEpoch_Hud.Scripts.Mods.Items.CustomItems.Mageblood.Menu;
 
@@ -44,6 +45,7 @@ internal static class MagebloodMenuWriter
         string json = store.Read();
         if (json == null)
         {
+            ModSettings.Trace("Mageblood swap: config not readable");
             return false;
         }
 
@@ -55,9 +57,11 @@ internal static class MagebloodMenuWriter
 
         if (!store.Write(text))
         {
+            ModSettings.Trace("Mageblood swap: write failed");
             return false;
         }
 
+        ModSettings.Trace("Mageblood swap written: " + first + " / " + second);
         MagebloodConfigLoader.RequestReload();
         return true;
     }

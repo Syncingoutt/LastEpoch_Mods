@@ -29,6 +29,7 @@ internal static class MagebloodFlasksCard
     private static HudFormPage.Card _card;
     private static MagebloodMenuLayout _layout;
 
+    private static int _rebuildCount;
     private static bool _stale = true;
     private static int _shownVersion;
     private static MagebloodMenuStatus _shownStatus;
@@ -42,6 +43,7 @@ internal static class MagebloodFlasksCard
     {
         _page = page;
         _layout = null;
+        _rebuildCount = 0;
         _slots.Clear();
         _sliders.Clear();
         _stale = true;
@@ -52,6 +54,7 @@ internal static class MagebloodFlasksCard
 
     public static void OnShow()
     {
+        ModSettings.Trace("Mageblood flasks: card shown");
         _stale = true;
     }
 
@@ -65,6 +68,7 @@ internal static class MagebloodFlasksCard
 
         if (ProbeUnresolved(now))
         {
+            ModSettings.Trace("Mageblood flasks: stat name resolved");
             _stale = true;
         }
 
@@ -98,6 +102,7 @@ internal static class MagebloodFlasksCard
     {
         var layout = MagebloodMenuLayout.Build(MagebloodConfigLoader.Flasks);
         bool keep = !_stale && ReferenceEquals(texts, _shownTexts) && layout.SameShape(_layout);
+        TraceLayout(texts, keep);
         _layout = layout;
         _shownVersion = MagebloodConfigLoader.Version;
         _shownTexts = texts;
@@ -109,6 +114,30 @@ internal static class MagebloodFlasksCard
         }
 
         Rebuild(texts);
+    }
+
+    private static void TraceLayout(Dictionary<string, string> texts, bool keep)
+    {
+        if (!ModSettings.Debug.Enabled.Value)
+        {
+            return;
+        }
+
+        _rebuildCount += keep ? 0 : 1;
+        ModSettings.Trace(
+            "Mageblood flasks layout: rebuild #"
+                + _rebuildCount
+                + " | "
+                + (keep ? "ranges only" : "full")
+                + ", stale "
+                + _stale
+                + ", version "
+                + _shownVersion
+                + "->"
+                + MagebloodConfigLoader.Version
+                + ", locale changed "
+                + !ReferenceEquals(texts, _shownTexts)
+        );
     }
 
     private static void Rebuild(Dictionary<string, string> texts)
@@ -362,6 +391,18 @@ internal static class MagebloodFlasksCard
                 slot,
                 chosen,
                 out string current
+            );
+            ModSettings.Trace(
+                "Mageblood slot pick: slot "
+                    + slot
+                    + ", index "
+                    + index
+                    + ", chosen "
+                    + chosen
+                    + ", current "
+                    + current
+                    + ", swap "
+                    + pick
             );
             if (!pick || !MagebloodMenuWriter.Swap(current, chosen))
             {
