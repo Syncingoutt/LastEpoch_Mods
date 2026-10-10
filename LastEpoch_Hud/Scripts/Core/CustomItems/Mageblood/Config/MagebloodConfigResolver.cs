@@ -35,6 +35,7 @@ public static class MagebloodConfigResolver
     )
     {
         var rows = new List<MagebloodBuffStat>();
+        var keptRows = new List<MagebloodStatEntry>();
         foreach (MagebloodStatEntry row in entry.Stats)
         {
             if (
@@ -49,11 +50,12 @@ public static class MagebloodConfigResolver
             )
             {
                 rows.Add(stat);
+                keptRows.Add(row);
             }
         }
         if (rows.Count > 0)
         {
-            return new MagebloodFlask(entry.Name, entry.Icon ?? entry.Name, rows);
+            return new MagebloodFlask(entry.Name, entry.Icon ?? entry.Name, rows, keptRows);
         }
 
         problems.Add(

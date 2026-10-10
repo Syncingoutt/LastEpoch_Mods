@@ -21,6 +21,7 @@ internal static class Items_CustomItems
         }
 
         MagebloodMenu.Build(_page);
+        MagebloodFlasksCard.Build(_page);
     }
 
     public static void Show()
@@ -31,6 +32,7 @@ internal static class Items_CustomItems
         }
 
         MagebloodMenu.OnShow();
+        MagebloodFlasksCard.OnShow();
         _page.Show();
         Refresh();
     }
@@ -44,9 +46,14 @@ internal static class Items_CustomItems
             return;
         }
 
-        if (MagebloodMenu.Refresh(Time.unscaledTime))
+        float now = Time.unscaledTime;
+        bool menu = MagebloodMenu.Refresh(now);
+        bool flasks = MagebloodFlasksCard.Refresh(now);
+        if (!menu && !flasks)
         {
-            _page.RefreshValues();
+            return;
         }
+
+        _page.RefreshValues();
     }
 }

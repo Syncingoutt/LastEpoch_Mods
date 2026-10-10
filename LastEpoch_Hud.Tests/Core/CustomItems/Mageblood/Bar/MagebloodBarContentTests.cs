@@ -11,7 +11,8 @@ public class MagebloodBarContentTests
     private static readonly MagebloodFlask _flask = new(
         "FakeA",
         "fakeicon",
-        Array.Empty<MagebloodBuffStat>()
+        Array.Empty<MagebloodBuffStat>(),
+        Array.Empty<MagebloodStatEntry>()
     );
 
     [Fact]
