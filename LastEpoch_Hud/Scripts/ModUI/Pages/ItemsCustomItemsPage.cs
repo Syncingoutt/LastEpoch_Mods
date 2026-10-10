@@ -6,8 +6,8 @@ using UnityEngine.UI;
 
 namespace LastEpoch_Hud.Scripts.ModUI.Pages;
 
-/// <summary>Items > Custom Items: one card per custom item.</summary>
-internal static class Items_CustomItems
+/// <summary>Items > Custom Items: one card per custom item. State resets on HUD re-bind (Build).</summary>
+internal static class ItemsCustomItemsPage
 {
     private static HudFormPage _page;
 

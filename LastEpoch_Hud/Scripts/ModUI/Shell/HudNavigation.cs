@@ -84,10 +84,10 @@ internal static class HudNavigation
             Page(
                 HudPageId.ItemsCustomItems,
                 CustomItemLocaleKeys.CustomItemsPage,
-                Items_CustomItems.Build,
-                Items_CustomItems.Show,
-                Items_CustomItems.Hide,
-                Items_CustomItems.Refresh
+                ItemsCustomItemsPage.Build,
+                ItemsCustomItemsPage.Show,
+                ItemsCustomItemsPage.Hide,
+                ItemsCustomItemsPage.Refresh
             )
         ),
         new(
