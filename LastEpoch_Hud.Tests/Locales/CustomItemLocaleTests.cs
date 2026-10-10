@@ -2,6 +2,7 @@ using System.Text.Json;
 using LastEpoch_Hud.Scripts.Core.CustomItems;
 using LastEpoch_Hud.Scripts.Core.CustomItems.Headhunter;
 using LastEpoch_Hud.Scripts.Core.CustomItems.Mageblood;
+using LastEpoch_Hud.Scripts.Core.CustomItems.Mageblood.Menu;
 using LastEpoch_Hud.Scripts.Core.CustomItems.Mjolner;
 using LastEpoch_Hud.Tests.Support;
 
@@ -77,7 +78,7 @@ public sealed class CustomItemLocaleTests
     }
 
     private static IEnumerable<string> CheckedKeys() =>
-        CustomItemLocaleKeys.All.Concat(MagebloodFlaskNames.Keys);
+        CustomItemLocaleKeys.All.Concat(MagebloodFlaskNames.Keys).Concat(MagebloodMenuTexts.All);
 
     private static bool IsFilled(string text, string[] expected) =>
         text != null && !text.Contains('{') && expected.All(text.Contains);

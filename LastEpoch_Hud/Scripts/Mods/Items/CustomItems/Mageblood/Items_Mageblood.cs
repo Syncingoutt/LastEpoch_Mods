@@ -3,6 +3,7 @@ using LastEpoch_Hud.Scripts.Core.CustomItems;
 using LastEpoch_Hud.Scripts.Core.CustomItems.Affixes;
 using LastEpoch_Hud.Scripts.Core.CustomItems.Mageblood;
 using LastEpoch_Hud.Scripts.Mods.Items.CustomItems.Mageblood.Bar;
+using LastEpoch_Hud.Scripts.Mods.Items.CustomItems.Mageblood.Menu;
 using MelonLoader;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -31,6 +32,7 @@ public class Items_Mageblood : MonoBehaviour
     private void Update()
     {
         _registrar.Update();
+        MagebloodMenuWriter.Tick(Time.unscaledTime);
         if (MagebloodConfigLoader.ReloadIfChanged(Time.unscaledTime))
         {
             MagebloodBuffs.MarkDirty();

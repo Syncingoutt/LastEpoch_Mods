@@ -16,6 +16,14 @@ internal static class MagebloodConfigLoader
 
     private static readonly ConfigChangeDetector _changes = new(1.0);
 
+    /// <summary>Counts every read of the file, so a card can tell its view is stale.</summary>
+    public static int Version { get; private set; }
+    public static bool IsReadable { get; private set; } = true;
+
+    /// <summary>Parser plus resolver problems of the last read.</summary>
+    public static int ProblemCount { get; private set; }
+    public static CustomItemConfigStore Store => _store;
+
     public static MagebloodConfig Current { get; private set; } = MagebloodConfigDefaults.Config;
     public static IReadOnlyList<MagebloodFlask> Flasks { get; private set; } =
         new List<MagebloodFlask>();
@@ -26,11 +34,17 @@ internal static class MagebloodConfigLoader
         string text = MergeNewDefaults(_store.Read());
         MagebloodConfigParseResult result = MagebloodConfigParser.Parse(text);
         LogProblems(result.Problems);
-        Resolve(result.Config);
+        RecordRead(result.IsReadable, result.Problems.Count + Resolve(result.Config));
         Main.logger_instance?.Msg(
             "Mageblood config loaded: " + Flasks.Count + " flask(s) from " + _store.FilePath
         );
         _changes.Remember(_store.LastWriteUtc());
+    }
+
+    /// <summary>Makes the next <see cref="ReloadIfChanged"/> read the file, even with the same stamp.</summary>
+    public static void RequestReload()
+    {
+        _changes.ForceNext();
     }
 
     /// <summary>True when the flasks were replaced.</summary>
@@ -54,10 +68,11 @@ internal static class MagebloodConfigLoader
         LogProblems(result.Problems);
         if (!result.IsReadable)
         {
+            RecordRead(false, result.Problems.Count);
             return false;
         }
 
-        Resolve(result.Config);
+        RecordRead(true, result.Problems.Count + Resolve(result.Config));
         Main.logger_instance?.Msg("Mageblood config reloaded: " + Flasks.Count + " flask(s)");
         return true;
     }
@@ -90,12 +105,21 @@ internal static class MagebloodConfigLoader
         return merge.Text;
     }
 
-    private static void Resolve(MagebloodConfig config)
+    private static void RecordRead(bool readable, int problemCount)
+    {
+        IsReadable = readable;
+        ProblemCount = problemCount;
+        Version++;
+    }
+
+    /// <summary>Returns the number of resolver problems.</summary>
+    private static int Resolve(MagebloodConfig config)
     {
         var problems = new List<MagebloodConfigProblem>();
         Flasks = MagebloodConfigResolver.Resolve(config, _statIds, _tagIds, problems);
         Current = config;
         LogProblems(problems);
+        return problems.Count;
     }
 
     private static void LogProblems(IReadOnlyList<MagebloodConfigProblem> problems)

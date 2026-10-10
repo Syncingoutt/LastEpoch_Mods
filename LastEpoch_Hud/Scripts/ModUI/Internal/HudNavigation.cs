@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using LastEpoch_Hud.Scripts.Core.CustomItems;
+using LastEpoch_Hud.Scripts.ModUI.Pages;
 
 namespace LastEpoch_Hud.Scripts.ModUI;
 
@@ -112,6 +114,7 @@ internal static class HudNavigation
         ["Utilities_QOL"] = "character.qol",
         ["Items_Drop"] = "items.drop",
         ["Items_CraftingSlot"] = "items.crafting",
+        [Items_CustomItems.RootName] = Items_CustomItems.PageId,
         ["World_Difficulty"] = "world.difficulty",
         ["World_Monoliths"] = "world.monoliths",
         ["World_Misc"] = "world.misc",
@@ -201,7 +204,12 @@ internal static class HudNavigation
             true,
             new HudPageDefinition("items.drop", "Drop", new HudArea[0]),
             new HudPageDefinition("items.force-drop", "Force Drop", new HudArea[0]),
-            new HudPageDefinition("items.crafting", "Crafting Slot", new HudArea[0])
+            new HudPageDefinition("items.crafting", "Crafting Slot", Array.Empty<HudArea>()),
+            new HudPageDefinition(
+                Items_CustomItems.PageId,
+                CustomItemLocaleKeys.CustomItemsPage,
+                Array.Empty<HudArea>()
+            )
         ),
         new(
             "world",

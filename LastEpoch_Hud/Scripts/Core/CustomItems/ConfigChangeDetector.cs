@@ -7,6 +7,7 @@ public sealed class ConfigChangeDetector
 {
     private readonly IntervalGate _gate;
     private DateTime? _remembered;
+    private bool _forced;
 
     public ConfigChangeDetector(double intervalSeconds)
     {
@@ -18,14 +19,26 @@ public sealed class ConfigChangeDetector
         _remembered = writeTimeUtc;
     }
 
+    /// <summary>The next check is due and counts as changed, even with the same stamp.</summary>
+    public void ForceNext()
+    {
+        _forced = true;
+    }
+
     public bool IsCheckDue(double now)
     {
-        return _gate.IsDue(now);
+        return _forced || _gate.IsDue(now);
     }
 
     public bool HasChanged(DateTime? writeTimeUtc)
     {
-        if (writeTimeUtc == null || writeTimeUtc == _remembered)
+        bool forced = _forced;
+        _forced = false;
+        if (writeTimeUtc == null)
+        {
+            return false;
+        }
+        if (!forced && writeTimeUtc == _remembered)
         {
             return false;
         }
