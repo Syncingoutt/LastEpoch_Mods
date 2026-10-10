@@ -86,4 +86,75 @@ public sealed class HeadhunterActiveSceneGateTests
         Assert.False(gate.TryEnter(12, name));
         Assert.True(gate.TryEnter(12, ZoneB));
     }
+
+    [Fact]
+    public void IsNew_FreshGateValidHandle_True()
+    {
+        Assert.True(new HeadhunterActiveSceneGate().IsNew(11));
+    }
+
+    [Fact]
+    public void IsNew_OtherThanLastEntered_True()
+    {
+        var gate = new HeadhunterActiveSceneGate();
+        gate.TryEnter(11, ZoneA);
+
+        Assert.True(gate.IsNew(12));
+    }
+
+    [Fact]
+    public void IsNew_LastEnteredHandle_False()
+    {
+        var gate = new HeadhunterActiveSceneGate();
+        gate.TryEnter(11, ZoneA);
+
+        Assert.False(gate.IsNew(11));
+    }
+
+    [Fact]
+    public void IsNew_EarlierHandleAfterSwitch_True()
+    {
+        var gate = new HeadhunterActiveSceneGate();
+        gate.TryEnter(11, ZoneA);
+        gate.TryEnter(12, ZoneB);
+
+        Assert.True(gate.IsNew(11));
+    }
+
+    [Fact]
+    public void IsNew_ZeroHandleFreshGate_False()
+    {
+        Assert.False(new HeadhunterActiveSceneGate().IsNew(0));
+    }
+
+    [Fact]
+    public void IsNew_ZeroHandleAfterEnter_False()
+    {
+        var gate = new HeadhunterActiveSceneGate();
+        gate.TryEnter(11, ZoneA);
+
+        Assert.False(gate.IsNew(0));
+    }
+
+    [Fact]
+    public void IsNew_DoesNotRememberHandle()
+    {
+        var gate = new HeadhunterActiveSceneGate();
+
+        Assert.True(gate.IsNew(11));
+        Assert.True(gate.IsNew(11));
+        Assert.True(gate.TryEnter(11, ZoneA));
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public void IsNew_HandleRejectedForEmptyName_StaysNew(string name)
+    {
+        var gate = new HeadhunterActiveSceneGate();
+        gate.TryEnter(11, ZoneA);
+        gate.TryEnter(12, name);
+
+        Assert.True(gate.IsNew(12));
+    }
 }

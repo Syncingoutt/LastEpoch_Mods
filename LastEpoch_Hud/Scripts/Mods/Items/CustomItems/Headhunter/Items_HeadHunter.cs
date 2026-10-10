@@ -16,9 +16,13 @@ namespace LastEpoch_Hud.Scripts.Mods.Items.CustomItems.Headhunter;
 [RegisterTypeInIl2Cpp]
 public class Items_HeadHunter : MonoBehaviour
 {
+    private const double ScenePollSeconds = 0.25;
+
     private static readonly CustomUniqueRegistrar _registrar = new(CreateDefinition());
 
     private static readonly HeadhunterActiveSceneGate _sceneGate = new();
+
+    private static readonly IntervalGate _scenePoll = new(ScenePollSeconds);
 
     public Items_HeadHunter(System.IntPtr ptr)
         : base(ptr) { }
@@ -27,7 +31,6 @@ public class Items_HeadHunter : MonoBehaviour
     {
         HeadhunterConfigLoader.Load();
         SceneManager.add_sceneLoaded(new System.Action<Scene, LoadSceneMode>(OnSceneLoaded));
-        SceneManager.add_activeSceneChanged(new System.Action<Scene, Scene>(OnActiveSceneChanged));
     }
 
     private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -37,9 +40,21 @@ public class Items_HeadHunter : MonoBehaviour
         ResetRunIfCharacterExit(scene.name);
     }
 
-    private static void OnActiveSceneChanged(Scene previous, Scene next)
+    /// <summary>Enters the active scene when the game switched it without a load event.</summary>
+    private static void PollActiveScene(double now)
     {
-        EnterActiveScene(next);
+        if (!_scenePoll.IsDue(now))
+        {
+            return;
+        }
+
+        Scene scene = SceneManager.GetActiveScene();
+        if (!_sceneGate.IsNew(scene.handle))
+        {
+            return;
+        }
+
+        EnterActiveScene(scene);
     }
 
     /// <summary>Re-evaluates the zone pause and probe once per newly active scene.</summary>
@@ -75,6 +90,7 @@ public class Items_HeadHunter : MonoBehaviour
         _registrar.Update();
         HeadhunterKillSource.EnsureHooked();
         HeadhunterConfigLoader.ReloadIfChanged(Time.unscaledTime);
+        PollActiveScene(Time.unscaledTime);
         HeadhunterTimerPause.Tick(Time.unscaledTime);
         HeadhunterBuffBar.Tick(Time.unscaledTime);
         HeadhunterBarHover.Tick();
