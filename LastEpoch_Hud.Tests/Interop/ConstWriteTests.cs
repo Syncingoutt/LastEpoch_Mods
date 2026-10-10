@@ -13,9 +13,10 @@ public sealed class ConstWriteTests
     [Fact]
     public void Mod_NeverWritesGameConstants()
     {
+        ConstWriteScanner scanner = Scanner();
         ModuleDefinition mod = GameEnvironment.ReadGameModule(GameEnvironment.ModDll);
 
-        IReadOnlyList<ConstWrite> writes = Scanner().Scan(mod);
+        IReadOnlyList<ConstWrite> writes = scanner.Scan(mod);
 
         Assert.True(
             writes.Count == 0,
