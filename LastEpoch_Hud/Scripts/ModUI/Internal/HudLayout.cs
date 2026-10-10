@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using LastEpoch_Hud.Scripts.ModUI.Pages;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -291,6 +292,7 @@ public static class HudLayout
         Utilities_Currency.Build(window, font);
         Items_Drop.Build(window, hud, font);
         Items_CraftingSlot.Build(window, hud, font);
+        Items_CustomItems.Build(window, hud, font);
         World_Difficulty.Build(window, hud, font);
         World_Monoliths.Build(window, hud, font);
         World_Misc.Build(window, hud, font);
@@ -955,6 +957,7 @@ public static class HudLayout
         Items_Drop.Hide();
         Items_ForceDrop.Hide();
         Items_CraftingSlot.Hide();
+        Items_CustomItems.Hide();
         World_Difficulty.Hide();
         World_Monoliths.Hide();
         World_Misc.Hide();
@@ -1023,6 +1026,14 @@ public static class HudLayout
         {
             SetLegacyAreas(Array.Empty<HudArea>());
             Items_CraftingSlot.Show();
+            SetSelected(page.Id);
+            activePage = page;
+            return;
+        }
+        if (page.Id == Items_CustomItems.PageId)
+        {
+            SetLegacyAreas(Array.Empty<HudArea>());
+            Items_CustomItems.Show();
             SetSelected(page.Id);
             activePage = page;
             return;
@@ -1115,6 +1126,12 @@ public static class HudLayout
 
     public static void RefreshActivePage()
     {
+        if (activePage?.Id == Items_CustomItems.PageId)
+        {
+            Items_CustomItems.Refresh();
+            return;
+        }
+
         if (activePage?.Id == "character.main")
             Utilities_Character.Refresh();
         else if (activePage?.Id == "character.qol")

@@ -22,6 +22,7 @@ public static class CustomItemLocaleKeys
     public const string SandsOfSilkSubtype = "CustomItem.SandsOfSilk.Subtype";
     public const string SandsOfSilkName = "CustomItem.SandsOfSilk.Name";
     public const string SandsOfSilkLore = "CustomItem.SandsOfSilk.Lore";
+    public const string CustomItemsPage = "Custom Items";
 
     public static readonly string[] All =
     {
@@ -44,5 +45,6 @@ public static class CustomItemLocaleKeys
         SandsOfSilkSubtype,
         SandsOfSilkName,
         SandsOfSilkLore,
+        CustomItemsPage,
     };
 }
