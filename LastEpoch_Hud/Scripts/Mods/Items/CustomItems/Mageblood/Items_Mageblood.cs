@@ -4,6 +4,7 @@ using LastEpoch_Hud.Scripts.Core.CustomItems.Affixes;
 using LastEpoch_Hud.Scripts.Core.CustomItems.Mageblood;
 using MelonLoader;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace LastEpoch_Hud.Scripts.Mods.Items.CustomItems.Mageblood;
 
@@ -18,12 +19,23 @@ public class Items_Mageblood : MonoBehaviour
     private void Awake()
     {
         MagebloodConfigLoader.Load();
+        SceneManager.add_sceneLoaded(new System.Action<Scene, LoadSceneMode>(OnSceneLoaded));
+    }
+
+    private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        MagebloodBuffs.OnSceneLoaded(scene.name);
     }
 
     private void Update()
     {
         _registrar.Update();
-        MagebloodConfigLoader.ReloadIfChanged(Time.unscaledTime);
+        if (MagebloodConfigLoader.ReloadIfChanged(Time.unscaledTime))
+        {
+            MagebloodBuffs.MarkDirty();
+        }
+
+        MagebloodBuffs.Tick(Time.unscaledTime);
     }
 
     private static CustomUniqueDefinition CreateDefinition()

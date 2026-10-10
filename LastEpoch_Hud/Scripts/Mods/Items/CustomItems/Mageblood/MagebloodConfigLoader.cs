@@ -33,31 +33,33 @@ internal static class MagebloodConfigLoader
         _changes.Remember(_store.LastWriteUtc());
     }
 
-    public static void ReloadIfChanged(double now)
+    /// <summary>True when the flasks were replaced.</summary>
+    public static bool ReloadIfChanged(double now)
     {
         if (!_changes.IsCheckDue(now))
         {
-            return;
+            return false;
         }
         if (!_changes.HasChanged(_store.LastWriteUtc()))
         {
-            return;
+            return false;
         }
 
-        Reload();
+        return Reload();
     }
 
-    private static void Reload()
+    private static bool Reload()
     {
         MagebloodConfigParseResult result = MagebloodConfigParser.Parse(_store.Read());
         LogProblems(result.Problems);
         if (!result.IsReadable)
         {
-            return;
+            return false;
         }
 
         Resolve(result.Config);
         Main.logger_instance?.Msg("Mageblood config reloaded: " + Flasks.Count + " flask(s)");
+        return true;
     }
 
     private static void ExportDefaultsIfMissing()
