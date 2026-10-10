@@ -35,9 +35,9 @@ public sealed class MagebloodConfigDefaultsTests
         ["Basalt"] = new[] { new MagebloodStatEntry("DamageTaken", More: -15f, Tag: "Physical") },
         ["Amethyst"] = new[]
         {
-            new MagebloodStatEntry("VoidResistance", Added: 0.35f),
-            new MagebloodStatEntry("NecroticResistance", Added: 0.35f),
-            new MagebloodStatEntry("PoisonResistance", Added: 0.35f),
+            new MagebloodStatEntry("VoidResistance", Added: 0.7f),
+            new MagebloodStatEntry("NecroticResistance", Added: 0.7f),
+            new MagebloodStatEntry("PoisonResistance", Added: 0.7f),
         },
         ["Quartz"] = new[]
         {
