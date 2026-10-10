@@ -8,16 +8,8 @@ namespace LastEpoch_Hud.Tests.Patches;
 public sealed partial class PatchTargetTests
 {
     private static readonly Lazy<IReadOnlyList<PatchDeclaration>> _cache = new(() =>
-    {
-        var resolver = new DefaultAssemblyResolver();
-        resolver.AddSearchDirectory(GameEnvironment.Il2CppDir);
-        resolver.AddSearchDirectory(Path.Combine(GameEnvironment.GameDir, "MelonLoader", "net6"));
-        var module = ModuleDefinition.ReadModule(
-            GameEnvironment.ModDll,
-            new ReaderParameters { AssemblyResolver = resolver }
-        );
-        return PatchScanner.Scan(module);
-    });
+        PatchScanner.Scan(GameEnvironment.ReadGameModule(GameEnvironment.ModDll))
+    );
 
     [Fact]
     public void Patches_ResolveToOneGameMethod()
