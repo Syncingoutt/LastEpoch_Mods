@@ -7,11 +7,8 @@ internal static class GameEnumIds
 {
     public static Dictionary<string, int> Read(string typeName)
     {
-        var resolver = new DefaultAssemblyResolver();
-        resolver.AddSearchDirectory(GameEnvironment.Il2CppDir);
-        using var module = ModuleDefinition.ReadModule(
-            Path.Combine(GameEnvironment.Il2CppDir, "Il2CppLE.dll"),
-            new ReaderParameters { AssemblyResolver = resolver }
+        using ModuleDefinition module = GameEnvironment.ReadGameModule(
+            Path.Combine(GameEnvironment.Il2CppDir, "Il2CppLE.dll")
         );
         TypeDefinition type = module.GetType("Il2Cpp", typeName);
         Assert.NotNull(type);

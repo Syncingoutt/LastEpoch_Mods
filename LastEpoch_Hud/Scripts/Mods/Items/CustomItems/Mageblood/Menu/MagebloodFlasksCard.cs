@@ -114,11 +114,22 @@ internal static class MagebloodFlasksCard
     private static void Rebuild(Dictionary<string, string> texts)
     {
         int focus = FocusedSlot();
+        ClearRows();
+        AddRows(texts);
+        HudFormPage.StyleCard(_card);
+        Reselect(focus);
+    }
+
+    private static void ClearRows()
+    {
         _page.ClearCard(_card);
         _slots.Clear();
         _sliders.Clear();
         ResetProbe();
+    }
 
+    private static void AddRows(Dictionary<string, string> texts)
+    {
         Text help = _page.AddText(_card, "MagebloodLeftmostHelp", string.Empty, HelpRowHeight);
         LocaleRegistry.Apply(help, MagebloodFlasksTexts.LeftmostHelp);
         if (_layout.Slots.Count == 0)
@@ -133,8 +144,6 @@ internal static class MagebloodFlasksCard
         {
             AddSlot(slot, shown);
         }
-
-        Reselect(focus);
     }
 
     private static string[] ShownOptions(Dictionary<string, string> texts)

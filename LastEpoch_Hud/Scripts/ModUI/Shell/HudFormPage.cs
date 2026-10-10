@@ -511,12 +511,17 @@ internal sealed class HudFormPage : IHudSearchPage
 
     public void SetVisibleWhen(Component control, Func<bool> read)
     {
-        if (control.IsNullOrDestroyed() || control.transform.parent == null || read == null)
+        if (read == null)
         {
             return;
         }
 
-        GameObject row = control.transform.parent.gameObject;
+        GameObject row = RowOf(control);
+        if (row.IsNullOrDestroyed())
+        {
+            return;
+        }
+
         visibility.Add(new VisibilityBinding { Root = row, Read = read });
         if (searchItemsByRoot.TryGetValue(row, out SearchItem item))
         {
@@ -567,12 +572,13 @@ internal sealed class HudFormPage : IHudSearchPage
     /// <summary>Sets the row label of a control to a ready text; it is not translated again.</summary>
     public void SetLabel(Component control, string text)
     {
-        if (control.IsNullOrDestroyed() || control.transform.parent == null)
+        GameObject row = RowOf(control);
+        if (row.IsNullOrDestroyed())
         {
             return;
         }
 
-        Transform label = control.transform.parent.Find("Label");
+        Transform label = row.transform.Find("Label");
         Text target = label == null ? null : label.GetComponent<Text>();
         if (target.IsNullOrDestroyed())
         {
@@ -586,12 +592,12 @@ internal sealed class HudFormPage : IHudSearchPage
     /// <summary>Fades the whole row of a control (or restores it).</summary>
     public void SetDimmed(Component control, bool dimmed)
     {
-        if (control.IsNullOrDestroyed() || control.transform.parent == null)
+        GameObject row = RowOf(control);
+        if (row.IsNullOrDestroyed())
         {
             return;
         }
 
-        GameObject row = control.transform.parent.gameObject;
         CanvasGroup group = row.GetComponent<CanvasGroup>();
         if (group.IsNullOrDestroyed())
         {
@@ -601,10 +607,23 @@ internal sealed class HudFormPage : IHudSearchPage
         group.alpha = dimmed ? DimmedAlpha : 1f;
     }
 
+    /// <summary>Styles a card body built after the window was styled: selectable colors and font scale.</summary>
+    public static void StyleCard(Card card)
+    {
+        if (card == null || card.Body.IsNullOrDestroyed())
+        {
+            return;
+        }
+
+        HudStyler.NormalizeSelectableGraphics(card.Body);
+        HudStyler.ApplyFontScale(card.Body);
+    }
+
     /// <summary>Removes every row of the card body with its bindings and search entries.</summary>
     public void ClearCard(Card card)
     {
         Transform body = card.Body.transform;
+        HudStyler.ForgetFontBaselines(card.Body);
         Unhook(body);
         toggles.RemoveAll(b => IsUnder(b.Control, body));
         sliders.RemoveAll(b => IsUnder(b.Control, body));
@@ -622,8 +641,44 @@ internal sealed class HudFormPage : IHudSearchPage
         {
             GameObject child = body.GetChild(i).gameObject;
             child.SetActive(false);
+            child.transform.SetParent(null, false);
             UnityEngine.Object.Destroy(child);
         }
+    }
+
+    // The direct child of a card body that holds the control, or null.
+    private GameObject RowOf(Component control)
+    {
+        if (control.IsNullOrDestroyed())
+        {
+            return null;
+        }
+
+        Transform node = control.transform;
+        while (node.parent != null)
+        {
+            if (IsCardBody(node.parent))
+            {
+                return node.gameObject;
+            }
+
+            node = node.parent;
+        }
+
+        return null;
+    }
+
+    private bool IsCardBody(Transform node)
+    {
+        foreach (Card card in cards)
+        {
+            if (card.Body.transform == node)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // Destroy is deferred, so the controls are still alive here.

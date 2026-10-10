@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace LastEpoch_Hud.Scripts.ModUI.Shell;
 
-/// <summary>Applies HudTheme tokens to runtime-built HUD controls. Font baselines clear on HUD re-bind (ResetFontBaselines).</summary>
+/// <summary>Applies HudTheme tokens to runtime-built HUD controls. Font baselines clear on HUD re-bind (ResetFontBaselines); cleared card rows drop theirs (ForgetFontBaselines).</summary>
 internal static class HudStyler
 {
     private static readonly Dictionary<int, LegacyFontMetrics> _legacyFontSizes = new();
@@ -174,6 +174,22 @@ internal static class HudStyler
     {
         _legacyFontSizes.Clear();
         _tmpFontSizes.Clear();
+    }
+
+    public static void ForgetFontBaselines(GameObject root)
+    {
+        if (root.IsNullOrDestroyed())
+        {
+            return;
+        }
+        foreach (Text text in root.GetComponentsInChildren<Text>(true))
+        {
+            _legacyFontSizes.Remove(text.GetInstanceID());
+        }
+        foreach (TMP_Text text in root.GetComponentsInChildren<TMP_Text>(true))
+        {
+            _tmpFontSizes.Remove(text.GetInstanceID());
+        }
     }
 
     // ColorBlock values are the final visual colors. Keeping a tinted base
