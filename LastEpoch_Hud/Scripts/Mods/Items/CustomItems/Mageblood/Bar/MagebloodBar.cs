@@ -15,7 +15,7 @@ internal static class MagebloodBar
     private static readonly BuffBarFrame _frame = new("MagebloodBuffBar");
     private static readonly MagebloodBarContent _content = new();
     private static readonly List<MagebloodBarSlot> _slots = new();
-    private static readonly List<string> _labels = new();
+    private static readonly List<MagebloodFlask> _shown = new();
 
     public static bool IsVisible => _frame.IsVisible;
 
@@ -73,12 +73,12 @@ internal static class MagebloodBar
 
     public static void ShowTooltip(int index)
     {
-        if (index < 0 || index >= _labels.Count || _slots.Count == 0)
+        if (index < 0 || index >= _shown.Count || _slots.Count == 0)
         {
             return;
         }
 
-        _frame.ShowTooltip(index, _labels[index], _slots[0].TextFont);
+        _frame.ShowTooltip(index, MagebloodFlaskTooltip.Text(_shown[index]), _slots[0].TextFont);
     }
 
     public static void HideTooltip()
@@ -88,12 +88,12 @@ internal static class MagebloodBar
 
     private static void Rebuild(IReadOnlyList<MagebloodFlask> flasks, int count)
     {
-        _labels.Clear();
+        _shown.Clear();
         bool complete = true;
         for (int i = 0; i < count; i++)
         {
             complete &= ShowFlask(SlotAt(i), flasks[i]);
-            _labels.Add(MagebloodFlaskTooltip.Text(flasks[i]));
+            _shown.Add(flasks[i]);
         }
 
         for (int i = count; i < _slots.Count; i++)

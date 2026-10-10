@@ -29,3 +29,8 @@ fr:Runes
 fr:CustomItem.Mjolner.Name
 fr:CustomItem.EssentiaSanguis.Name
 fr:CustomItem.Mageblood.Name
+
+# Mageblood flask names identical in French.
+fr:Mageblood.Flask.Jade
+fr:Mageblood.Flask.Bismuth
+fr:Mageblood.Flask.Quartz

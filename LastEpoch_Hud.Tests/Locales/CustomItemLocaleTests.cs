@@ -20,7 +20,7 @@ public sealed class CustomItemLocaleTests
     public void AllKeys_InBaseJson()
     {
         Dictionary<string, string>.KeyCollection keys = Read("base").Keys;
-        var missing = CustomItemLocaleKeys.All.Where(key => !keys.Contains(key)).ToList();
+        var missing = CheckedKeys().Where(key => !keys.Contains(key)).ToList();
 
         Assert.True(missing.Count == 0, $"base.json misses: {string.Join(", ", missing)}");
     }
@@ -33,8 +33,8 @@ public sealed class CustomItemLocaleTests
     public void Language_TranslatesEveryCustomItemKey(string language)
     {
         Dictionary<string, string> texts = Read(language);
-        var missing = CustomItemLocaleKeys
-            .All.Where(key => string.IsNullOrWhiteSpace(texts.GetValueOrDefault(key)))
+        var missing = CheckedKeys()
+            .Where(key => string.IsNullOrWhiteSpace(texts.GetValueOrDefault(key)))
             .ToList();
 
         Assert.True(missing.Count == 0, $"{language}.json misses: {string.Join(", ", missing)}");
@@ -75,6 +75,9 @@ public sealed class CustomItemLocaleTests
 
         Assert.True(broken.Count == 0, $"{language}: wrong fill of {string.Join(", ", broken)}");
     }
+
+    private static IEnumerable<string> CheckedKeys() =>
+        CustomItemLocaleKeys.All.Concat(MagebloodFlaskNames.Keys);
 
     private static bool IsFilled(string text, string[] expected) =>
         text != null && !text.Contains('{') && expected.All(text.Contains);

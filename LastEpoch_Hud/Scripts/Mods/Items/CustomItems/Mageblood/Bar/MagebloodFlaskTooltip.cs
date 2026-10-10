@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using LastEpoch_Hud.Scripts.Core.CustomItems.Headhunter.Bar;
+using LastEpoch_Hud.Scripts.Core.CustomItems.Mageblood;
 using LastEpoch_Hud.Scripts.Core.CustomItems.Mageblood.Bar;
 using LastEpoch_Hud.Scripts.Core.CustomItems.Mageblood.Config;
 using LastEpoch_Hud.Scripts.Mods.Items.CustomItems.Headhunter;
@@ -17,7 +18,8 @@ internal static class MagebloodFlaskTooltip
             rows.Add(Row(stat));
         }
 
-        return MagebloodFlaskLabel.Format(flask.Name, rows);
+        string name = MagebloodFlaskNames.Display(Locales.current_dictionary, flask.Name);
+        return MagebloodFlaskLabel.Format(name, rows);
     }
 
     private static string Row(MagebloodBuffStat stat)
