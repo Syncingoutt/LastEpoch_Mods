@@ -84,7 +84,9 @@ public class Fix_Items
                         remove_affix = true;
                         need_fix = true;
                     }
-                    var definition = ModUI.ForceDropCatalog.Find(affix.affixId);
+                    AffixList.Affix definition = ModUI.ForceDrop.ForceDropCatalog.Find(
+                        affix.affixId
+                    );
                     // Saved T8 does not depend on the creation toggle. While
                     // definitions load, preserve the packed tier instead of
                     // destructively downgrading a possibly valid item.
@@ -143,7 +145,9 @@ public class Fix_Items
                         remove_affix = true;
                         need_fix = true;
                     }
-                    var definition = ModUI.ForceDropCatalog.Find(affix.affixId);
+                    AffixList.Affix definition = ModUI.ForceDrop.ForceDropCatalog.Find(
+                        affix.affixId
+                    );
                     int maximum =
                         definition.IsNullOrDestroyed() || definition.tiers.IsNullOrDestroyed()
                             ? 7

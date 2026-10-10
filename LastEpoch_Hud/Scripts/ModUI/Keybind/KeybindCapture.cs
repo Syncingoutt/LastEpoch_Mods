@@ -1,8 +1,9 @@
 using System;
+using LastEpoch_Hud.Scripts.ModUI.Settings;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace LastEpoch_Hud.Scripts.ModUI;
+namespace LastEpoch_Hud.Scripts.ModUI.Keybind;
 
 // Capture state machine. Polled from SaveManager.Update each frame.
 // First key/button after Begin() commits and exits capture mode.

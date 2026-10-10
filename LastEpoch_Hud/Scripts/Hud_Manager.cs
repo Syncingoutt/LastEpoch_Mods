@@ -108,7 +108,7 @@ public partial class Hud_Manager : MonoBehaviour
                     Update_Hud_Content();
                     hud_object.active = true;
                     Content.Set_Active();
-                    ModUI.NumericSliderInputs.Tick(hud_object);
+                    ModUI.Settings.NumericSliderInputs.Tick(hud_object);
                     if (!Refs_Manager.epoch_input_manager.IsNullOrDestroyed())
                     {
                         if (!Refs_Manager.epoch_input_manager.isControllerActive) //Keyboard
@@ -301,14 +301,14 @@ public partial class Hud_Manager : MonoBehaviour
                         "ModUI.SaveManager.BindHud",
                         () =>
                         {
-                            ModUI.SaveManager.BindHud(hud_object);
+                            ModUI.Settings.SaveManager.BindHud(hud_object);
                         }
                     );
                     SafeInit(
                         "ModUI.HudLayout.Initialize",
                         () =>
                         {
-                            ModUI.HudLayout.Initialize(hud_object);
+                            ModUI.Shell.HudLayout.Initialize(hud_object);
                         }
                     );
                 }
@@ -477,13 +477,13 @@ public partial class Hud_Manager : MonoBehaviour
     {
         if (!Locales.update || hud_object.IsNullOrDestroyed())
             return;
-        ModUI.LocaleRegistry.RefreshTree(hud_object);
+        ModUI.Settings.LocaleRegistry.RefreshTree(hud_object);
         Locales.update = false;
     }
 
     void Update_Hud_Content()
     {
-        ModUI.HudLayout.RefreshActivePage();
+        ModUI.Shell.HudLayout.RefreshActivePage();
         if ((Content.Character.enable) && (Content.Character.need_update))
         {
             Content.Character.Update_PlayerData();
@@ -513,8 +513,9 @@ public partial class Hud_Manager : MonoBehaviour
             if (!Content.OdlForceDrop.Type_Initialized)
             {
                 Content.OdlForceDrop.InitForcedrop();
+                return;
             }
-            else if (!ModUI.ForceDropBuilder.Tick())
+            if (!ModUI.ForceDrop.ForceDropBuilder.Tick())
             {
                 Content.OdlForceDrop.implicits.active = Content.OdlForceDrop.implicits_enable;
                 Content.OdlForceDrop.implicits_border.active = Content
@@ -1482,7 +1483,7 @@ public partial class Hud_Manager : MonoBehaviour
                             }
                             Data.SetupSoulEmberControls();
                             Data.SetupCorruptionAllButton();
-                            ModUI.CharacterActionControls.Bind(
+                            ModUI.Settings.CharacterActionControls.Bind(
                                 character_cheats_content,
                                 character_data_content
                             );
@@ -2765,7 +2766,7 @@ public partial class Hud_Manager : MonoBehaviour
                         -1,
                         false
                     );
-                    ModUI.MonolithTimelineEditor.RefreshSelection();
+                    ModUI.Pages.MonolithTimelineEditor.RefreshSelection();
                     return;
                 }
                 if (
@@ -2941,7 +2942,7 @@ public partial class Hud_Manager : MonoBehaviour
                         }
                     }
                 }
-                ModUI.MonolithTimelineEditor.RefreshSelection();
+                ModUI.Pages.MonolithTimelineEditor.RefreshSelection();
             }
 
             public static void Update_Faction_Data()
@@ -3367,17 +3368,17 @@ public partial class Hud_Manager : MonoBehaviour
                     unlock_blessing_slots_button = button.GetComponent<Button>();
                     unlock_blessing_slots_button.onClick = new Button.ButtonClickedEvent();
                     foreach (var label in button.GetComponentsInChildren<Text>(true))
-                        ModUI.LocaleRegistry.Apply(label, "Unlock Blessing Slots");
+                        ModUI.Settings.LocaleRegistry.Apply(label, "Unlock Blessing Slots");
                     foreach (
                         var label in button.GetComponentsInChildren<Il2CppTMPro.TMP_Text>(true)
                     )
                         label.text = "Unlock Blessing Slots";
                     foreach (var label in original.GetComponentsInChildren<Text>(true))
-                        ModUI.LocaleRegistry.Apply(label, "Discover All Blessings");
+                        ModUI.Settings.LocaleRegistry.Apply(label, "Discover All Blessings");
                     foreach (
                         var label in original.GetComponentsInChildren<Il2CppTMPro.TMP_Text>(true)
                     )
-                        ModUI.LocaleRegistry.Apply(label, "Discover All Blessings");
+                        ModUI.Settings.LocaleRegistry.Apply(label, "Discover All Blessings");
                     original.transform.SetParent(row.transform, false);
                     rect.anchorMin = Vector2.zero;
                     rect.anchorMax = new Vector2(.32f, 1f);
@@ -3395,13 +3396,13 @@ public partial class Hud_Manager : MonoBehaviour
                     max_blessings_button = maxButtonObject.GetComponent<Button>();
                     max_blessings_button.onClick = new Button.ButtonClickedEvent();
                     foreach (var label in maxButtonObject.GetComponentsInChildren<Text>(true))
-                        ModUI.LocaleRegistry.Apply(label, "Max Out Blessings");
+                        ModUI.Settings.LocaleRegistry.Apply(label, "Max Out Blessings");
                     foreach (
                         var label in maxButtonObject.GetComponentsInChildren<Il2CppTMPro.TMP_Text>(
                             true
                         )
                     )
-                        ModUI.LocaleRegistry.Apply(label, "Max Out Blessings");
+                        ModUI.Settings.LocaleRegistry.Apply(label, "Max Out Blessings");
                     var maxRect = maxButtonObject.GetComponent<RectTransform>();
                     maxRect.anchorMin = new Vector2(.34f, 0f);
                     maxRect.anchorMax = new Vector2(.66f, 1f);
@@ -3458,7 +3459,7 @@ public partial class Hud_Manager : MonoBehaviour
                         choose_blessings_button = replacement.GetComponent<Button>();
                         choose_blessings_button.onClick = new Button.ButtonClickedEvent();
                         foreach (var label in replacement.GetComponentsInChildren<Text>(true))
-                            ModUI.LocaleRegistry.Apply(label, "Choose Blessings");
+                            ModUI.Settings.LocaleRegistry.Apply(label, "Choose Blessings");
                         foreach (
                             var label in replacement.GetComponentsInChildren<Il2CppTMPro.TMP_Text>(
                                 true
@@ -4435,7 +4436,7 @@ public partial class Hud_Manager : MonoBehaviour
                             labelRect.offsetMin = Vector2.zero;
                             labelRect.offsetMax = Vector2.zero;
                         }
-                        ModUI.Prefab.ApplyLabel(buttonText, labelText);
+                        ModUI.Settings.Prefab.ApplyLabel(buttonText, labelText);
                     }
                 }
 
@@ -4446,7 +4447,7 @@ public partial class Hud_Manager : MonoBehaviour
                 {
                     if (!monolithTarget.IsNullOrDestroyed())
                     {
-                        ModUI.MonolithTimelineEditor.Build(monolithTarget);
+                        ModUI.Pages.MonolithTimelineEditor.Build(monolithTarget);
                     }
                 }
 
@@ -5149,7 +5150,7 @@ public partial class Hud_Manager : MonoBehaviour
                         {
                             continue;
                         }
-                        ModUI.LocaleRegistry.Apply(label, "Area of Effect");
+                        ModUI.Settings.LocaleRegistry.Apply(label, "Area of Effect");
                     }
                     foreach (
                         Il2CppTMPro.TMP_Text label in row.GetComponentsInChildren<Il2CppTMPro.TMP_Text>(
@@ -5161,7 +5162,7 @@ public partial class Hud_Manager : MonoBehaviour
                         {
                             continue;
                         }
-                        ModUI.LocaleRegistry.Apply(label, "Area of Effect");
+                        ModUI.Settings.LocaleRegistry.Apply(label, "Area of Effect");
                     }
 
                     LayoutBuffPanels(character_buffs_content);
@@ -5736,7 +5737,7 @@ public partial class Hud_Manager : MonoBehaviour
                         );
                         if (!items_craft_content.IsNullOrDestroyed())
                         {
-                            ModUI.InfiniteForgingPotentialControls.Bind(
+                            ModUI.Settings.InfiniteForgingPotentialControls.Bind(
                                 content_obj,
                                 items_craft_content
                             );
@@ -11975,7 +11976,7 @@ public partial class Hud_Manager : MonoBehaviour
                         shard_initialized = false; //Reset shards
                         if (
                             enable
-                            && !ModUI.ForceDropBuilder.IsReady
+                            && !ModUI.ForceDrop.ForceDropBuilder.IsReady
                             && !center_content.IsNullOrDestroyed()
                         )
                         {
@@ -12270,7 +12271,7 @@ public partial class Hud_Manager : MonoBehaviour
                         shard_initialized = false;
                         if (
                             enable
-                            && !ModUI.ForceDropBuilder.IsReady
+                            && !ModUI.ForceDrop.ForceDropBuilder.IsReady
                             && !center_content.IsNullOrDestroyed()
                         )
                         {
@@ -13004,9 +13005,9 @@ public partial class Hud_Manager : MonoBehaviour
 
             public static void Drop()
             {
-                if (ModUI.ForceDropBuilder.IsReady)
+                if (ModUI.ForceDrop.ForceDropBuilder.IsReady)
                 {
-                    ModUI.ForceDropBuilder.DropSelection();
+                    ModUI.ForceDrop.ForceDropBuilder.DropSelection();
                     return;
                 }
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using LastEpoch_Hud.Scripts.ModUI.Settings;
 
 namespace LastEpoch_Hud.Scripts.ModUI;
 

@@ -4,6 +4,8 @@ using Il2Cpp;
 using Il2CppLE.Factions;
 using LastEpoch_Hud.Scripts.Core.QualityOfLife;
 using LastEpoch_Hud.Scripts.ModUI;
+using LastEpoch_Hud.Scripts.ModUI.Pages;
+using LastEpoch_Hud.Scripts.ModUI.Settings;
 using UnityEngine;
 
 namespace LastEpoch_Hud.Scripts.Mods.UI;
@@ -69,7 +71,7 @@ internal static class SessionGainCounters
             {
                 nextDisplay = Time.unscaledTime + .25f;
                 display = Format();
-                World_Misc.RefreshSession();
+                WorldMiscPage.RefreshSession();
             }
         }
         catch (Exception ex)

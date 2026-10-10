@@ -3,6 +3,7 @@ using HarmonyLib;
 using Il2Cpp;
 using Il2CppRewired;
 using LastEpoch_Hud.Scripts.ModUI;
+using LastEpoch_Hud.Scripts.ModUI.Keybind;
 using MelonLoader;
 using UnityEngine;
 using UnityEngine.UI;

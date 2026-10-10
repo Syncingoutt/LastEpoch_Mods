@@ -1,4 +1,4 @@
-namespace LastEpoch_Hud.Scripts.ModUI;
+namespace LastEpoch_Hud.Scripts.ModUI.Keybind;
 
 internal static class KeybindFormat
 {

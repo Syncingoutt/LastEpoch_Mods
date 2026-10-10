@@ -1,6 +1,7 @@
+using LastEpoch_Hud.Scripts.ModUI.Settings;
 using UnityEngine;
 
-namespace LastEpoch_Hud.Scripts.ModUI;
+namespace LastEpoch_Hud.Scripts.ModUI.Keybind;
 
 // Public API consumed by feature code (e.g. Skills_AutoCast.IsModifierHeld).
 // Reads the tagged-string binding produced by KeybindSetting and tests whether

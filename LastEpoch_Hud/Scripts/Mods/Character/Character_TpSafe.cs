@@ -1,6 +1,7 @@
 using System;
 using Il2CppTMPro;
 using LastEpoch_Hud.Scripts.ModUI;
+using LastEpoch_Hud.Scripts.ModUI.Keybind;
 using MelonLoader;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -87,7 +88,7 @@ public class Character_TpSafe : MonoBehaviour
             || Teleport.Teleport_ToScene.instance.IsNullOrDestroyed()
         )
             return false;
-        var settings = ModUI.SaveManager.instance;
+        ModUI.Settings.SaveManager settings = ModUI.Settings.SaveManager.instance;
         if (settings.IsNullOrDestroyed() || !settings.initialized)
             return false;
         if (Typing())

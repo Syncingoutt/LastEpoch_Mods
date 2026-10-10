@@ -1,6 +1,6 @@
 using System;
 using Il2CppLE.Factions;
-using LastEpoch_Hud.Scripts.ModUI;
+using LastEpoch_Hud.Scripts.ModUI.Settings;
 using UnityEngine;
 using UnityEngine.UI;
 

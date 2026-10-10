@@ -1,7 +1,7 @@
 using System;
 using Il2CppRewired;
 
-namespace LastEpoch_Hud.Scripts.ModUI;
+namespace LastEpoch_Hud.Scripts.ModUI.Keybind;
 
 // Walks the active joystick's IGamepadTemplate to check button states
 internal static class KeybindRewired

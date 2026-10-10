@@ -4,7 +4,7 @@ using Il2Cpp;
 using Il2CppLE.Factions;
 using LastEpoch_Hud.Scripts.ModUI;
 using CraftType = Il2Cpp.ZoneRestrictedCraftingManager.CraftingType;
-using ModSaveManager = LastEpoch_Hud.Scripts.ModUI.SaveManager;
+using ModSaveManager = LastEpoch_Hud.Scripts.ModUI.Settings.SaveManager;
 
 namespace LastEpoch_Hud.Scripts.Mods.Items;
 

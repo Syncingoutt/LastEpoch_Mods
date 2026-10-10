@@ -1,4 +1,6 @@
-namespace LastEpoch_Hud.Scripts.ModUI;
+using LastEpoch_Hud.Scripts.ModUI.Settings;
+
+namespace LastEpoch_Hud.Scripts.ModUI.Keybind;
 
 // Centralized English strings for the keybind UI. Translated once via Locales.current_dictionary
 // (same path as label: parameters). Override per-setting via the resetLabel: parameter on
