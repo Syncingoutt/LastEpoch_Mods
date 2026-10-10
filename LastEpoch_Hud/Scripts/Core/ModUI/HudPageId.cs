@@ -11,6 +11,7 @@ public enum HudPageId
     ItemsDrop,
     ItemsForceDrop,
     ItemsCraftingSlot,
+    ItemsCustomItems,
     WorldDifficulty,
     WorldMonoliths,
     WorldMisc,

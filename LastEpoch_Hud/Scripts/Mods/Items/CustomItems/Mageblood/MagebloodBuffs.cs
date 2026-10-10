@@ -19,6 +19,9 @@ internal static class MagebloodBuffs
     private static readonly RefreshGate _gate = new(1.0);
     private static readonly MagebloodAppliedState _state = new();
 
+    public static bool Worn => _state.Worn;
+    public static int ActiveFlasks => _state.ActiveFlasks;
+
     public static void MarkDirty()
     {
         _state.MarkDirty();

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using LastEpoch_Hud.Scripts.Core.CustomItems;
 using LastEpoch_Hud.Scripts.Core.ModUI;
 using LastEpoch_Hud.Scripts.ModUI.Pages;
 using UnityEngine;
@@ -79,6 +80,14 @@ internal static class HudNavigation
                 ItemsCraftingSlotPage.Show,
                 ItemsCraftingSlotPage.Hide,
                 ItemsCraftingSlotPage.Refresh
+            ),
+            Page(
+                HudPageId.ItemsCustomItems,
+                CustomItemLocaleKeys.CustomItemsPage,
+                Items_CustomItems.Build,
+                Items_CustomItems.Show,
+                Items_CustomItems.Hide,
+                Items_CustomItems.Refresh
             )
         ),
         new(

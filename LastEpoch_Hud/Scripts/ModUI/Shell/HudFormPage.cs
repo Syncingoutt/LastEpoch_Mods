@@ -503,6 +503,61 @@ internal sealed class HudFormPage : IHudSearchPage
         );
     }
 
+    public void SetVisibleWhen(Component control, Func<bool> read)
+    {
+        if (control.IsNullOrDestroyed() || control.transform.parent == null || read == null)
+        {
+            return;
+        }
+
+        GameObject row = control.transform.parent.gameObject;
+        visibility.Add(new VisibilityBinding { Root = row, Read = read });
+        if (searchItemsByRoot.TryGetValue(row, out SearchItem item))
+        {
+            item.Conditional = true;
+        }
+    }
+
+    /// <summary>Greys out (or restores) the slider and its input box.</summary>
+    public void SetInteractable(Slider control, bool on)
+    {
+        SliderBinding binding = FindSlider(control);
+        if (binding == null)
+        {
+            return;
+        }
+
+        binding.Control.interactable = on;
+        if (!binding.Input.IsNullOrDestroyed())
+        {
+            binding.Input.interactable = on;
+        }
+    }
+
+    /// <summary>Changes the slider bounds without firing its write callback.</summary>
+    public void SetSliderRange(Slider control, float minimum, float maximum, bool wholeNumbers)
+    {
+        SliderBinding binding = FindSlider(control);
+        if (binding == null)
+        {
+            return;
+        }
+
+        refreshing = true;
+        try
+        {
+            binding.Minimum = minimum;
+            binding.Maximum = maximum;
+            binding.Control.minValue = minimum;
+            binding.Control.maxValue = maximum;
+            binding.Control.wholeNumbers = wholeNumbers;
+        }
+        finally
+        {
+            refreshing = false;
+        }
+    }
+
     private Slider AddSliderRow(
         Card card,
         string id,
@@ -636,17 +691,6 @@ internal sealed class HudFormPage : IHudSearchPage
             );
         }
         return slider;
-    }
-
-    public void SetVisibleWhen(Slider control, Func<bool> read)
-    {
-        if (control.IsNullOrDestroyed() || control.transform.parent == null || read == null)
-            return;
-        visibility.Add(
-            new VisibilityBinding { Root = control.transform.parent.gameObject, Read = read }
-        );
-        if (searchItemsByRoot.TryGetValue(control.transform.parent.gameObject, out var item))
-            item.Conditional = true;
     }
 
     public Dropdown AddDropdown(
@@ -883,6 +927,19 @@ internal sealed class HudFormPage : IHudSearchPage
         {
             refreshing = false;
         }
+    }
+
+    private SliderBinding FindSlider(Slider control)
+    {
+        foreach (SliderBinding binding in sliders)
+        {
+            if (binding.Control == control)
+            {
+                return binding;
+            }
+        }
+
+        return null;
     }
 
     private void SliderChanged(SliderBinding binding, float value)
