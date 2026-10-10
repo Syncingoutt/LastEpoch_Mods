@@ -1,3 +1,5 @@
+using Mono.Cecil;
+
 namespace LastEpoch_Hud.Tests.Support;
 
 /// <summary>Paths to the repo, the built mod and the installed game.</summary>
@@ -12,6 +14,16 @@ internal static class GameEnvironment
         Environment.GetEnvironmentVariable("LAST_EPOCH_PATH") ?? DefaultGameDir;
 
     public static string Il2CppDir => Path.Combine(GameDir, "MelonLoader", "Il2CppAssemblies");
+
+    public static string Cpp2IlOutDir =>
+        Path.Combine(
+            GameDir,
+            "MelonLoader",
+            "Dependencies",
+            "Il2CppAssemblyGenerator",
+            "Cpp2IL",
+            "cpp2il_out"
+        );
 
     public static string ModProjectDir => Path.Combine(RepoRoot, "LastEpoch_Hud");
 
@@ -31,11 +43,30 @@ internal static class GameEnvironment
             $"No mod build at {ModDll}; build the mod or set LAST_EPOCH_MOD_DLL"
         );
 
+    public static void SkipWithoutCpp2IlOut() =>
+        Assert.SkipUnless(
+            Directory.Exists(Cpp2IlOutDir),
+            $"No Cpp2IL output at {Cpp2IlOutDir}; set LAST_EPOCH_PATH"
+        );
+
+    public static ModuleDefinition ReadGameModule(string path)
+    {
+        var resolver = new DefaultAssemblyResolver();
+        resolver.AddSearchDirectory(Il2CppDir);
+        resolver.AddSearchDirectory(Path.Combine(GameDir, "MelonLoader", "net6"));
+        return ModuleDefinition.ReadModule(
+            path,
+            new ReaderParameters { AssemblyResolver = resolver }
+        );
+    }
+
     private static string FindRepoRoot()
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
         while (dir != null && !File.Exists(Path.Combine(dir.FullName, "LastEpoch_Hud.sln")))
+        {
             dir = dir.Parent;
+        }
         return dir?.FullName
             ?? throw new InvalidOperationException(
                 "LastEpoch_Hud.sln not found above the test output"

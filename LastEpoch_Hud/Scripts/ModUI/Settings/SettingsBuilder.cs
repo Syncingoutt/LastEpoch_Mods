@@ -66,6 +66,18 @@ public class SettingsBuilder
         BindCount++;
     }
 
+    internal static void ApplyDropdownOptions(
+        Dropdown dropdown,
+        System.Collections.Generic.IReadOnlyList<string> options
+    )
+    {
+        dropdown.ClearOptions();
+        var list = new Il2CppSystem.Collections.Generic.List<Dropdown.OptionData>();
+        foreach (var opt in options)
+            list.Add(new Dropdown.OptionData { text = opt });
+        dropdown.options = list;
+    }
+
     private static void BindToggleComponent(Toggle toggle, BoolSetting setting, string label)
     {
         toggle.isOn = setting.Value;
@@ -777,15 +789,6 @@ public class SettingsBuilder
         slider.minValue = min;
         slider.maxValue = max;
         slider.value = value;
-    }
-
-    private static void ApplyDropdownOptions(Dropdown dropdown, string[] options)
-    {
-        dropdown.ClearOptions();
-        var list = new Il2CppSystem.Collections.Generic.List<Dropdown.OptionData>();
-        foreach (var opt in options)
-            list.Add(new Dropdown.OptionData { text = opt });
-        dropdown.options = list;
     }
 
     private static void UpdateText(Text text, string value)

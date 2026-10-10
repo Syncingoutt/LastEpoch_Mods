@@ -15,6 +15,8 @@ namespace LastEpoch_Hud.Scripts.ModUI.Shell;
 // page owns one scrollbar; cards only describe their controls and bindings.
 internal sealed class HudFormPage : IHudSearchPage
 {
+    private const float DimmedAlpha = 0.45f;
+
     internal sealed class Card
     {
         internal GameObject Root;
@@ -31,6 +33,7 @@ internal sealed class HudFormPage : IHudSearchPage
         public string Label;
         public GameObject Root;
         public bool Conditional;
+        public HudSearchEntry Entry;
     }
 
     private sealed class ActionSearchGroup
@@ -77,6 +80,7 @@ internal sealed class HudFormPage : IHudSearchPage
     }
 
     private readonly GameObject root;
+    private readonly GameObject _hud;
     private readonly GameObject content;
     private readonly Font font;
     private readonly TMP_InputField inputTemplate;
@@ -92,6 +96,7 @@ internal sealed class HudFormPage : IHudSearchPage
     private readonly List<DropdownBinding> dropdowns = new();
     private readonly List<VisibilityBinding> visibility = new();
     private readonly List<KeybindBinding> keybinds = new();
+    private Dropdown _dropdownTemplate;
     private bool refreshing;
     private bool searchActive;
 
@@ -104,6 +109,7 @@ internal sealed class HudFormPage : IHudSearchPage
     )
     {
         font = inheritedFont;
+        _hud = hud;
         PageId = pageId;
         inputTemplate = FindInputTemplate(hud);
         handleSprite = FindHandleSprite(hud);
@@ -503,6 +509,202 @@ internal sealed class HudFormPage : IHudSearchPage
         );
     }
 
+    public void SetVisibleWhen(Component control, Func<bool> read)
+    {
+        if (read == null)
+        {
+            return;
+        }
+
+        GameObject row = RowOf(control);
+        if (row.IsNullOrDestroyed())
+        {
+            return;
+        }
+
+        visibility.Add(new VisibilityBinding { Root = row, Read = read });
+        if (searchItemsByRoot.TryGetValue(row, out SearchItem item))
+        {
+            item.Conditional = true;
+        }
+    }
+
+    /// <summary>Greys out (or restores) the slider and its input box.</summary>
+    public void SetInteractable(Slider control, bool on)
+    {
+        SliderBinding binding = FindSlider(control);
+        if (binding == null)
+        {
+            return;
+        }
+
+        binding.Control.interactable = on;
+        if (!binding.Input.IsNullOrDestroyed())
+        {
+            binding.Input.interactable = on;
+        }
+    }
+
+    /// <summary>Changes the slider bounds without firing its write callback.</summary>
+    public void SetSliderRange(Slider control, float minimum, float maximum, bool wholeNumbers)
+    {
+        SliderBinding binding = FindSlider(control);
+        if (binding == null)
+        {
+            return;
+        }
+
+        refreshing = true;
+        try
+        {
+            binding.Minimum = minimum;
+            binding.Maximum = maximum;
+            binding.Control.minValue = minimum;
+            binding.Control.maxValue = maximum;
+            binding.Control.wholeNumbers = wholeNumbers;
+        }
+        finally
+        {
+            refreshing = false;
+        }
+    }
+
+    /// <summary>Sets the row label of a control to a ready text; it is not translated again.</summary>
+    public void SetLabel(Component control, string text)
+    {
+        GameObject row = RowOf(control);
+        if (row.IsNullOrDestroyed())
+        {
+            return;
+        }
+
+        Transform label = row.transform.Find("Label");
+        Text target = label == null ? null : label.GetComponent<Text>();
+        if (target.IsNullOrDestroyed())
+        {
+            return;
+        }
+
+        LocaleRegistry.Apply(target, null);
+        target.text = text;
+    }
+
+    /// <summary>Fades the whole row of a control (or restores it).</summary>
+    public void SetDimmed(Component control, bool dimmed)
+    {
+        GameObject row = RowOf(control);
+        if (row.IsNullOrDestroyed())
+        {
+            return;
+        }
+
+        CanvasGroup group = row.GetComponent<CanvasGroup>();
+        if (group.IsNullOrDestroyed())
+        {
+            group = row.AddComponent<CanvasGroup>();
+        }
+
+        group.alpha = dimmed ? DimmedAlpha : 1f;
+    }
+
+    /// <summary>Styles a card body built after the window was styled: selectable colors and font scale.</summary>
+    public static void StyleCard(Card card)
+    {
+        if (card == null || card.Body.IsNullOrDestroyed())
+        {
+            return;
+        }
+
+        HudStyler.NormalizeSelectableGraphics(card.Body);
+        HudStyler.ApplyFontScale(card.Body);
+    }
+
+    /// <summary>Removes every row of the card body with its bindings and search entries.</summary>
+    public void ClearCard(Card card)
+    {
+        Transform body = card.Body.transform;
+        HudStyler.ForgetFontBaselines(card.Body);
+        Unhook(body);
+        toggles.RemoveAll(b => IsUnder(b.Control, body));
+        sliders.RemoveAll(b => IsUnder(b.Control, body));
+        dropdowns.RemoveAll(b => IsUnder(b.Control, body));
+        keybinds.RemoveAll(b => IsUnder(b.Display, body));
+        visibility.RemoveAll(b => b.Root.IsNullOrDestroyed() || b.Root.transform.IsChildOf(body));
+        foreach (SearchItem item in card.SearchItems)
+        {
+            searchItemsByRoot.Remove(item.Root);
+            searchEntries.Remove(item.Entry);
+        }
+        card.SearchItems.Clear();
+
+        for (int i = body.childCount - 1; i >= 0; i--)
+        {
+            GameObject child = body.GetChild(i).gameObject;
+            child.SetActive(false);
+            child.transform.SetParent(null, false);
+            UnityEngine.Object.Destroy(child);
+        }
+    }
+
+    // The direct child of a card body that holds the control, or null.
+    private GameObject RowOf(Component control)
+    {
+        if (control.IsNullOrDestroyed())
+        {
+            return null;
+        }
+
+        Transform node = control.transform;
+        while (node.parent != null)
+        {
+            if (IsCardBody(node.parent))
+            {
+                return node.gameObject;
+            }
+
+            node = node.parent;
+        }
+
+        return null;
+    }
+
+    private bool IsCardBody(Transform node)
+    {
+        foreach (Card card in cards)
+        {
+            if (card.Body.transform == node)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Destroy is deferred, so the controls are still alive here.
+    private void Unhook(Transform body)
+    {
+        foreach (SliderBinding b in sliders)
+        {
+            if (!b.Control.IsNullOrDestroyed() && b.Control.transform.IsChildOf(body))
+            {
+                SliderHook.Unregister(b.Control);
+            }
+        }
+        foreach (ToggleBinding b in toggles)
+        {
+            if (!b.Control.IsNullOrDestroyed() && b.Control.transform.IsChildOf(body))
+            {
+                ToggleHook.Unregister(b.Control);
+            }
+        }
+    }
+
+    private static bool IsUnder(Component control, Transform body)
+    {
+        return control.IsNullOrDestroyed() || control.transform.IsChildOf(body);
+    }
+
     private Slider AddSliderRow(
         Card card,
         string id,
@@ -638,22 +840,70 @@ internal sealed class HudFormPage : IHudSearchPage
         return slider;
     }
 
-    public void SetVisibleWhen(Slider control, Func<bool> read)
-    {
-        if (control.IsNullOrDestroyed() || control.transform.parent == null || read == null)
-            return;
-        visibility.Add(
-            new VisibilityBinding { Root = control.transform.parent.gameObject, Read = read }
-        );
-        if (searchItemsByRoot.TryGetValue(control.transform.parent.gameObject, out var item))
-            item.Conditional = true;
-    }
-
     public Dropdown AddDropdown(
         Card card,
         string id,
         string label,
         Dropdown source,
+        Func<int> read,
+        Action<int> write
+    )
+    {
+        return AddDropdownRow(card, id, label, source, source, read, write);
+    }
+
+    /// <summary>A dropdown row with its own options, cloned from the first dropdown in the hud.</summary>
+    public Dropdown AddOptionsDropdown(
+        Card card,
+        string id,
+        string label,
+        IReadOnlyList<string> options,
+        Func<int> read,
+        Action<int> write
+    )
+    {
+        Dropdown dropdown = AddDropdownRow(
+            card,
+            id,
+            label,
+            FindDropdownTemplate(),
+            null,
+            read,
+            write
+        );
+        if (dropdown.IsNullOrDestroyed())
+        {
+            return null;
+        }
+
+        refreshing = true;
+        try
+        {
+            SettingsBuilder.ApplyDropdownOptions(dropdown, options);
+        }
+        finally
+        {
+            refreshing = false;
+        }
+        return dropdown;
+    }
+
+    private Dropdown FindDropdownTemplate()
+    {
+        if (_dropdownTemplate.IsNullOrDestroyed())
+        {
+            _dropdownTemplate = _hud.GetComponentInChildren<Dropdown>(true);
+        }
+
+        return _dropdownTemplate;
+    }
+
+    private Dropdown AddDropdownRow(
+        Card card,
+        string id,
+        string label,
+        Dropdown template,
+        Dropdown optionsSource,
         Func<int> read,
         Action<int> write
     )
@@ -667,12 +917,16 @@ internal sealed class HudFormPage : IHudSearchPage
         labelRect.offsetMax = Vector2.zero;
         labelText.alignment = TextAnchor.MiddleLeft;
 
-        if (source.IsNullOrDestroyed())
+        if (template.IsNullOrDestroyed())
         {
             Main.logger_instance?.Warning("HudFormPage: dropdown source missing for " + id);
             return null;
         }
-        var clone = UnityEngine.Object.Instantiate(source.gameObject, row.transform, false);
+        GameObject clone = UnityEngine.Object.Instantiate(
+            template.gameObject,
+            row.transform,
+            false
+        );
         clone.name = "Control";
         clone.SetActive(true);
         var dropdown = clone.GetComponent<Dropdown>();
@@ -707,17 +961,25 @@ internal sealed class HudFormPage : IHudSearchPage
         HudStyler.ApplyDropdown(dropdown);
         Prefab.BindDropdown(
             dropdown,
-            new Action<int>(value =>
+            new Action<int>(_ =>
             {
-                if (!refreshing)
-                    write?.Invoke(value);
+                if (refreshing)
+                {
+                    ModSettings.Trace(
+                        "HudFormPage: dropdown " + id + " change skipped while refreshing"
+                    );
+                    return;
+                }
+
+                // The Il2Cpp event argument is unreliable; read the control's own index.
+                write?.Invoke(dropdown.value);
             })
         );
         dropdowns.Add(
             new DropdownBinding
             {
                 Control = dropdown,
-                Source = source,
+                Source = optionsSource,
                 Read = read,
             }
         );
@@ -885,6 +1147,19 @@ internal sealed class HudFormPage : IHudSearchPage
         }
     }
 
+    private SliderBinding FindSlider(Slider control)
+    {
+        foreach (SliderBinding binding in sliders)
+        {
+            if (binding.Control == control)
+            {
+                return binding;
+            }
+        }
+
+        return null;
+    }
+
     private void SliderChanged(SliderBinding binding, float value)
     {
         if (refreshing)
@@ -1032,10 +1307,16 @@ internal sealed class HudFormPage : IHudSearchPage
     {
         if (card == null || row.IsNullOrDestroyed() || string.IsNullOrWhiteSpace(label))
             return;
-        var item = new SearchItem { Label = label, Root = row };
+        var entry = new HudSearchEntry { Card = card.Title, Label = label };
+        var item = new SearchItem
+        {
+            Label = label,
+            Root = row,
+            Entry = entry,
+        };
         card.SearchItems.Add(item);
         searchItemsByRoot[row] = item;
-        searchEntries.Add(new HudSearchEntry { Card = card.Title, Label = label });
+        searchEntries.Add(entry);
     }
 
     private void RegisterAction(ActionSearchGroup group, string label, GameObject button)

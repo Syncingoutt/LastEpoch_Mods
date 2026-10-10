@@ -16,7 +16,13 @@ namespace LastEpoch_Hud.Scripts.Mods.Items.CustomItems.Headhunter;
 [RegisterTypeInIl2Cpp]
 public class Items_HeadHunter : MonoBehaviour
 {
+    private const double ScenePollSeconds = 0.25;
+
     private static readonly CustomUniqueRegistrar _registrar = new(CreateDefinition());
+
+    private static readonly HeadhunterActiveSceneGate _sceneGate = new();
+
+    private static readonly IntervalGate _scenePoll = new(ScenePollSeconds);
 
     public Items_HeadHunter(System.IntPtr ptr)
         : base(ptr) { }
@@ -30,10 +36,38 @@ public class Items_HeadHunter : MonoBehaviour
     private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         HeadhunterIconLoads.AllowRetry();
-        string active = SceneManager.GetActiveScene().name;
-        HeadhunterTimerPause.OnSceneLoaded(active, Time.unscaledTime);
-        HeadhunterProbe.OnSceneLoaded(active, Time.unscaledTime);
+        EnterActiveScene(SceneManager.GetActiveScene());
         ResetRunIfCharacterExit(scene.name);
+    }
+
+    /// <summary>Enters the active scene when the game switched it without a load event.</summary>
+    private static void PollActiveScene(double now)
+    {
+        if (!_scenePoll.IsDue(now))
+        {
+            return;
+        }
+
+        Scene scene = SceneManager.GetActiveScene();
+        if (!_sceneGate.IsNew(scene.handle))
+        {
+            return;
+        }
+
+        EnterActiveScene(scene);
+    }
+
+    /// <summary>Re-evaluates the zone pause and probe once per newly active scene.</summary>
+    private static void EnterActiveScene(Scene scene)
+    {
+        string name = scene.name;
+        if (!_sceneGate.TryEnter(scene.handle, name))
+        {
+            return;
+        }
+
+        HeadhunterTimerPause.OnActiveSceneChanged(name, Time.unscaledTime);
+        HeadhunterProbe.OnActiveSceneChanged(name, Time.unscaledTime);
     }
 
     /// <summary>Clears the HH run on login/character select.</summary>
@@ -56,6 +90,7 @@ public class Items_HeadHunter : MonoBehaviour
         _registrar.Update();
         HeadhunterKillSource.EnsureHooked();
         HeadhunterConfigLoader.ReloadIfChanged(Time.unscaledTime);
+        PollActiveScene(Time.unscaledTime);
         HeadhunterTimerPause.Tick(Time.unscaledTime);
         HeadhunterBuffBar.Tick(Time.unscaledTime);
         HeadhunterBarHover.Tick();

@@ -1,5 +1,6 @@
 using System.Globalization;
 using LastEpoch_Hud.Scripts.Core.CustomItems.Headhunter.Pause;
+using LastEpoch_Hud.Scripts.Core.CustomItems.Headhunter.Pause.RewardMenu;
 
 namespace LastEpoch_Hud.Tests.Core.CustomItems.Headhunter.Pause;
 
@@ -131,6 +132,63 @@ public sealed class HeadhunterPauseLogTests
     }
 
     [Fact]
+    public void CutsceneStarted_HasSceneIdDuration()
+    {
+        string line = InGermanCulture(() =>
+            HeadhunterPauseLog.CutsceneStarted(FakeScene, Cutscene())
+        );
+
+        Assert.Contains($"scene={FakeScene}", line);
+        Assert.Contains("id=FakeA", line);
+        Assert.Contains("duration=69.17s", line);
+        Assert.DoesNotContain("held=", line);
+    }
+
+    [Theory]
+    [InlineData(HeadhunterCutsceneEnd.Duration, "by=duration")]
+    [InlineData(HeadhunterCutsceneEnd.Stopped, "by=stopped")]
+    [InlineData(HeadhunterCutsceneEnd.Missing, "by=missing")]
+    [InlineData(HeadhunterCutsceneEnd.Scene, "by=scene")]
+    public void CutsceneEnded_HasHeldAndBy(HeadhunterCutsceneEnd by, string expectedBy)
+    {
+        string line = InGermanCulture(() => HeadhunterPauseLog.CutsceneEnded(FakeScene, Stop(by)));
+
+        Assert.Contains($"scene={FakeScene}", line);
+        Assert.Contains("id=FakeA", line);
+        Assert.Contains("duration=69.17s", line);
+        Assert.Contains("held=11.50s", line);
+        Assert.Contains(expectedBy, line);
+    }
+
+    [Fact]
+    public void RewardMenuStarted_HasScenePanel()
+    {
+        string line = HeadhunterPauseLog.RewardMenuStarted(FakeScene, Menu());
+
+        Assert.Contains($"scene={FakeScene}", line);
+        Assert.Contains("panel=FakePanelA", line);
+        Assert.DoesNotContain("held=", line);
+    }
+
+    [Theory]
+    [InlineData(HeadhunterRewardMenuEnd.Closed, "by=closed")]
+    [InlineData(HeadhunterRewardMenuEnd.Hidden, "by=hidden")]
+    [InlineData(HeadhunterRewardMenuEnd.Missing, "by=missing")]
+    [InlineData(HeadhunterRewardMenuEnd.Cap, "by=cap")]
+    [InlineData(HeadhunterRewardMenuEnd.Scene, "by=scene")]
+    public void RewardMenuEnded_HasHeldAndBy(HeadhunterRewardMenuEnd by, string expectedBy)
+    {
+        string line = InGermanCulture(() =>
+            HeadhunterPauseLog.RewardMenuEnded(FakeScene, RewardStop(by))
+        );
+
+        Assert.Contains($"scene={FakeScene}", line);
+        Assert.Contains("panel=FakePanelA", line);
+        Assert.Contains("held=11.50s", line);
+        Assert.Contains(expectedBy, line);
+    }
+
+    [Fact]
     public void Lines_HaveNoNewline()
     {
         string lines =
@@ -141,10 +199,37 @@ public sealed class HeadhunterPauseLogTests
             + HeadhunterPauseLog.Cinematic(FakeScene, false, 1)
             + HeadhunterPauseLog.BossIntroStarted(FakeScene, Intro())
             + HeadhunterPauseLog.BossIntroEnded(FakeScene, Intro(), 1)
-            + HeadhunterPauseLog.BossIntroExpired(FakeScene, Intro(), 1);
+            + HeadhunterPauseLog.BossIntroExpired(FakeScene, Intro(), 1)
+            + HeadhunterPauseLog.CutsceneStarted(FakeScene, Cutscene())
+            + HeadhunterPauseLog.CutsceneEnded(FakeScene, Stop(HeadhunterCutsceneEnd.Stopped))
+            + HeadhunterPauseLog.RewardMenuStarted(FakeScene, Menu())
+            + HeadhunterPauseLog.RewardMenuEnded(
+                FakeScene,
+                RewardStop(HeadhunterRewardMenuEnd.Closed)
+            );
 
         Assert.DoesNotContain('\n', lines);
         Assert.DoesNotContain('\r', lines);
+    }
+
+    private static HeadhunterRewardMenu Menu()
+    {
+        return new HeadhunterRewardMenu(1, "FakePanelA", 10);
+    }
+
+    private static HeadhunterRewardMenuStop RewardStop(HeadhunterRewardMenuEnd by)
+    {
+        return new HeadhunterRewardMenuStop(Menu(), 11.5, by);
+    }
+
+    private static HeadhunterCutscene Cutscene()
+    {
+        return new HeadhunterCutscene("FakeA", 69.17, 10);
+    }
+
+    private static HeadhunterCutsceneStop Stop(HeadhunterCutsceneEnd by)
+    {
+        return new HeadhunterCutsceneStop(Cutscene(), 11.5, by);
     }
 
     private static HeadhunterBossIntro Intro()

@@ -40,6 +40,18 @@ public static class CustomUniqueAffixes
             ),
         };
 
+    public static readonly IReadOnlyList<CustomBaseImplicit> MagebloodImplicits =
+        new CustomBaseImplicit[]
+        {
+            new(CustomItemStat.Strength, CustomItemTag.None, CustomItemModType.Added, 0, 25f, 35f),
+            new(CustomItemStat.Dexterity, CustomItemTag.None, CustomItemModType.Added, 0, 30f, 50f),
+        };
+
+    public static readonly IReadOnlyList<CustomUniqueMod> MagebloodMods =
+        System.Array.Empty<CustomUniqueMod>();
+
+    public static readonly IReadOnlyList<byte> MagebloodTooltip = new byte[] { DescriptionEntry };
+
     public static readonly IReadOnlyList<CustomUniqueMod> HeadhunterMods = new CustomUniqueMod[]
     {
         new(CustomItemStat.Strength, CustomItemTag.None, CustomItemModType.Added, 40f, 55f, true),

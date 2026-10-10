@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Globalization;
 using LastEpoch_Hud.Scripts.Core.CustomItems.Headhunter.Config.Defaults;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -36,17 +34,7 @@ public static class HeadhunterConfigParser
 
     internal static bool TryGetInt(JToken token, out int value)
     {
-        value = 0;
-        if (token is not JValue { Value: long number })
-        {
-            return false;
-        }
-        if (number < int.MinValue || number > int.MaxValue)
-        {
-            return false;
-        }
-        value = (int)number;
-        return true;
+        return ConfigJson.TryGetInt(token, out value);
     }
 
     internal static void Report(
@@ -61,24 +49,12 @@ public static class HeadhunterConfigParser
 
     internal static bool TryReadNumber(JToken token, out float value)
     {
-        value = 0f;
-        if (token is not JValue { Value: long or double } number)
-        {
-            return false;
-        }
-        value = Convert.ToSingle(number.Value, CultureInfo.InvariantCulture);
-        return float.IsFinite(value);
+        return ConfigJson.TryReadNumber(token, out value);
     }
 
     internal static bool TryReadBool(JToken token, out bool value)
     {
-        value = false;
-        if (token is not JValue { Value: bool flag })
-        {
-            return false;
-        }
-        value = flag;
-        return true;
+        return ConfigJson.TryReadBool(token, out value);
     }
 
     private static HeadhunterConfigParseResult Result(

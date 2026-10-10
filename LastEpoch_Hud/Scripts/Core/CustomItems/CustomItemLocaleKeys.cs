@@ -15,9 +15,14 @@ public static class CustomItemLocaleKeys
     public const string EssentiaSanguisName = "CustomItem.EssentiaSanguis.Name";
     public const string EssentiaSanguisDescription = "CustomItem.EssentiaSanguis.Description";
     public const string EssentiaSanguisLore = "CustomItem.EssentiaSanguis.Lore";
+    public const string MagebloodSubtype = "CustomItem.Mageblood.Subtype";
+    public const string MagebloodName = "CustomItem.Mageblood.Name";
+    public const string MagebloodLore = "CustomItem.Mageblood.Lore";
+    public const string MagebloodDescription = "CustomItem.Mageblood.Description";
     public const string SandsOfSilkSubtype = "CustomItem.SandsOfSilk.Subtype";
     public const string SandsOfSilkName = "CustomItem.SandsOfSilk.Name";
     public const string SandsOfSilkLore = "CustomItem.SandsOfSilk.Lore";
+    public const string CustomItemsPage = "Custom Items";
 
     public static readonly string[] All =
     {
@@ -33,8 +38,13 @@ public static class CustomItemLocaleKeys
         EssentiaSanguisName,
         EssentiaSanguisDescription,
         EssentiaSanguisLore,
+        MagebloodSubtype,
+        MagebloodName,
+        MagebloodLore,
+        MagebloodDescription,
         SandsOfSilkSubtype,
         SandsOfSilkName,
         SandsOfSilkLore,
+        CustomItemsPage,
     };
 }

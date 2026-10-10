@@ -1,10 +1,11 @@
 using System;
 using System.IO;
+using LastEpoch_Hud.Scripts.Core.CustomItems;
 
 namespace LastEpoch_Hud.Scripts.Mods.Items.CustomItems;
 
 /// <summary>One config file under the mod folder's CustomItems directory. Never throws on IO errors.</summary>
-internal sealed class CustomItemConfigStore
+internal sealed class CustomItemConfigStore : IConfigText
 {
     private static readonly string _folder = Path.Combine(
         Directory.GetCurrentDirectory(),
@@ -40,16 +41,19 @@ internal sealed class CustomItemConfigStore
         }
     }
 
-    public void Write(string text)
+    /// <summary>False after an IO error (logged).</summary>
+    public bool Write(string text)
     {
         try
         {
             Directory.CreateDirectory(_folder);
             File.WriteAllText(FilePath, text);
+            return true;
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
             Main.logger_instance?.Warning("Could not write " + FilePath + ": " + ex.Message);
+            return false;
         }
     }
 
