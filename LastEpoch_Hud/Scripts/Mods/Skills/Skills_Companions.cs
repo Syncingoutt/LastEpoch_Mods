@@ -21,31 +21,17 @@ public class Skills_Companions
                 __instance.canSummonWolvesUpToMaxCompanions = true;
             }
             __instance.wolfStunImmunity = ModSettings.SkillsCompanions.WolfStunImmunity.Value;
-            ApplyLegacyBoneGolems(__instance);
+            ApplyBoneGolemsPerSkeletons(__instance);
         }
 
-        // Removed with the minions settings migration.
-        private static void ApplyLegacyBoneGolems(AbilityStatsMutatorManager manager)
+        private static void ApplyBoneGolemsPerSkeletons(AbilityStatsMutatorManager manager)
         {
-            if (Save_Manager.instance.IsNullOrDestroyed())
+            if (!ModSettings.SkillsMinions.BoneGolemPerSkeletons.Enabled)
             {
                 return;
             }
-            if (Save_Manager.instance.data.IsNullOrDestroyed())
-            {
-                return;
-            }
-            Save_Manager.Data.BoneGolems golems = Save_Manager
-                .instance
-                .data
-                .Skills
-                .Minions
-                .BoneGolems;
-            if (!golems.Enable_addedGolemsPer4Skeletons)
-            {
-                return;
-            }
-            manager.addedGolemsPer4Skeletons = golems.addedGolemsPer4Skeletons;
+            manager.addedGolemsPer4Skeletons = (int)
+                ModSettings.SkillsMinions.BoneGolemPerSkeletons.Value;
         }
     }
 

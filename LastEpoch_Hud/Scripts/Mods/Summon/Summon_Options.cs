@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
+using LastEpoch_Hud.Scripts.ModUI.Settings;
 using MelonLoader;
 using UnityEngine;
 using UnityEngine.AI;
@@ -50,24 +52,25 @@ public class Summon_Options : MonoBehaviour
     {
         bool ready =
             Scenes.IsGameScene()
-            && !Save_Manager.instance.IsNullOrDestroyed()
-            && Save_Manager.instance.initialized
+            && SaveManager.IsLoaded
             && !Refs_Manager.player_actor.IsNullOrDestroyed();
         if (!ready)
         {
             OnDisable();
             return;
         }
-        Save_Manager.Data.Summon options = Save_Manager.instance.data.Summon;
-        if (!options.Enable_GodMode)
+        bool godMode = ModSettings.Summon.GodMode.Value;
+        bool dontCollide = ModSettings.Summon.DontCollide.Value;
+        bool forever = ModSettings.Summon.Forever.Value;
+        if (!godMode)
         {
             RestoreHealth();
         }
-        if (!options.Enable_DontCollide)
+        if (!dontCollide)
         {
             RestoreRadii();
         }
-        if (!options.Enable_GodMode && !options.Enable_DontCollide && !options.Enable_Forever)
+        if (!godMode && !dontCollide && !forever)
         {
             return;
         }
@@ -89,7 +92,7 @@ public class Summon_Options : MonoBehaviour
             {
                 continue;
             }
-            if (options.Enable_GodMode)
+            if (godMode)
             {
                 UnitHealth unit = summoned.gameObject.GetComponent<UnitHealth>();
                 BaseHealth target = unit.IsNullOrDestroyed() ? null : unit.TryCast<BaseHealth>();
@@ -102,7 +105,7 @@ public class Summon_Options : MonoBehaviour
                     target.damageable = false;
                 }
             }
-            if (options.Enable_DontCollide)
+            if (dontCollide)
             {
                 NavMeshAgent agent = summoned.gameObject.GetComponent<NavMeshAgent>();
                 if (!agent.IsNullOrDestroyed())
@@ -114,7 +117,7 @@ public class Summon_Options : MonoBehaviour
                     agent.radius = 0f;
                 }
             }
-            if (options.Enable_Forever)
+            if (forever)
             {
                 UnsummonAfterDelay delay = summoned.gameObject.GetComponent<UnsummonAfterDelay>();
                 // Match the original Forever option: remove the lifetime component.
