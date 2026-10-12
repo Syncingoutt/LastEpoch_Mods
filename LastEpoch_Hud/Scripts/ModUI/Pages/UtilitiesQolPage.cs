@@ -7,8 +7,8 @@ using UnityEngine;
 namespace LastEpoch_Hud.Scripts.ModUI.Pages;
 
 /// <summary>
-/// Utilities &gt; QOL. This replaces the mixed legacy Pickup/Requirements panel
-/// with small, focused cards while keeping the same Save_Manager fields.
+/// Utilities &gt; QOL: small cards for pickup, auto-sell, shatter and item requirements.
+/// Requirements bind to ModSettings; the other cards still use Save_Manager fields.
 /// State resets on HUD re-bind (Build).
 /// </summary>
 internal static class UtilitiesQolPage
@@ -225,26 +225,26 @@ internal static class UtilitiesQolPage
     private static void BuildRequirements()
     {
         var card = page.AddCard("Requirements", "Requirements");
-        AddToggle(
+        page.AddToggle(
             card,
             "Class",
             "Class",
-            () => Save_Manager.instance.data.Items.Req.classe,
-            value => Save_Manager.instance.data.Items.Req.classe = value
+            () => ModSettings.ItemsRequirements.Class.Value,
+            ModSettings.ItemsRequirements.Class.Set
         );
-        AddToggle(
+        page.AddToggle(
             card,
             "Level",
             "Level",
-            () => Save_Manager.instance.data.Items.Req.level,
-            value => Save_Manager.instance.data.Items.Req.level = value
+            () => ModSettings.ItemsRequirements.Level.Value,
+            ModSettings.ItemsRequirements.Level.Set
         );
-        AddToggle(
+        page.AddToggle(
             card,
             "Set",
             "Set",
-            () => Save_Manager.instance.data.Items.Req.set,
-            value => Save_Manager.instance.data.Items.Req.set = value
+            () => ModSettings.ItemsRequirements.Set.Value,
+            ModSettings.ItemsRequirements.Set.Set
         );
     }
 

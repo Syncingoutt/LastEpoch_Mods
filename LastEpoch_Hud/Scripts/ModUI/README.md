@@ -333,6 +333,7 @@ new SettingsGroup("Name")           // JSON key, auto-registers for save/load
 ```
 ModUI/
   ModSettings.cs         Binding declarations and serialized setting ownership
+  ModSettings.<Section>.cs  Partial files with one settings section each (e.g. ModSettings.Items.cs)
   Pages/                 One runtime-built view per sidebar page
     Utilities*Page.cs     Character, multipliers, currency, buffs, and QOL
     Items*Page.cs         Drop, Force Drop bridge, and crafting slot
@@ -393,6 +394,7 @@ ModUI/
     KeybindFormat.cs        Friendly display formatting for tagged bindings
     KeybindRewired.cs       Rewired IGamepadTemplate walking + button table
     KeybindCapture.cs       Capture state machine ticked from SaveManager.Update
+    UnityKeyNames.cs        KeyCode names from Unity for the legacy Save.json import
     KeybindMatcher.cs       Public IsHeld API consumed by feature code
 ```
 

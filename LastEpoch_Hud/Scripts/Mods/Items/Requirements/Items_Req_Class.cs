@@ -1,4 +1,6 @@
 ﻿using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
+using LastEpoch_Hud.Scripts.ModUI.Settings;
 
 namespace LastEpoch_Hud.Scripts.Mods.Items.Requirements;
 
@@ -23,7 +25,7 @@ public class Items_Req_Class
             }
             if (!backup.IsNullOrDestroyed())
             {
-                if (Save_Manager.instance.data.Items.Req.classe)
+                if (ModSettings.ItemsRequirements.Class.Value)
                 {
                     Remove();
                 }
@@ -120,23 +122,6 @@ public class Items_Req_Class
 
     private static bool CanRun()
     {
-        if (
-            (!Save_Manager.instance.IsNullOrDestroyed())
-            && (!Refs_Manager.item_list.IsNullOrDestroyed())
-        )
-        {
-            if (Save_Manager.instance.initialized)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
+        return SaveManager.IsLoaded && !Refs_Manager.item_list.IsNullOrDestroyed();
     }
 }

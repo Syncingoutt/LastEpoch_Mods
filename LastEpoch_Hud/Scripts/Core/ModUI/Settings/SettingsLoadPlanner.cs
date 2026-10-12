@@ -6,6 +6,17 @@ public static class SettingsLoadPlanner
     public static SettingsLoadPlan Plan(
         SettingsFileState state,
         bool allGroupsLoaded,
+        bool hasMissingEntries,
+        bool imported = false
+    )
+    {
+        SettingsLoadPlan plan = PlanFor(state, allGroupsLoaded, hasMissingEntries);
+        return imported ? plan with { WriteNow = true } : plan;
+    }
+
+    private static SettingsLoadPlan PlanFor(
+        SettingsFileState state,
+        bool allGroupsLoaded,
         bool hasMissingEntries
     )
     {

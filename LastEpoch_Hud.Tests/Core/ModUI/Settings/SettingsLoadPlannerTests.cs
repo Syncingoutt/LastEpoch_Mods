@@ -99,4 +99,31 @@ public sealed class SettingsLoadPlannerTests
 
         Assert.Equal(new SettingsLoadPlan(reset, backup, write), plan);
     }
+
+    [Fact]
+    public void Plan_LoadedComplete_Imported_WritesOnly()
+    {
+        SettingsLoadPlan plan = SettingsLoadPlanner.Plan(
+            SettingsFileState.Loaded,
+            true,
+            false,
+            imported: true
+        );
+
+        Assert.Equal(new SettingsLoadPlan(false, false, true), plan);
+    }
+
+    [Theory]
+    [InlineData(SettingsFileState.Missing)]
+    [InlineData(SettingsFileState.Corrupt)]
+    [InlineData(SettingsFileState.Unreadable)]
+    [InlineData(SettingsFileState.Loaded)]
+    public void Plan_Imported_DoesNotChangeResetOrBackup(SettingsFileState state)
+    {
+        SettingsLoadPlan baseline = SettingsLoadPlanner.Plan(state, true, false, imported: false);
+
+        SettingsLoadPlan plan = SettingsLoadPlanner.Plan(state, true, false, imported: true);
+
+        Assert.Equal(baseline with { WriteNow = true }, plan);
+    }
 }

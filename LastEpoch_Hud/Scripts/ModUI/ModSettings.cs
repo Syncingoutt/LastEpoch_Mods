@@ -6,7 +6,7 @@ namespace LastEpoch_Hud.Scripts.ModUI;
 // Central registry of all mod settings.
 // Each section is a SettingsGroup that handles serialization AND UI binding.
 // Adding a setting = one line here. No other files to edit.
-public static class ModSettings
+public static partial class ModSettings
 {
     public static bool Dirty { get; private set; }
 
@@ -498,18 +498,6 @@ public static class ModSettings
 
     //     public static readonly BoolSetting RangePickup               = Group.Bool("RangePickup", panel: "Range_Pickup");
     //     public static readonly BoolSetting HideMaterialsNotifications= Group.Bool("HideMaterialsNotifications", panel: "Hide_Notifications");
-    // }
-
-    // public static class ItemsRequirements
-    // {
-    //     // No prefix -- the toggles are named Toggle_RemoveReq_Class directly
-    //     public static readonly SettingsGroup Group = new SettingsGroup("ItemsRequirements")
-    //         .Content("Items_Content")
-    //         .Viewport("Items_Pickup", "Items_Req_Content");
-
-    //     public static readonly BoolSetting Class = Group.Bool("Class", panel: "RemoveReq_Class");
-    //     public static readonly BoolSetting Level = Group.Bool("Level", panel: "RemoveReq_Level");
-    //     public static readonly BoolSetting Set   = Group.Bool("Set", panel: "RemoveReq_Set");
     // }
 
     // public static class ItemsCrafting

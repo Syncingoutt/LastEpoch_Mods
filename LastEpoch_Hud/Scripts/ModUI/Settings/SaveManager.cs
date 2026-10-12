@@ -1,4 +1,7 @@
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using LastEpoch_Hud.Scripts.Core.ModUI.LegacySettings;
 using LastEpoch_Hud.Scripts.Core.ModUI.Settings;
 using LastEpoch_Hud.Scripts.ModUI.Keybind;
 using MelonLoader;
@@ -18,6 +21,7 @@ public class SaveManager : MonoBehaviour
     public static SaveManager instance;
     public volatile bool initialized;
 
+    private const string LegacyFileName = "Save.json";
     private const string filename = "SaveModUI.json";
     private const string TempFileName = "SaveModUI.json.tmp";
     private const string CorruptFileName = "SaveModUI.corrupt.json";
@@ -25,10 +29,15 @@ public class SaveManager : MonoBehaviour
     private float saveTimer;
     private bool profilingAttachAttempted;
     private bool _writesBlocked;
+    private string _legacyText;
+
+    /// <summary>Settings loaded this process.</summary>
+    public static bool IsLoaded => !instance.IsNullOrDestroyed() && instance.initialized;
 
     void Awake()
     {
         instance = this;
+        _legacyText = ReadLegacyText();
     }
 
     void Start()
@@ -103,11 +112,20 @@ public class SaveManager : MonoBehaviour
     private void Load()
     {
         string fullPath = ModPaths.FilePath(filename);
-        SettingsFileState state = ReadRoot(fullPath, out JObject root);
+        SettingsFileState state = ReadRoot(fullPath, out JObject fileRoot);
         bool loaded = state == SettingsFileState.Loaded;
-        bool allGroupsLoaded = !loaded || LoadGroups(root);
-        bool hasMissingEntries = loaded && allGroupsLoaded && AnyMissingEntries(root);
-        SettingsLoadPlan plan = SettingsLoadPlanner.Plan(state, allGroupsLoaded, hasMissingEntries);
+        // Taken before the import: imported groups are missing on disk and must be saved.
+        bool hasMissingEntries = loaded && AnyMissingEntries(fileRoot);
+        JObject root = fileRoot ?? new JObject();
+        LegacyImportOutcome outcome = ImportLegacy(root);
+        WarnUnknownMapTargets();
+        bool allGroupsLoaded = LoadGroups(root);
+        SettingsLoadPlan plan = SettingsLoadPlanner.Plan(
+            state,
+            allGroupsLoaded,
+            hasMissingEntries,
+            outcome == LegacyImportOutcome.Imported
+        );
 
         Main.logger_instance?.Msg(
             "ModUI SaveManager: Initialized with "
@@ -138,6 +156,92 @@ public class SaveManager : MonoBehaviour
         {
             Main.logger_instance?.Msg("ModUI SaveManager: Wrote fresh schema to " + filename);
         }
+    }
+
+    private static string ReadLegacyText()
+    {
+        string path = ModPaths.FilePath(LegacyFileName);
+        if (!File.Exists(path))
+        {
+            return null;
+        }
+        try
+        {
+            return File.ReadAllText(path);
+        }
+        catch (System.Exception ex) when (ex is IOException or System.UnauthorizedAccessException)
+        {
+            ErrorLog.Report(ex, "ModUI SaveManager.ReadLegacy");
+            return null;
+        }
+    }
+
+    private LegacyImportOutcome ImportLegacy(JObject root)
+    {
+        List<LegacyImportProblem> problems = new();
+        LegacyImportOutcome outcome = LegacySettingsMerge.ImportMissing(
+            _legacyText,
+            root,
+            LegacySettingsMap.All,
+            new UnityKeyNames(),
+            problems
+        );
+        _legacyText = null;
+        ReportImport(outcome, problems);
+        return outcome;
+    }
+
+    private static void ReportImport(
+        LegacyImportOutcome outcome,
+        List<LegacyImportProblem> problems
+    )
+    {
+        if (outcome == LegacyImportOutcome.FileFailed)
+        {
+            ErrorLog.Report(problems[0].Message, "ModUI SaveManager.ImportLegacy");
+            return;
+        }
+        if (outcome == LegacyImportOutcome.Imported)
+        {
+            Main.logger_instance?.Msg(
+                "ModUI SaveManager: Imported legacy settings from " + LegacyFileName
+            );
+        }
+        if (problems.Count == 0)
+        {
+            return;
+        }
+        Main.logger_instance?.Warning(
+            "ModUI SaveManager: Skipped unreadable legacy fields: "
+                + string.Join(", ", problems.Select(problem => problem.Path))
+        );
+    }
+
+    private static void WarnUnknownMapTargets()
+    {
+        IReadOnlyList<string> unknown = LegacyMapCheck.UnknownTargets(
+            LegacySettingsMap.All,
+            IsKnownSetting
+        );
+        if (unknown.Count == 0)
+        {
+            return;
+        }
+        Main.logger_instance?.Warning(
+            "ModUI SaveManager: Legacy map targets no setting has: " + string.Join(", ", unknown)
+        );
+    }
+
+    private static bool IsKnownSetting(string group, string key)
+    {
+        foreach (SettingsGroup candidate in ModSettings.AllGroups)
+        {
+            if (candidate.Name == group)
+            {
+                return candidate.HasEntry(key);
+            }
+        }
+        return false;
     }
 
     private static SettingsFileState ReadRoot(string path, out JObject root)
