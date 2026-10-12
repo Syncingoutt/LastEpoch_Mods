@@ -23,13 +23,13 @@ public class SaveManager : MonoBehaviour
 
     private const string LegacyFileName = "Save.json";
     private const string filename = "SaveModUI.json";
-    private const string TempFileName = "SaveModUI.json.tmp";
     private const string CorruptFileName = "SaveModUI.corrupt.json";
     private const float SaveInterval = 1f;
     private float saveTimer;
     private bool profilingAttachAttempted;
     private bool _writesBlocked;
     private string _legacyText;
+    private bool _legacyReadFailed;
 
     /// <summary>Settings loaded this process.</summary>
     public static bool IsLoaded => !instance.IsNullOrDestroyed() && instance.initialized;
@@ -37,7 +37,16 @@ public class SaveManager : MonoBehaviour
     void Awake()
     {
         instance = this;
-        _legacyText = ReadLegacyText();
+        LegacyTextState legacyState = LegacyTextReader.TryRead(
+            ModPaths.FilePath(LegacyFileName),
+            out _legacyText,
+            out string error
+        );
+        _legacyReadFailed = legacyState == LegacyTextState.Failed;
+        if (_legacyReadFailed)
+        {
+            ErrorLog.Report(error, "ModUI SaveManager.ReadLegacy");
+        }
     }
 
     void Start()
@@ -112,10 +121,17 @@ public class SaveManager : MonoBehaviour
     private void Load()
     {
         string fullPath = ModPaths.FilePath(filename);
-        SettingsFileState state = ReadRoot(fullPath, out JObject fileRoot);
-        bool loaded = state == SettingsFileState.Loaded;
+        SettingsFileState state = SettingsFile.TryRead(
+            fullPath,
+            out JObject fileRoot,
+            out string readError
+        );
+        if (readError != null)
+        {
+            ErrorLog.Report(readError, "ModUI SaveManager.Read");
+        }
         // Taken before the import: imported groups are missing on disk and must be saved.
-        bool hasMissingEntries = loaded && AnyMissingEntries(fileRoot);
+        bool hasMissingEntries = state == SettingsFileState.Loaded && AnyMissingEntries(fileRoot);
         JObject root = fileRoot ?? new JObject();
         LegacyImportOutcome outcome = ImportLegacy(root);
         WarnUnknownMapTargets();
@@ -126,6 +142,8 @@ public class SaveManager : MonoBehaviour
             hasMissingEntries,
             outcome == LegacyImportOutcome.Imported
         );
+        // Without the legacy values, saving would replace them with defaults for good.
+        _writesBlocked = outcome == LegacyImportOutcome.ReadFailed;
 
         Main.logger_instance?.Msg(
             "ModUI SaveManager: Initialized with "
@@ -158,29 +176,12 @@ public class SaveManager : MonoBehaviour
         }
     }
 
-    private static string ReadLegacyText()
-    {
-        string path = ModPaths.FilePath(LegacyFileName);
-        if (!File.Exists(path))
-        {
-            return null;
-        }
-        try
-        {
-            return File.ReadAllText(path);
-        }
-        catch (System.Exception ex) when (ex is IOException or System.UnauthorizedAccessException)
-        {
-            ErrorLog.Report(ex, "ModUI SaveManager.ReadLegacy");
-            return null;
-        }
-    }
-
     private LegacyImportOutcome ImportLegacy(JObject root)
     {
         List<LegacyImportProblem> problems = new();
         LegacyImportOutcome outcome = LegacySettingsMerge.ImportMissing(
             _legacyText,
+            _legacyReadFailed,
             root,
             LegacySettingsMap.All,
             new UnityKeyNames(),
@@ -196,6 +197,14 @@ public class SaveManager : MonoBehaviour
         List<LegacyImportProblem> problems
     )
     {
+        if (outcome == LegacyImportOutcome.ReadFailed)
+        {
+            ErrorLog.Report(
+                problems[0].Message + " Settings will not be saved this session.",
+                "ModUI SaveManager.ImportLegacy"
+            );
+            return;
+        }
         if (outcome == LegacyImportOutcome.FileFailed)
         {
             ErrorLog.Report(problems[0].Message, "ModUI SaveManager.ImportLegacy");
@@ -242,38 +251,6 @@ public class SaveManager : MonoBehaviour
             }
         }
         return false;
-    }
-
-    private static SettingsFileState ReadRoot(string path, out JObject root)
-    {
-        root = null;
-        if (!File.Exists(path))
-        {
-            return SettingsFileState.Missing;
-        }
-
-        Main.logger_instance?.Msg("ModUI SaveManager: Loading " + path);
-        string text;
-        try
-        {
-            text = File.ReadAllText(path);
-        }
-        catch (System.Exception ex) when (ex is IOException or System.UnauthorizedAccessException)
-        {
-            ErrorLog.Report(ex, "ModUI SaveManager.Read");
-            return SettingsFileState.Unreadable;
-        }
-
-        try
-        {
-            root = JObject.Parse(text);
-            return SettingsFileState.Loaded;
-        }
-        catch (JsonReaderException ex)
-        {
-            ErrorLog.Report(ex, "ModUI SaveManager.Parse");
-            return SettingsFileState.Corrupt;
-        }
     }
 
     // False if any group threw; the others still load.
@@ -371,10 +348,17 @@ public class SaveManager : MonoBehaviour
             }
 
             Directory.CreateDirectory(ModPaths.Folder);
-            string target = ModPaths.FilePath(filename);
-            string temp = ModPaths.FilePath(TempFileName);
-            File.WriteAllText(temp, root.ToString(Formatting.Indented));
-            ReplaceFile(temp, target);
+            if (
+                !SettingsFile.WriteAtomic(
+                    ModPaths.FilePath(filename),
+                    root.ToString(Formatting.Indented),
+                    out string writeError
+                )
+            )
+            {
+                ErrorLog.Report(writeError, "ModUI SaveManager.Save");
+                return false;
+            }
             ModSettings.Trace("SaveManager.Save wrote " + filename);
             return true;
         }
@@ -383,17 +367,6 @@ public class SaveManager : MonoBehaviour
             ErrorLog.Report(ex, "ModUI SaveManager.Save");
             return false;
         }
-    }
-
-    private static void ReplaceFile(string temp, string target)
-    {
-        if (File.Exists(target))
-        {
-            File.Replace(temp, target, null);
-            return;
-        }
-
-        File.Move(temp, target);
     }
 
     public static void BindHud(GameObject hud_object)

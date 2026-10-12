@@ -1,4 +1,11 @@
 namespace LastEpoch_Hud.Tests.Core.ModUI.LegacySettings;
 
-/// <summary>A setting read from the built mod: its kind and, for Bool, its declared default.</summary>
-internal readonly record struct DeclaredSetting(string Kind, bool BoolDefault);
+/// <summary>A setting read from the built mod: its kind, declared defaults and limits.</summary>
+internal readonly record struct DeclaredSetting(
+    string Kind,
+    bool BoolDefault,
+    float FloatValue,
+    bool FloatEnabled,
+    float MinLimit,
+    float MaxLimit
+);

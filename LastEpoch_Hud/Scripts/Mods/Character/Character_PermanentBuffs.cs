@@ -1,4 +1,6 @@
 ﻿using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
+using LastEpoch_Hud.Scripts.ModUI.Settings;
 using MelonLoader;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -37,21 +39,7 @@ public class Character_PermanentBuffs : MonoBehaviour
 
     void Update()
     {
-        if (!Save_Manager.instance.IsNullOrDestroyed())
-        {
-            if ((!Save_Manager.instance.data.Character.PermanentBuffs.Enable_Mod) && (Mod_Enable))
-            {
-                force_disable = true;
-            }
-            else if (Save_Manager.instance.data.Character.PermanentBuffs.Enable_Mod)
-            {
-                Mod_Enable = true;
-            }
-        }
-        else
-        {
-            Mod_Enable = false;
-        }
+        SyncModEnable();
 
         if ((Mod_Enable) && (!force_disable))
         {
@@ -102,15 +90,26 @@ public class Character_PermanentBuffs : MonoBehaviour
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (!Save_Manager.instance.IsNullOrDestroyed())
-        {
-            Buff_Enable = InitBuffs();
-        }
-        else
-        {
-            Buff_Enable = false;
-        }
+        Buff_Enable = InitBuffs();
         Running = false;
+    }
+
+    private void SyncModEnable()
+    {
+        if (!SaveManager.IsLoaded)
+        {
+            Mod_Enable = false;
+            return;
+        }
+        if (ModSettings.PermanentBuffs.EnableMod.Value)
+        {
+            Mod_Enable = true;
+            return;
+        }
+        if (Mod_Enable)
+        {
+            force_disable = true;
+        }
     }
 
     bool HudIsOpen()
@@ -143,153 +142,123 @@ public class Character_PermanentBuffs : MonoBehaviour
             new PermanentBuff
             {
                 Name = "MoveSpeed_Buff",
-                Value = Save_Manager.instance.data.Character.PermanentBuffs.MoveSpeed_Buff_Value,
+                Value = ModSettings.PermanentBuffs.MoveSpeed.Value,
                 Propertie = SP.Movespeed,
                 Type = Buff_Type.Increase,
-                Toggle = Save_Manager.instance.data.Character.PermanentBuffs.Enable_MoveSpeed_Buff,
+                Toggle = ModSettings.PermanentBuffs.MoveSpeed.Enabled,
             },
             new PermanentBuff
             {
                 Name = "CastSpeed_Buff",
-                Value = Save_Manager.instance.data.Character.PermanentBuffs.CastSpeed_Buff_Value,
+                Value = ModSettings.PermanentBuffs.CastSpeed.Value,
                 Propertie = SP.CastSpeed,
                 Type = Buff_Type.Increase,
-                Toggle = Save_Manager.instance.data.Character.PermanentBuffs.Enable_CastSpeed_Buff,
+                Toggle = ModSettings.PermanentBuffs.CastSpeed.Enabled,
             },
             new PermanentBuff
             {
                 Name = "AttackSpeed_Buff",
-                Value = Save_Manager.instance.data.Character.PermanentBuffs.AttackSpeed_Buff_Value,
+                Value = ModSettings.PermanentBuffs.AttackSpeed.Value,
                 Propertie = SP.AttackSpeed,
                 Type = Buff_Type.Increase,
-                Toggle = Save_Manager
-                    .instance
-                    .data
-                    .Character
-                    .PermanentBuffs
-                    .Enable_AttackSpeed_Buff,
+                Toggle = ModSettings.PermanentBuffs.AttackSpeed.Enabled,
             },
             new PermanentBuff
             {
                 Name = "Damage_Buff",
-                Value = Save_Manager.instance.data.Character.PermanentBuffs.Damage_Buff_Value,
+                Value = ModSettings.PermanentBuffs.Damage.Value,
                 Propertie = SP.Damage,
                 Type = Buff_Type.Increase,
-                Toggle = Save_Manager.instance.data.Character.PermanentBuffs.Enable_Damage_Buff,
+                Toggle = ModSettings.PermanentBuffs.Damage.Enabled,
             },
             new PermanentBuff
             {
                 Name = "ManaRegen_Buff",
-                Value = Save_Manager.instance.data.Character.PermanentBuffs.ManaRegen_Buff_Value,
+                Value = ModSettings.PermanentBuffs.ManaRegen.Value,
                 Propertie = SP.ManaRegen,
                 Type = Buff_Type.Increase,
-                Toggle = Save_Manager.instance.data.Character.PermanentBuffs.Enable_ManaRegen_Buff,
+                Toggle = ModSettings.PermanentBuffs.ManaRegen.Enabled,
             },
             new PermanentBuff
             {
                 Name = "HealthRegen_Buff",
-                Value = Save_Manager.instance.data.Character.PermanentBuffs.HealthRegen_Buff_Value,
+                Value = ModSettings.PermanentBuffs.HealthRegen.Value,
                 Propertie = SP.HealthRegen,
                 Type = Buff_Type.Increase,
-                Toggle = Save_Manager
-                    .instance
-                    .data
-                    .Character
-                    .PermanentBuffs
-                    .Enable_HealthRegen_Buff,
+                Toggle = ModSettings.PermanentBuffs.HealthRegen.Enabled,
             },
             new PermanentBuff
             {
                 Name = "CriticalChance_Buff",
-                Value = Save_Manager
-                    .instance
-                    .data
-                    .Character
-                    .PermanentBuffs
-                    .CriticalChance_Buff_Value,
+                Value = ModSettings.PermanentBuffs.CriticalChance.Value,
                 Propertie = SP.CriticalChance,
                 Type = Buff_Type.Add,
-                Toggle = Save_Manager
-                    .instance
-                    .data
-                    .Character
-                    .PermanentBuffs
-                    .Enable_CriticalChance_Buff,
+                Toggle = ModSettings.PermanentBuffs.CriticalChance.Enabled,
             },
             new PermanentBuff
             {
                 Name = "CriticalMultiplier_Buff",
-                Value = Save_Manager
-                    .instance
-                    .data
-                    .Character
-                    .PermanentBuffs
-                    .CriticalMultiplier_Buff_Value,
+                Value = ModSettings.PermanentBuffs.CriticalMultiplier.Value,
                 Propertie = SP.CriticalMultiplier,
                 Type = Buff_Type.Add,
-                Toggle = Save_Manager
-                    .instance
-                    .data
-                    .Character
-                    .PermanentBuffs
-                    .Enable_CriticalMultiplier_Buff,
+                Toggle = ModSettings.PermanentBuffs.CriticalMultiplier.Enabled,
             },
             new PermanentBuff
             {
                 Name = "Strength_Buff",
-                Value = Save_Manager.instance.data.Character.PermanentBuffs.Str_Buff_Value,
+                Value = ModSettings.PermanentBuffs.Strength.Value,
                 Propertie = SP.Strength,
                 Type = Buff_Type.Add,
-                Toggle = Save_Manager.instance.data.Character.PermanentBuffs.Enable_Str_Buff,
+                Toggle = ModSettings.PermanentBuffs.Strength.Enabled,
             },
             new PermanentBuff
             {
                 Name = "Intelligence_Buff",
-                Value = Save_Manager.instance.data.Character.PermanentBuffs.Int_Buff_Value,
+                Value = ModSettings.PermanentBuffs.Intelligence.Value,
                 Propertie = SP.Intelligence,
                 Type = Buff_Type.Add,
-                Toggle = Save_Manager.instance.data.Character.PermanentBuffs.Enable_Int_Buff,
+                Toggle = ModSettings.PermanentBuffs.Intelligence.Enabled,
             },
             new PermanentBuff
             {
                 Name = "Dexterity_Buff",
-                Value = Save_Manager.instance.data.Character.PermanentBuffs.Dex_Buff_Value,
+                Value = ModSettings.PermanentBuffs.Dexterity.Value,
                 Propertie = SP.Dexterity,
                 Type = Buff_Type.Add,
-                Toggle = Save_Manager.instance.data.Character.PermanentBuffs.Enable_Dex_Buff,
+                Toggle = ModSettings.PermanentBuffs.Dexterity.Enabled,
             },
             new PermanentBuff
             {
                 Name = "Attunement_Buff",
-                Value = Save_Manager.instance.data.Character.PermanentBuffs.Att_Buff_Value,
+                Value = ModSettings.PermanentBuffs.Attunement.Value,
                 Propertie = SP.Attunement,
                 Type = Buff_Type.Add,
-                Toggle = Save_Manager.instance.data.Character.PermanentBuffs.Enable_Att_Buff,
+                Toggle = ModSettings.PermanentBuffs.Attunement.Enabled,
             },
             new PermanentBuff
             {
                 Name = "Vitality_Buff",
-                Value = Save_Manager.instance.data.Character.PermanentBuffs.Vit_Buff_Value,
+                Value = ModSettings.PermanentBuffs.Vitality.Value,
                 Propertie = SP.Vitality,
                 Type = Buff_Type.Add,
-                Toggle = Save_Manager.instance.data.Character.PermanentBuffs.Enable_Vit_Buff,
+                Toggle = ModSettings.PermanentBuffs.Vitality.Enabled,
             },
             new PermanentBuff
             {
                 Name = "AreaOfEffect_Buff",
-                Value = Save_Manager.instance.data.Character.PermanentBuffs.AoE_Buff_Value,
+                Value = ModSettings.PermanentBuffs.AreaOfEffect.Value,
                 Propertie = SP.IncreasedAreaForAreaSkills,
                 Type = Buff_Type.Add,
-                Toggle = Save_Manager.instance.data.Character.PermanentBuffs.Enable_AoE_Buff,
+                Toggle = ModSettings.PermanentBuffs.AreaOfEffect.Enabled,
                 Tags = AT.None,
             },
             new PermanentBuff
             {
                 Name = "MeleeAreaOfEffect_Buff",
-                Value = Save_Manager.instance.data.Character.PermanentBuffs.AoE_Buff_Value,
+                Value = ModSettings.PermanentBuffs.AreaOfEffect.Value,
                 Propertie = SP.IncreasedAreaForAreaSkills,
                 Type = Buff_Type.Add,
-                Toggle = Save_Manager.instance.data.Character.PermanentBuffs.Enable_AoE_Buff,
+                Toggle = ModSettings.PermanentBuffs.AreaOfEffect.Enabled,
                 Tags = AT.Melee,
             },
         };
@@ -361,6 +330,10 @@ public class Character_PermanentBuffs : MonoBehaviour
 
     private void RemoveBuffs()
     {
+        if (Buffs == null)
+        {
+            return;
+        }
         if (!Refs_Manager.player_actor.IsNullOrDestroyed())
         {
             System.Collections.Generic.List<string> player_buffs =

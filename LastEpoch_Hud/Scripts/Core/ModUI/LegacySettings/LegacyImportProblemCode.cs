@@ -6,5 +6,6 @@ public enum LegacyImportProblemCode
     EmptyText,
     InvalidJson,
     RootNotObject,
+    ReadFailed,
     InvalidValue,
 }

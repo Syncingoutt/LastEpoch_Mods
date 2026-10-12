@@ -130,12 +130,47 @@ public sealed class LegacySettingsMergeTests
         Assert.Empty(root);
     }
 
+    [Fact]
+    public void ImportMissing_ReadFailedGroupMissing_ReturnsReadFailed()
+    {
+        JObject root = new();
+        var problems = new List<LegacyImportProblem>();
+
+        LegacyImportOutcome outcome = Run(null, root, problems, legacyReadFailed: true);
+
+        Assert.Equal(LegacyImportOutcome.ReadFailed, outcome);
+        Assert.Empty(root);
+        LegacyImportProblem problem = Assert.Single(problems);
+        Assert.Equal(LegacyImportProblemCode.ReadFailed, problem.Code);
+        Assert.Equal("", problem.Path);
+    }
+
+    [Fact]
+    public void ImportMissing_ReadFailedNothingMissing_ReturnsNothingMissing()
+    {
+        var root = JObject.Parse("{\"G\":{\"K\":false},\"H\":{\"K\":false}}");
+        var problems = new List<LegacyImportProblem>();
+
+        LegacyImportOutcome outcome = Run(null, root, problems, legacyReadFailed: true);
+
+        Assert.Equal(LegacyImportOutcome.NothingMissing, outcome);
+        Assert.Empty(problems);
+    }
+
     private static LegacyImportOutcome Run(
         string text,
         JObject root,
-        List<LegacyImportProblem> problems
+        List<LegacyImportProblem> problems,
+        bool legacyReadFailed = false
     )
     {
-        return LegacySettingsMerge.ImportMissing(text, root, _map, new FakeKeyNames(), problems);
+        return LegacySettingsMerge.ImportMissing(
+            text,
+            legacyReadFailed,
+            root,
+            _map,
+            new FakeKeyNames(),
+            problems
+        );
     }
 }

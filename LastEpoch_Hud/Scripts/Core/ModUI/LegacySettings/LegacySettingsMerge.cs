@@ -3,18 +3,19 @@ using Newtonsoft.Json.Linq;
 
 namespace LastEpoch_Hud.Scripts.Core.ModUI.LegacySettings;
 
-/// <summary>Imports the legacy groups a settings root lacks and merges them in.</summary>
+/// <summary>Imports the legacy groups a settings root lacks and merges them in. A failed legacy read only matters when a group is missing.</summary>
 public static class LegacySettingsMerge
 {
     public static LegacyImportOutcome ImportMissing(
         string legacyJson,
+        bool legacyReadFailed,
         JObject root,
         IReadOnlyList<LegacyFieldMapping> map,
         ILegacyKeyNames keys,
         List<LegacyImportProblem> problems
     )
     {
-        if (legacyJson == null)
+        if (legacyJson == null && !legacyReadFailed)
         {
             return LegacyImportOutcome.NoLegacyFile;
         }
@@ -22,6 +23,18 @@ public static class LegacySettingsMerge
         if (groups.Count == 0)
         {
             return LegacyImportOutcome.NothingMissing;
+        }
+        if (legacyReadFailed)
+        {
+            // Nothing was imported: saving defaults now would hide the legacy values for good.
+            problems.Add(
+                new LegacyImportProblem(
+                    LegacyImportProblemCode.ReadFailed,
+                    "",
+                    "Legacy settings file could not be read."
+                )
+            );
+            return LegacyImportOutcome.ReadFailed;
         }
         if (
             !LegacySettingsImporter.TryImport(

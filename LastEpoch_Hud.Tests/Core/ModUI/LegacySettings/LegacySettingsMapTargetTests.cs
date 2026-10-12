@@ -1,4 +1,6 @@
 using LastEpoch_Hud.Scripts.Core.ModUI.LegacySettings;
+using LastEpoch_Hud.Scripts.Core.ModUI.Sliders;
+using LastEpoch_Hud.Tests.Core.ModUI.Sliders;
 using LastEpoch_Hud.Tests.Support;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -10,8 +12,17 @@ public sealed class LegacySettingsMapTargetTests
 {
     private const string ModSettingsPrefix = "LastEpoch_Hud.Scripts.ModUI.ModSettings/";
     private const string SettingsGroupType = "SettingsGroup";
+    private const string FloatKind = "Float";
+    private const string BoolKind = "Bool";
 
-    private static readonly string[] _kinds = { "Bool", "Float", "Range", "Dropdown", "Keybind" };
+    private static readonly string[] _kinds =
+    {
+        BoolKind,
+        FloatKind,
+        "Range",
+        "Dropdown",
+        "Keybind",
+    };
 
     [Fact]
     public void All_TargetsExistWithMatchingKind()
@@ -34,8 +45,8 @@ public sealed class LegacySettingsMapTargetTests
     {
         GameEnvironment.SkipWithoutModBuild();
         Dictionary<(string Group, string Key), DeclaredSetting> declared = ReadDeclaredSettings();
-        LegacyFieldMapping[] bools = LegacySettingsMap
-            .All.Where(m => m.Part == LegacySettingPart.Bool)
+        LegacyFieldMapping[] defaulted = LegacySettingsMap
+            .All.Where(m => HasDefaultPart(m.Part))
             .ToArray();
         string[] groups = LegacySettingsMap.All.Select(m => m.Group).Distinct().ToArray();
         Assert.True(
@@ -49,11 +60,36 @@ public sealed class LegacySettingsMapTargetTests
             )
         );
 
-        IEnumerable<string> bad = bools
+        IEnumerable<string> bad = defaulted
             .Where(m => !HasDefault(sections, declared, m))
+            .Select(m => m.Group + "." + m.Key + " (" + m.Part + ")");
+
+        Assert.Empty(bad);
+    }
+
+    [Fact]
+    public void All_FloatValueLimitsEqualDeclaredLimits()
+    {
+        GameEnvironment.SkipWithoutModBuild();
+        Dictionary<(string Group, string Key), DeclaredSetting> declared = ReadDeclaredSettings();
+
+        IEnumerable<string> bad = LegacySettingsMap
+            .All.Where(m => m.Part == LegacySettingPart.FloatValue)
+            .Where(m =>
+                !declared.TryGetValue((m.Group, m.Key), out DeclaredSetting setting)
+                || setting.MinLimit != m.MinLimit
+                || setting.MaxLimit != m.MaxLimit
+            )
             .Select(m => m.Group + "." + m.Key);
 
         Assert.Empty(bad);
+    }
+
+    private static bool HasDefaultPart(LegacySettingPart part)
+    {
+        return part == LegacySettingPart.Bool
+            || part == LegacySettingPart.FloatEnabled
+            || part == LegacySettingPart.FloatValue;
     }
 
     private static bool HasDefault(
@@ -62,10 +98,17 @@ public sealed class LegacySettingsMapTargetTests
         LegacyFieldMapping mapping
     )
     {
+        if (!declared.TryGetValue((mapping.Group, mapping.Key), out DeclaredSetting setting))
+        {
+            return false;
+        }
         JToken imported = sections[mapping.Group]?[mapping.Key];
-        return imported != null
-            && declared.TryGetValue((mapping.Group, mapping.Key), out DeclaredSetting setting)
-            && (bool)imported == setting.BoolDefault;
+        return mapping.Part switch
+        {
+            LegacySettingPart.Bool => (bool?)imported == setting.BoolDefault,
+            LegacySettingPart.FloatEnabled => (bool?)imported?["Enabled"] == setting.FloatEnabled,
+            _ => (float?)imported?["Value"] == setting.FloatValue,
+        };
     }
 
     private static Dictionary<(string Group, string Key), DeclaredSetting> ReadDeclaredSettings()
@@ -90,55 +133,140 @@ public sealed class LegacySettingsMapTargetTests
     )
     {
         string group = null;
-        bool? flag = null;
-        List<string> strings = new();
+        FieldReference pending = null;
+        List<object> args = new();
         foreach (Instruction instruction in initializer.Body.Instructions)
         {
-            if (instruction.OpCode == OpCodes.Ldstr)
+            if (instruction.OpCode == OpCodes.Stsfld)
             {
-                strings.Add((string)instruction.Operand);
+                args.Clear();
+                pending = null;
                 continue;
             }
-            if (strings.Count > 0 && flag == null && IsBoolConstant(instruction))
+            if (TryReadConstant(instruction, out object constant))
             {
-                flag = instruction.OpCode == OpCodes.Ldc_I4_1;
+                args.Add(constant);
+                continue;
+            }
+            if (instruction.Operand is FieldReference field)
+            {
+                pending = IsLimitsField(field) ? field : pending;
                 continue;
             }
             if (instruction.Operand is not MethodReference call)
             {
                 continue;
             }
-            string first = strings.FirstOrDefault();
-            strings.Clear();
-            bool defaultValue = flag == true;
-            flag = null;
+            if (call.DeclaringType.Name == nameof(SliderRange))
+            {
+                args.Add(ResolveLimit(pending, call.Name));
+                pending = null;
+                continue;
+            }
             if (call.DeclaringType.Name != SettingsGroupType)
             {
                 continue;
             }
             if (call.Name == ".ctor")
             {
-                group = first;
+                group = args.OfType<string>().FirstOrDefault();
+                args.Clear();
                 continue;
             }
-            if (group == null || first == null || !_kinds.Contains(call.Name))
+            if (!_kinds.Contains(call.Name))
             {
                 continue;
             }
-            declared[(group, first)] = new DeclaredSetting(call.Name, defaultValue);
+            string key = args.OfType<string>().FirstOrDefault();
+            if (group != null && key != null)
+            {
+                var numbers = args.Where(a => a is not string).ToList();
+                declared[(group, key)] = Declare(call.Name, numbers);
+            }
+            args.Clear();
         }
     }
 
-    private static bool IsBoolConstant(Instruction instruction)
+    private static DeclaredSetting Declare(string kind, List<object> numbers)
     {
-        return instruction.OpCode == OpCodes.Ldc_I4_0 || instruction.OpCode == OpCodes.Ldc_I4_1;
+        if (kind == BoolKind)
+        {
+            return new DeclaredSetting(kind, ToInt(numbers, 0) == 1, 0f, false, 0f, 0f);
+        }
+        if (kind != FloatKind)
+        {
+            return new DeclaredSetting(kind, false, 0f, false, 0f, 0f);
+        }
+        return new DeclaredSetting(
+            kind,
+            false,
+            ToFloat(numbers, 0),
+            ToInt(numbers, 1) == 1,
+            ToFloat(numbers, 3),
+            ToFloat(numbers, 4)
+        );
+    }
+
+    private static int ToInt(List<object> numbers, int index)
+    {
+        return index < numbers.Count && numbers[index] is int value ? value : -1;
+    }
+
+    private static float ToFloat(List<object> numbers, int index)
+    {
+        return index < numbers.Count && numbers[index] is float value ? value : float.NaN;
+    }
+
+    private static bool IsLimitsField(FieldReference field)
+    {
+        return field.FieldType.Name == nameof(SliderRange)
+            && field.DeclaringType.Name.EndsWith("SliderLimits", StringComparison.Ordinal);
+    }
+
+    private static float ResolveLimit(FieldReference field, string getter)
+    {
+        if (field == null)
+        {
+            return float.NaN;
+        }
+        Type limits = typeof(SliderRange).Assembly.GetType(field.DeclaringType.FullName);
+        SliderRange? range =
+            limits == null ? null : SliderLimitsReflection.Find(limits, field.Name);
+        if (!range.HasValue)
+        {
+            return float.NaN;
+        }
+        return getter == "get_Min" ? range.Value.Min : range.Value.Max;
+    }
+
+    private static bool TryReadConstant(Instruction instruction, out object constant)
+    {
+        constant = instruction.OpCode.Code switch
+        {
+            Code.Ldstr => instruction.Operand,
+            Code.Ldc_R4 => instruction.Operand,
+            Code.Ldc_I4_M1 => -1,
+            Code.Ldc_I4_0 => 0,
+            Code.Ldc_I4_1 => 1,
+            Code.Ldc_I4_2 => 2,
+            Code.Ldc_I4_3 => 3,
+            Code.Ldc_I4_4 => 4,
+            Code.Ldc_I4_5 => 5,
+            Code.Ldc_I4_6 => 6,
+            Code.Ldc_I4_7 => 7,
+            Code.Ldc_I4_8 => 8,
+            Code.Ldc_I4_S => (int)(sbyte)instruction.Operand,
+            Code.Ldc_I4 => instruction.Operand,
+            _ => null,
+        };
+        return constant != null;
     }
 
     private static string KindOf(LegacySettingPart part)
     {
         return part switch
         {
-            LegacySettingPart.FloatEnabled or LegacySettingPart.FloatValue => "Float",
+            LegacySettingPart.FloatEnabled or LegacySettingPart.FloatValue => FloatKind,
             LegacySettingPart.RangeEnabled
             or LegacySettingPart.RangeMin
             or LegacySettingPart.RangeMax => "Range",

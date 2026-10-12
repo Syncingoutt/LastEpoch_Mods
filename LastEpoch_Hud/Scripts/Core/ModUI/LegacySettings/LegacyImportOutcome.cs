@@ -8,4 +8,5 @@ public enum LegacyImportOutcome
     Imported,
     FileFailed,
     FieldsFailed,
+    ReadFailed,
 }
