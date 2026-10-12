@@ -445,50 +445,6 @@ public static partial class ModSettings
     // ITEMS TAB
     //
 
-    // public static class ItemsCrafting
-    // {
-    //     // Master enable toggle lives in Items_Craft > Title, outside the viewport.
-    //     // Use OnBind to wire it since it doesn't fit the standard panel layout.
-    //     public static readonly BoolSetting EnableMod = new BoolSetting();
-
-    //     public static readonly SettingsGroup Group = new SettingsGroup("ItemsCrafting")
-    //         .Content("Items_Content")
-    //         .Viewport("Items_Craft", "Items_Craft_Content")
-    //         .Prefix("Items_Craft_")
-    //         .OnBind((contentObj, _) =>
-    //         {
-    //             var toggle = Prefab.ToggleInTitle(contentObj, "Items_Craft", "Toggle_Items_Craft_Enable", activate: true);
-    //             if (toggle == null) return;
-    //             toggle.isOn = EnableMod.Value;
-    //             Prefab.BindToggle(toggle, new System.Action<bool>(v => EnableMod.Set(v)));
-    //         });
-
-    //     public static readonly FloatSetting ForginPotencial = Group.Float("ForginPotencial");
-    //     public static readonly FloatSetting Implicit0       = Group.Float("Implicit0", format: DisplayFormat.Percent);
-    //     public static readonly FloatSetting Implicit1       = Group.Float("Implicit1", format: DisplayFormat.Percent);
-    //     public static readonly FloatSetting Implicit2       = Group.Float("Implicit2", format: DisplayFormat.Percent);
-    //     public static readonly FloatSetting SealTier        = Group.Float("SealTier", format: DisplayFormat.Tier);
-    //     public static readonly FloatSetting SealValue       = Group.Float("SealValue", format: DisplayFormat.Percent);
-    //     public static readonly FloatSetting AffixTier0      = Group.Float("AffixTier0", format: DisplayFormat.Tier);
-    //     public static readonly FloatSetting AffixValue0     = Group.Float("AffixValue0", format: DisplayFormat.Percent);
-    //     public static readonly FloatSetting AffixTier1      = Group.Float("AffixTier1", format: DisplayFormat.Tier);
-    //     public static readonly FloatSetting AffixValue1     = Group.Float("AffixValue1", format: DisplayFormat.Percent);
-    //     public static readonly FloatSetting AffixTier2      = Group.Float("AffixTier2", format: DisplayFormat.Tier);
-    //     public static readonly FloatSetting AffixValue2     = Group.Float("AffixValue2", format: DisplayFormat.Percent);
-    //     public static readonly FloatSetting AffixTier3      = Group.Float("AffixTier3", format: DisplayFormat.Tier);
-    //     public static readonly FloatSetting AffixValue3     = Group.Float("AffixValue3", format: DisplayFormat.Percent);
-    //     public static readonly FloatSetting UniqueMod0      = Group.Float("UniqueMod0", format: DisplayFormat.Percent);
-    //     public static readonly FloatSetting UniqueMod1      = Group.Float("UniqueMod1", format: DisplayFormat.Percent);
-    //     public static readonly FloatSetting UniqueMod2      = Group.Float("UniqueMod2", format: DisplayFormat.Percent);
-    //     public static readonly FloatSetting UniqueMod3      = Group.Float("UniqueMod3", format: DisplayFormat.Percent);
-    //     public static readonly FloatSetting UniqueMod4      = Group.Float("UniqueMod4", format: DisplayFormat.Percent);
-    //     public static readonly FloatSetting UniqueMod5      = Group.Float("UniqueMod5", format: DisplayFormat.Percent);
-    //     public static readonly FloatSetting UniqueMod6      = Group.Float("UniqueMod6", format: DisplayFormat.Percent);
-    //     public static readonly FloatSetting UniqueMod7      = Group.Float("UniqueMod7", format: DisplayFormat.Percent);
-    //     public static readonly FloatSetting LegendaryPotencial = Group.Float("LegendaryPotencial");
-    //     public static readonly FloatSetting WeaverWill      = Group.Float("WeaverWill");
-    // }
-
     // public static class ItemsForceDrop
     // {
     //     // Drop button fires an event -- mod feature code subscribes to execute the drop.

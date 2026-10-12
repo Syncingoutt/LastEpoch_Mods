@@ -163,5 +163,214 @@ public static partial class ModSettings
             max: ItemSliderLimits.AutoShatterQuantityChance.Max
         );
     }
+
+    /// <summary>Items &gt; Crafting Slot overrides applied when an item enters the crafting slot.</summary>
+    public static class ItemsCraftingSlot
+    {
+        public static readonly SettingsGroup Group = new(ItemsCraftingSlotMap.Group);
+
+        public static readonly BoolSetting EnableMod = Group.Bool("EnableMod");
+
+        public static readonly FloatSetting ForgingPotential = Group.Float(
+            "ForgingPotential",
+            255f,
+            min: ItemSliderLimits.CraftingSlotForgingPotential.Min,
+            max: ItemSliderLimits.CraftingSlotForgingPotential.Max
+        );
+        public static readonly FloatSetting Implicit0 = Group.Float(
+            "Implicit0",
+            255f,
+            min: ItemSliderLimits.CraftingSlotImplicit.Min,
+            max: ItemSliderLimits.CraftingSlotImplicit.Max
+        );
+        public static readonly FloatSetting Implicit1 = Group.Float(
+            "Implicit1",
+            255f,
+            min: ItemSliderLimits.CraftingSlotImplicit.Min,
+            max: ItemSliderLimits.CraftingSlotImplicit.Max
+        );
+        public static readonly FloatSetting Implicit2 = Group.Float(
+            "Implicit2",
+            255f,
+            min: ItemSliderLimits.CraftingSlotImplicit.Min,
+            max: ItemSliderLimits.CraftingSlotImplicit.Max
+        );
+        public static readonly FloatSetting SealTier = Group.Float(
+            "SealTier",
+            6f,
+            min: ItemSliderLimits.CraftingSlotSealTier.Min,
+            max: ItemSliderLimits.CraftingSlotSealTier.Max
+        );
+        public static readonly FloatSetting SealValue = Group.Float(
+            "SealValue",
+            255f,
+            min: ItemSliderLimits.CraftingSlotSealValue.Min,
+            max: ItemSliderLimits.CraftingSlotSealValue.Max
+        );
+        public static readonly FloatSetting Affix0Tier = Group.Float(
+            "Affix0Tier",
+            6f,
+            min: ItemSliderLimits.CraftingSlotAffixTier.Min,
+            max: ItemSliderLimits.CraftingSlotAffixTier.Max
+        );
+        public static readonly FloatSetting Affix1Tier = Group.Float(
+            "Affix1Tier",
+            6f,
+            min: ItemSliderLimits.CraftingSlotAffixTier.Min,
+            max: ItemSliderLimits.CraftingSlotAffixTier.Max
+        );
+        public static readonly FloatSetting Affix2Tier = Group.Float(
+            "Affix2Tier",
+            6f,
+            min: ItemSliderLimits.CraftingSlotAffixTier.Min,
+            max: ItemSliderLimits.CraftingSlotAffixTier.Max
+        );
+        public static readonly FloatSetting Affix3Tier = Group.Float(
+            "Affix3Tier",
+            6f,
+            min: ItemSliderLimits.CraftingSlotAffixTier.Min,
+            max: ItemSliderLimits.CraftingSlotAffixTier.Max
+        );
+        public static readonly FloatSetting Affix0Value = Group.Float(
+            "Affix0Value",
+            255f,
+            min: ItemSliderLimits.CraftingSlotAffixValue.Min,
+            max: ItemSliderLimits.CraftingSlotAffixValue.Max
+        );
+        public static readonly FloatSetting Affix1Value = Group.Float(
+            "Affix1Value",
+            255f,
+            min: ItemSliderLimits.CraftingSlotAffixValue.Min,
+            max: ItemSliderLimits.CraftingSlotAffixValue.Max
+        );
+        public static readonly FloatSetting Affix2Value = Group.Float(
+            "Affix2Value",
+            255f,
+            min: ItemSliderLimits.CraftingSlotAffixValue.Min,
+            max: ItemSliderLimits.CraftingSlotAffixValue.Max
+        );
+        public static readonly FloatSetting Affix3Value = Group.Float(
+            "Affix3Value",
+            255f,
+            min: ItemSliderLimits.CraftingSlotAffixValue.Min,
+            max: ItemSliderLimits.CraftingSlotAffixValue.Max
+        );
+        public static readonly FloatSetting UniqueMod0 = Group.Float(
+            "UniqueMod0",
+            255f,
+            min: ItemSliderLimits.CraftingSlotUniqueMod.Min,
+            max: ItemSliderLimits.CraftingSlotUniqueMod.Max
+        );
+        public static readonly FloatSetting UniqueMod1 = Group.Float(
+            "UniqueMod1",
+            255f,
+            min: ItemSliderLimits.CraftingSlotUniqueMod.Min,
+            max: ItemSliderLimits.CraftingSlotUniqueMod.Max
+        );
+        public static readonly FloatSetting UniqueMod2 = Group.Float(
+            "UniqueMod2",
+            255f,
+            min: ItemSliderLimits.CraftingSlotUniqueMod.Min,
+            max: ItemSliderLimits.CraftingSlotUniqueMod.Max
+        );
+        public static readonly FloatSetting UniqueMod3 = Group.Float(
+            "UniqueMod3",
+            255f,
+            min: ItemSliderLimits.CraftingSlotUniqueMod.Min,
+            max: ItemSliderLimits.CraftingSlotUniqueMod.Max
+        );
+        public static readonly FloatSetting UniqueMod4 = Group.Float(
+            "UniqueMod4",
+            255f,
+            min: ItemSliderLimits.CraftingSlotUniqueMod.Min,
+            max: ItemSliderLimits.CraftingSlotUniqueMod.Max
+        );
+        public static readonly FloatSetting UniqueMod5 = Group.Float(
+            "UniqueMod5",
+            255f,
+            min: ItemSliderLimits.CraftingSlotUniqueMod.Min,
+            max: ItemSliderLimits.CraftingSlotUniqueMod.Max
+        );
+        public static readonly FloatSetting UniqueMod6 = Group.Float(
+            "UniqueMod6",
+            255f,
+            min: ItemSliderLimits.CraftingSlotUniqueMod.Min,
+            max: ItemSliderLimits.CraftingSlotUniqueMod.Max
+        );
+        public static readonly FloatSetting UniqueMod7 = Group.Float(
+            "UniqueMod7",
+            255f,
+            min: ItemSliderLimits.CraftingSlotUniqueMod.Min,
+            max: ItemSliderLimits.CraftingSlotUniqueMod.Max
+        );
+        public static readonly FloatSetting LegendaryPotential = Group.Float(
+            "LegendaryPotential",
+            4f,
+            min: ItemSliderLimits.CraftingSlotLegendaryPotential.Min,
+            max: ItemSliderLimits.CraftingSlotLegendaryPotential.Max
+        );
+        public static readonly FloatSetting WeaverWill = Group.Float(
+            "WeaverWill",
+            28f,
+            min: ItemSliderLimits.CraftingSlotWeaverWill.Min,
+            max: ItemSliderLimits.CraftingSlotWeaverWill.Max
+        );
+
+        /// <summary>Implicit roll overrides, slot order.</summary>
+        public static IReadOnlyList<FloatSetting> Implicits { get; } =
+            new[] { Implicit0, Implicit1, Implicit2 };
+
+        /// <summary>Affix tier overrides, slot order.</summary>
+        public static IReadOnlyList<FloatSetting> AffixTiers { get; } =
+            new[] { Affix0Tier, Affix1Tier, Affix2Tier, Affix3Tier };
+
+        /// <summary>Affix roll overrides, slot order.</summary>
+        public static IReadOnlyList<FloatSetting> AffixValues { get; } =
+            new[] { Affix0Value, Affix1Value, Affix2Value, Affix3Value };
+
+        /// <summary>Unique mod roll overrides, slot order.</summary>
+        public static IReadOnlyList<FloatSetting> UniqueMods { get; } =
+            new[]
+            {
+                UniqueMod0,
+                UniqueMod1,
+                UniqueMod2,
+                UniqueMod3,
+                UniqueMod4,
+                UniqueMod5,
+                UniqueMod6,
+                UniqueMod7,
+            };
+
+        /// <summary>Every override setting, in page order.</summary>
+        public static IReadOnlyList<FloatSetting> Overrides { get; } =
+            new[]
+            {
+                ForgingPotential,
+                Implicit0,
+                Implicit1,
+                Implicit2,
+                SealTier,
+                SealValue,
+                Affix0Tier,
+                Affix0Value,
+                Affix1Tier,
+                Affix1Value,
+                Affix2Tier,
+                Affix2Value,
+                Affix3Tier,
+                Affix3Value,
+                UniqueMod0,
+                UniqueMod1,
+                UniqueMod2,
+                UniqueMod3,
+                UniqueMod4,
+                UniqueMod5,
+                UniqueMod6,
+                UniqueMod7,
+                LegendaryPotential,
+                WeaverWill,
+            };
+    }
 #pragma warning restore CA1034
 }
