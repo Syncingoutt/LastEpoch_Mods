@@ -12,7 +12,8 @@ public static class LegacySettingsMap
             PermanentBuffsMap.All,
             ItemsDropMap.All,
             ItemsPickupMap.All,
-            ItemsCraftingSlotMap.All
+            ItemsCraftingSlotMap.All,
+            CharacterCheatsMap.All
         );
 
     private static LegacyFieldMapping[] Concat(params IReadOnlyList<LegacyFieldMapping>[] maps)

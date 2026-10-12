@@ -51,6 +51,9 @@ public static class CharacterSliderLimits
     // Source: Slider_Character_Buffs_Attunement
     public static readonly SliderRange BuffAttunement = new(0f, 255f, false);
 
+    // Source: Slider_Character_Cheats_AutoPotions
+    public static readonly SliderRange AutoPotion = new(0f, 255f, false);
+
     // Source: no prefab slider; former UtilitiesBuffsPage inline max, commit 511ad5e0
     public static readonly SliderRange BuffAreaOfEffect = new(0f, 100f, false);
 }

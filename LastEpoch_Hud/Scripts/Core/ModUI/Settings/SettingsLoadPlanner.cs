@@ -1,3 +1,5 @@
+using LastEpoch_Hud.Scripts.Core.ModUI.LegacySettings;
+
 namespace LastEpoch_Hud.Scripts.Core.ModUI.Settings;
 
 /// <summary>Maps the settings file state to a load plan.</summary>
@@ -7,11 +9,16 @@ public static class SettingsLoadPlanner
         SettingsFileState state,
         bool allGroupsLoaded,
         bool hasMissingEntries,
-        bool imported = false
+        LegacyImportOutcome outcome = LegacyImportOutcome.NoLegacyFile
     )
     {
         SettingsLoadPlan plan = PlanFor(state, allGroupsLoaded, hasMissingEntries);
-        return imported ? plan with { WriteNow = true } : plan;
+        // Without the legacy values, saving would replace them with defaults for good.
+        return plan with
+        {
+            WriteNow = plan.WriteNow || outcome == LegacyImportOutcome.Imported,
+            BlockWrites = outcome == LegacyImportOutcome.ReadFailed,
+        };
     }
 
     private static SettingsLoadPlan PlanFor(
@@ -22,9 +29,9 @@ public static class SettingsLoadPlanner
     {
         return state switch
         {
-            SettingsFileState.Missing => new SettingsLoadPlan(true, false, true),
-            SettingsFileState.Corrupt => new SettingsLoadPlan(true, true, true),
-            SettingsFileState.Unreadable => new SettingsLoadPlan(false, true, true),
+            SettingsFileState.Missing => new SettingsLoadPlan(true, false, true, false),
+            SettingsFileState.Corrupt => new SettingsLoadPlan(true, true, true, false),
+            SettingsFileState.Unreadable => new SettingsLoadPlan(false, true, true, false),
             SettingsFileState.Loaded => LoadedPlan(allGroupsLoaded, hasMissingEntries),
             _ => default,
         };
@@ -35,8 +42,8 @@ public static class SettingsLoadPlanner
     {
         if (!allGroupsLoaded)
         {
-            return new SettingsLoadPlan(true, true, true);
+            return new SettingsLoadPlan(true, true, true, false);
         }
-        return new SettingsLoadPlan(false, false, hasMissingEntries);
+        return new SettingsLoadPlan(false, false, hasMissingEntries, false);
     }
 }

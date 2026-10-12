@@ -40,6 +40,7 @@ public sealed class CharacterSliderLimitsPrefabTests
     [InlineData(nameof(CharacterSliderLimits.BuffDexterity), "Slider_Character_Buffs_Dexterity")]
     [InlineData(nameof(CharacterSliderLimits.BuffVitality), "Slider_Character_Buffs_Vitality")]
     [InlineData(nameof(CharacterSliderLimits.BuffAttunement), "Slider_Character_Buffs_Attunement")]
+    [InlineData(nameof(CharacterSliderLimits.AutoPotion), "Slider_Character_Cheats_AutoPotions")]
     public void Range_MatchesPrefab(string field, string slider)
     {
         IReadOnlyDictionary<string, SliderRange> prefab = PrefabSliders.Load(

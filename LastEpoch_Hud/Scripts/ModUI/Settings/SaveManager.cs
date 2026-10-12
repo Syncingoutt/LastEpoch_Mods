@@ -140,10 +140,9 @@ public class SaveManager : MonoBehaviour
             state,
             allGroupsLoaded,
             hasMissingEntries,
-            outcome == LegacyImportOutcome.Imported
+            outcome
         );
-        // Without the legacy values, saving would replace them with defaults for good.
-        _writesBlocked = outcome == LegacyImportOutcome.ReadFailed;
+        _writesBlocked = plan.BlockWrites;
 
         Main.logger_instance?.Msg(
             "ModUI SaveManager: Initialized with "

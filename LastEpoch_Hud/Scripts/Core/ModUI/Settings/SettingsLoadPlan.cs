@@ -4,5 +4,6 @@ namespace LastEpoch_Hud.Scripts.Core.ModUI.Settings;
 public readonly record struct SettingsLoadPlan(
     bool ResetCapLevelToZone,
     bool BackupBeforeWrite,
-    bool WriteNow
+    bool WriteNow,
+    bool BlockWrites
 );

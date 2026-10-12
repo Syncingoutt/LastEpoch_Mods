@@ -109,18 +109,8 @@ internal static class UtilitiesCharacterPage
             card,
             "UnlockAllIdols",
             "Unlock All Idol Slots",
-            () =>
-                HasSave() && Save_Manager.instance.data.Character.Cheats.Enable_UnlockAllIdolsSlots,
-            value =>
-            {
-                if (!HasSave())
-                {
-                    return;
-                }
-
-                Save_Manager.instance.data.Character.Cheats.Enable_UnlockAllIdolsSlots = value;
-                Mods.Character.Character_UnlockAllIdols.Update();
-            }
+            () => ModSettings.CharacterCheats.UnlockAllIdolsSlots.Value,
+            value => ModSettings.CharacterCheats.UnlockAllIdolsSlots.Set(value)
         );
         _page.AddToggle(
             card,
@@ -141,14 +131,8 @@ internal static class UtilitiesCharacterPage
             card,
             "GodMode",
             "God Mode",
-            () => HasSave() && Save_Manager.instance.data.Character.Cheats.Enable_GodMode,
-            value =>
-            {
-                if (HasSave())
-                {
-                    Save_Manager.instance.data.Character.Cheats.Enable_GodMode = value;
-                }
-            }
+            () => ModSettings.CharacterCheats.GodMode.Value,
+            value => ModSettings.CharacterCheats.GodMode.Set(value)
         );
         _page.AddToggle(
             card,
@@ -161,28 +145,15 @@ internal static class UtilitiesCharacterPage
             card,
             "LowLife",
             "Force Low Life",
-            () => HasSave() && Save_Manager.instance.data.Character.Cheats.Enable_LowLife,
-            value =>
-            {
-                if (HasSave())
-                {
-                    Save_Manager.instance.data.Character.Cheats.Enable_LowLife = value;
-                }
-            }
+            () => ModSettings.CharacterCheats.LowLife.Value,
+            value => ModSettings.CharacterCheats.LowLife.Set(value)
         );
         _page.AddToggle(
             card,
             "WeaponRestrictions",
             "Ignore Weapon Restrictions",
-            () =>
-                HasSave() && Save_Manager.instance.data.Character.Cheats.Enable_TwoHandedWithShield,
-            value =>
-            {
-                if (HasSave())
-                {
-                    Save_Manager.instance.data.Character.Cheats.Enable_TwoHandedWithShield = value;
-                }
-            }
+            () => ModSettings.CharacterCheats.TwoHandedWithShield.Value,
+            value => ModSettings.CharacterCheats.TwoHandedWithShield.Set(value)
         );
         _page.AddToggle(
             card,

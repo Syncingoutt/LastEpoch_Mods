@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using LastEpoch_Hud.Scripts.Core.ModUI.LegacySettings.Maps;
 using LastEpoch_Hud.Scripts.Core.ModUI.Sliders;
+using LastEpoch_Hud.Scripts.Mods.Character;
 using LastEpoch_Hud.Scripts.ModUI.Settings;
 
 namespace LastEpoch_Hud.Scripts.ModUI;
@@ -124,6 +125,34 @@ public static partial class ModSettings
                 Vitality,
                 Attunement,
             };
+    }
+
+    /// <summary>Utilities > Character cheat toggles; some have no UI.</summary>
+    public static class CharacterCheats
+    {
+        public static readonly SettingsGroup Group = new(CharacterCheatsMap.Group);
+
+        public static readonly BoolSetting GodMode = Group.Bool("GodMode");
+        public static readonly BoolSetting LowLife = Group.Bool("LowLife");
+        public static readonly BoolSetting UnlockAllIdolsSlots = Group.Bool("UnlockAllIdolsSlots");
+        public static readonly BoolSetting WaypointsUnlock = Group.Bool("WaypointsUnlock");
+        public static readonly BoolSetting TwoHandedWithShield = Group.Bool("TwoHandedWithShield");
+
+        public static readonly FloatSetting AutoPot = Group.Float(
+            "AutoPot",
+            min: CharacterSliderLimits.AutoPotion.Min,
+            max: CharacterSliderLimits.AutoPotion.Max
+        );
+
+        static CharacterCheats()
+        {
+            UnlockAllIdolsSlots.Changed += OnUnlockAllIdolsSlotsChanged;
+        }
+
+        private static void OnUnlockAllIdolsSlotsChanged(bool _)
+        {
+            Character_UnlockAllIdols.Update();
+        }
     }
 #pragma warning restore CA1034
 }

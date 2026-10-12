@@ -548,10 +548,6 @@ public class Save_Manager : MonoBehaviour
         {
             data_duplicate = data;
             Save();
-            if (!Mods_Manager.instance.IsNullOrDestroyed())
-            {
-                Mods_Manager.instance.change = true;
-            } //Will be removed soon (when i have time to do it ^^)
         }
     }
 
