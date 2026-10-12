@@ -108,14 +108,7 @@ public class Items_Drop_ForginPotencial
 
     static string FilePath()
     {
-        string folder =
-            (
-                !Save_Manager.instance.IsNullOrDestroyed()
-                && !string.IsNullOrEmpty(Save_Manager.instance.path)
-            )
-                ? Save_Manager.instance.path
-                : Directory.GetCurrentDirectory() + @"\Mods\" + Main.mod_name + @"\";
-        return folder + "ForgingPotential.json";
+        return ModPaths.FilePath("ForgingPotential.json");
     }
 
     static void Load()

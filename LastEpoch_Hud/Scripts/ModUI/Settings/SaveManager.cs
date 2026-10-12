@@ -1,4 +1,5 @@
 using System.IO;
+using LastEpoch_Hud.Scripts.Core.ModUI.Settings;
 using LastEpoch_Hud.Scripts.ModUI.Keybind;
 using MelonLoader;
 using Newtonsoft.Json;
@@ -17,12 +18,13 @@ public class SaveManager : MonoBehaviour
     public static SaveManager instance;
     public volatile bool initialized;
 
-    private static readonly string basePath =
-        Directory.GetCurrentDirectory() + @"\Mods\" + Main.mod_name + @"\";
     private const string filename = "SaveModUI.json";
+    private const string TempFileName = "SaveModUI.json.tmp";
+    private const string CorruptFileName = "SaveModUI.corrupt.json";
     private const float SaveInterval = 1f;
     private float saveTimer;
     private bool profilingAttachAttempted;
+    private bool _writesBlocked;
 
     void Awake()
     {
@@ -39,7 +41,7 @@ public class SaveManager : MonoBehaviour
         }
         catch (System.Exception ex)
         {
-            Main.logger_instance?.Error("ModUI SaveManager: Load failed: " + ex.Message);
+            ErrorLog.Report(ex, "ModUI SaveManager.Load");
         }
     }
 
@@ -47,7 +49,9 @@ public class SaveManager : MonoBehaviour
     {
         LocaleRegistry.TickIfLocaleChanged();
         if (KeybindCapture.Active)
+        {
             KeybindCapture.Tick();
+        }
 
         if (initialized && !profilingAttachAttempted)
         {
@@ -62,133 +66,230 @@ public class SaveManager : MonoBehaviour
             }
         }
 
-        if (!initialized)
+        if (!initialized || _writesBlocked)
+        {
             return;
+        }
         if (!ModSettings.Dirty)
+        {
             return;
+        }
         // Time.unscaledDeltaTime: advances even when the game is paused (HUD open = timeScale=0)
         saveTimer += Time.unscaledDeltaTime;
         if (saveTimer < SaveInterval)
+        {
             return;
+        }
         saveTimer = 0f;
         ModSettings.Trace("SaveManager.Update flushing (debounce hit)");
-        Save();
-        ModSettings.ClearDirty();
+        if (TrySave())
+        {
+            ModSettings.ClearDirty();
+        }
     }
 
     void OnApplicationQuit()
     {
         if (!initialized || !ModSettings.Dirty)
+        {
             return;
-        try
-        {
-            Save();
-            ModSettings.ClearDirty();
         }
-        catch (System.Exception ex)
+        if (TrySave())
         {
-            Main.logger_instance?.Error("ModUI settings save on exit failed: " + ex.Message);
+            ModSettings.ClearDirty();
         }
     }
 
     private void Load()
     {
-        string fullPath = basePath + filename;
-        bool needsRewrite = false;
-
-        if (File.Exists(fullPath))
-        {
-            Main.logger_instance?.Msg("ModUI SaveManager: Loading " + fullPath);
-            try
-            {
-                var root = JObject.Parse(File.ReadAllText(fullPath));
-                foreach (var group in ModSettings.AllGroups)
-                    group.Load(root);
-
-                // If any registered group or per-group entry is missing from the
-                // on-disk file, rewrite so newly added sections or keys (e.g. a new
-                // Debug.Profiling toggle) show up on disk without waiting for the
-                // player to interact with one of them.
-                foreach (var group in ModSettings.AllGroups)
-                {
-                    if (group.HasMissingEntries(root))
-                    {
-                        needsRewrite = true;
-                        break;
-                    }
-                }
-            }
-            catch
-            {
-                Main.logger_instance?.Warning(
-                    "ModUI SaveManager: Error parsing save file, using defaults"
-                );
-                needsRewrite = true;
-            }
-        }
-        else
-        {
-            Main.logger_instance?.Msg("ModUI SaveManager: No save file found, using defaults");
-            needsRewrite = true;
-        }
+        string fullPath = ModPaths.FilePath(filename);
+        SettingsFileState state = ReadRoot(fullPath, out JObject root);
+        bool loaded = state == SettingsFileState.Loaded;
+        bool allGroupsLoaded = !loaded || LoadGroups(root);
+        bool hasMissingEntries = loaded && allGroupsLoaded && AnyMissingEntries(root);
+        SettingsLoadPlan plan = SettingsLoadPlanner.Plan(state, allGroupsLoaded, hasMissingEntries);
 
         Main.logger_instance?.Msg(
-            "ModUI SaveManager: Initialized with " + ModSettings.AllGroups.Count + " group(s)"
+            "ModUI SaveManager: Initialized with "
+                + ModSettings.AllGroups.Count
+                + " group(s), file "
+                + state
         );
 
-        // Schema rewrites/fresh saves should never silently enable XP capping.
-        // Preserve the user's choice on normal loads, but reset this option when
-        // the settings file is being regenerated or upgraded.
-        if (needsRewrite)
+        // Fresh or corrupt files should never silently enable XP capping.
+        // A schema top-up of a healthy file keeps the player's choice.
+        if (plan.ResetCapLevelToZone)
+        {
             ModSettings.Difficulty.CapLevelToZone.Value = false;
+        }
 
+        bool conflictFixed = FixBindingConflict();
+        if (plan.BackupBeforeWrite)
+        {
+            BackupCorruptFile(fullPath);
+        }
+        initialized = true;
+
+        if (!plan.WriteNow && !conflictFixed)
+        {
+            return;
+        }
+        if (TrySave())
+        {
+            Main.logger_instance?.Msg("ModUI SaveManager: Wrote fresh schema to " + filename);
+        }
+    }
+
+    private static SettingsFileState ReadRoot(string path, out JObject root)
+    {
+        root = null;
+        if (!File.Exists(path))
+        {
+            return SettingsFileState.Missing;
+        }
+
+        Main.logger_instance?.Msg("ModUI SaveManager: Loading " + path);
+        string text;
+        try
+        {
+            text = File.ReadAllText(path);
+        }
+        catch (System.Exception ex) when (ex is IOException or System.UnauthorizedAccessException)
+        {
+            ErrorLog.Report(ex, "ModUI SaveManager.Read");
+            return SettingsFileState.Unreadable;
+        }
+
+        try
+        {
+            root = JObject.Parse(text);
+            return SettingsFileState.Loaded;
+        }
+        catch (JsonReaderException ex)
+        {
+            ErrorLog.Report(ex, "ModUI SaveManager.Parse");
+            return SettingsFileState.Corrupt;
+        }
+    }
+
+    // False if any group threw; the others still load.
+    private static bool LoadGroups(JObject root)
+    {
+        bool allLoaded = true;
+        foreach (SettingsGroup group in ModSettings.AllGroups)
+        {
+            try
+            {
+                group.Load(root);
+            }
+            catch (System.Exception ex)
+            {
+                ErrorLog.Report(ex, "ModUI SaveManager.LoadGroup " + group.Name);
+                allLoaded = false;
+            }
+        }
+        return allLoaded;
+    }
+
+    // A group or per-group entry missing on disk means newly added keys need writing.
+    private static bool AnyMissingEntries(JObject root)
+    {
+        foreach (SettingsGroup group in ModSettings.AllGroups)
+        {
+            if (group.HasMissingEntries(root))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private bool FixBindingConflict()
+    {
         if (
-            KeybindMatcher.Conflicts(
+            !KeybindMatcher.Conflicts(
                 ModSettings.SafeTeleport.Key.Value,
                 ModSettings.SkillsAutoCast.ModifierKey.Value
             )
         )
         {
-            ModSettings.SafeTeleport.Key.Value = "";
-            needsRewrite = true;
-            Main.logger_instance?.Warning(
-                "Saved bindings conflict: Safe Teleport unbound; AutoCast binding preserved."
-            );
+            return false;
         }
-        initialized = true;
 
-        if (needsRewrite)
+        ModSettings.SafeTeleport.Key.Value = "";
+        Main.logger_instance?.Warning(
+            "Saved bindings conflict: Safe Teleport unbound; AutoCast binding preserved."
+        );
+        return true;
+    }
+
+    private void BackupCorruptFile(string fullPath)
+    {
+        if (!File.Exists(fullPath))
         {
-            Save();
-            Main.logger_instance?.Msg("ModUI SaveManager: Wrote fresh schema to " + filename);
+            return;
+        }
+        try
+        {
+            File.Copy(fullPath, ModPaths.FilePath(CorruptFileName), overwrite: true);
+        }
+        catch (System.Exception ex)
+        {
+            ErrorLog.Report(ex, "ModUI SaveManager.Backup: writes blocked this session");
+            _writesBlocked = true;
         }
     }
 
     internal static void FlushKeybind()
     {
         if (instance == null || !instance.initialized)
+        {
             return;
-        try
-        {
-            instance.Save();
-            ModSettings.ClearDirty();
         }
-        catch (System.Exception ex)
+        if (instance.TrySave())
         {
-            Main.logger_instance?.Error("ModUI keybind save failed: " + ex.Message);
+            ModSettings.ClearDirty();
         }
     }
 
-    private void Save()
+    private bool TrySave()
     {
-        var root = new JObject();
-        foreach (var group in ModSettings.AllGroups)
-            group.Save(root);
+        if (_writesBlocked)
+        {
+            return false;
+        }
+        try
+        {
+            var root = new JObject();
+            foreach (SettingsGroup group in ModSettings.AllGroups)
+            {
+                group.Save(root);
+            }
 
-        if (!Directory.Exists(basePath))
-            Directory.CreateDirectory(basePath);
-        File.WriteAllText(basePath + filename, root.ToString(Formatting.Indented));
-        ModSettings.Trace("SaveManager.Save wrote " + filename);
+            Directory.CreateDirectory(ModPaths.Folder);
+            string target = ModPaths.FilePath(filename);
+            string temp = ModPaths.FilePath(TempFileName);
+            File.WriteAllText(temp, root.ToString(Formatting.Indented));
+            ReplaceFile(temp, target);
+            ModSettings.Trace("SaveManager.Save wrote " + filename);
+            return true;
+        }
+        catch (System.Exception ex)
+        {
+            ErrorLog.Report(ex, "ModUI SaveManager.Save");
+            return false;
+        }
+    }
+
+    private static void ReplaceFile(string temp, string target)
+    {
+        if (File.Exists(target))
+        {
+            File.Replace(temp, target, null);
+            return;
+        }
+
+        File.Move(temp, target);
     }
 
     public static void BindHud(GameObject hud_object)
