@@ -445,38 +445,6 @@ public static partial class ModSettings
     // ITEMS TAB
     //
 
-    // public static class ItemsPickup
-    // {
-    //     public static readonly SettingsGroup Group = new SettingsGroup("ItemsPickup")
-    //         .Content("Items_Content")
-    //         .Viewport("Items_Pickup", "Items_Pickup_Content")
-    //         .Prefix("Items_Pickup_");
-
-    //     public static readonly BoolSetting AutoPickupGold        = Group.Bool("AutoPickupGold", panel: "AutoPickup_Gold");
-    //     public static readonly BoolSetting AutoPickupKeys        = Group.Bool("AutoPickupKeys", panel: "AutoPickup_Keys");
-    //     public static readonly BoolSetting AutoPickupPotions     = Group.Bool("AutoPickupPotions", panel: "AutoPickup_Pots");
-    //     public static readonly BoolSetting AutoPickupXpTome      = Group.Bool("AutoPickupXpTome", panel: "AutoPickup_XpTome");
-    //     public static readonly BoolSetting AutoPickupFavorTome   = Group.Bool("AutoPickupFavorTome", panel: "AutoPickup_FavorTome");
-    //     public static readonly BoolSetting AutoPickupMemoryAmber = Group.Bool("AutoPickupMemoryAmber", panel: "AutoPickup_MemoryAmber");
-    //     public static readonly BoolSetting AutoPickupWovenEchoes = Group.Bool("AutoPickupWovenEchoes", panel: "AutoPickup_WovenEchoes");
-    //     public static readonly BoolSetting AutoPickupMaterials   = Group.Bool("AutoPickupMaterials", panel: "AutoPickup_Materials");
-    //     public static readonly BoolSetting AutoPickupFromFilter  = Group.Bool("AutoPickupFromFilter", panel: "AutoPickup_Filters");
-
-    //     public static readonly BoolSetting  AutoStoreOnDrop          = Group.Bool("AutoStoreOnDrop", panel: "AutoStore_OnDrop");
-    //     public static readonly BoolSetting  AutoStoreOnInventoryOpen = Group.Bool("AutoStoreOnInventoryOpen", panel: "AutoStore_OnInventoryOpen");
-    //     public static readonly FloatSetting AutoStoreTimer           = Group.Float("AutoStoreTimer", format: DisplayFormat.Seconds, panel: "AutoStore_Timer");
-
-    //     public static readonly BoolSetting AutoSellFromFilter        = Group.Bool("AutoSellFromFilter", panel: "AutoSell_FromFilter");
-    //     public static readonly BoolSetting AutoShatterFromFilter     = Group.Bool("AutoShatterFromFilter", panel: "AutoShatter_FromFilter");
-    //     public static readonly BoolSetting AutoShatterUseRune        = Group.Bool("AutoShatterUseRune", panel: "AutoShatter_Rune");
-    //     public static readonly FloatSetting AutoShatterChance         = Group.Float("AutoShatterChance", format: DisplayFormat.Percent, panel: "AutoShatter_Chance");
-    //     public static readonly FloatSetting AutoShatterAffixChance    = Group.Float("AutoShatterAffixChance", format: DisplayFormat.Percent, panel: "AutoShatter_AffixChance");
-    //     public static readonly FloatSetting AutoShatterQuantityChance = Group.Float("AutoShatterQuantityChance", format: DisplayFormat.Percent, panel: "AutoShatter_QuantityChance");
-
-    //     public static readonly BoolSetting RangePickup               = Group.Bool("RangePickup", panel: "Range_Pickup");
-    //     public static readonly BoolSetting HideMaterialsNotifications= Group.Bool("HideMaterialsNotifications", panel: "Hide_Notifications");
-    // }
-
     // public static class ItemsCrafting
     // {
     //     // Master enable toggle lives in Items_Craft > Title, outside the viewport.

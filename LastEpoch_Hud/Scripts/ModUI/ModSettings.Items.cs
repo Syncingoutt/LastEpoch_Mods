@@ -103,5 +103,65 @@ public static partial class ModSettings
         public static IReadOnlyList<BoolSetting> ForcedRarities { get; } =
             new[] { ForceUnique, ForceSet, ForceLegendary };
     }
+
+    /// <summary>Items pickup, store, sell, shatter and notification options.</summary>
+    public static class ItemsPickup
+    {
+        public const float AutoStoreTimerSeconds = 10f;
+
+        public static readonly SettingsGroup Group = new(ItemsPickupMap.Group);
+
+        public static readonly BoolSetting AutoPickupGold = Group.Bool("AutoPickupGold");
+        public static readonly BoolSetting AutoPickupKeys = Group.Bool("AutoPickupKeys");
+        public static readonly BoolSetting AutoPickupPotions = Group.Bool("AutoPickupPotions");
+        public static readonly BoolSetting AutoPickupXpTome = Group.Bool("AutoPickupXpTome");
+        public static readonly BoolSetting AutoPickupFavorTome = Group.Bool("AutoPickupFavorTome");
+        public static readonly BoolSetting AutoPickupMemoryAmber = Group.Bool(
+            "AutoPickupMemoryAmber"
+        );
+        public static readonly BoolSetting AutoPickupMaterials = Group.Bool("AutoPickupMaterials");
+        public static readonly BoolSetting AutoPickupWovenEchoes = Group.Bool(
+            "AutoPickupWovenEchoes"
+        );
+        public static readonly BoolSetting AutoPickupFromFilter = Group.Bool(
+            "AutoPickupFromFilter"
+        );
+        public static readonly BoolSetting AutoStoreOnDrop = Group.Bool("AutoStoreOnDrop");
+        public static readonly BoolSetting AutoStoreOnInventoryOpen = Group.Bool(
+            "AutoStoreOnInventoryOpen"
+        );
+        public static readonly BoolSetting AutoSellFromFilter = Group.Bool("AutoSellFromFilter");
+        public static readonly BoolSetting AutoShatterFromFilter = Group.Bool(
+            "AutoShatterFromFilter"
+        );
+        public static readonly BoolSetting AutoShatterUseRune = Group.Bool("AutoShatterUseRune");
+        public static readonly BoolSetting RangePickup = Group.Bool("RangePickup");
+        public static readonly BoolSetting HideMaterialsNotifications = Group.Bool(
+            "HideMaterialsNotifications"
+        );
+
+        public static readonly FloatSetting AutoStoreTimer = Group.Float(
+            "AutoStoreTimer",
+            AutoStoreTimerSeconds
+        );
+        public static readonly FloatSetting AutoShatterChance = Group.Float(
+            "AutoShatterChance",
+            100f,
+            min: ItemSliderLimits.AutoShatterChance.Min,
+            max: ItemSliderLimits.AutoShatterChance.Max
+        );
+        public static readonly FloatSetting AutoShatterAffixChance = Group.Float(
+            "AutoShatterAffixChance",
+            100f,
+            min: ItemSliderLimits.AutoShatterAffixChance.Min,
+            max: ItemSliderLimits.AutoShatterAffixChance.Max
+        );
+        public static readonly FloatSetting AutoShatterQuantityChance = Group.Float(
+            "AutoShatterQuantityChance",
+            0f,
+            min: ItemSliderLimits.AutoShatterQuantityChance.Min,
+            max: ItemSliderLimits.AutoShatterQuantityChance.Max
+        );
+    }
 #pragma warning restore CA1034
 }

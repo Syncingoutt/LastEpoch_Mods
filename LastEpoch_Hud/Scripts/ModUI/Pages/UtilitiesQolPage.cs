@@ -1,6 +1,6 @@
-using System;
 using LastEpoch_Hud.Scripts.Core.ModUI;
 using LastEpoch_Hud.Scripts.Core.ModUI.Sliders;
+using LastEpoch_Hud.Scripts.ModUI.Settings;
 using LastEpoch_Hud.Scripts.ModUI.Shell;
 using UnityEngine;
 
@@ -8,7 +8,7 @@ namespace LastEpoch_Hud.Scripts.ModUI.Pages;
 
 /// <summary>
 /// Utilities &gt; QOL: small cards for pickup, auto-sell, shatter and item requirements.
-/// Requirements bind to ModSettings; the other cards still use Save_Manager fields.
+/// All cards bind to ModSettings.
 /// State resets on HUD re-bind (Build).
 /// </summary>
 internal static class UtilitiesQolPage
@@ -38,99 +38,94 @@ internal static class UtilitiesQolPage
     private static void BuildAutoPickup()
     {
         var card = page.AddCard("AutoPickup", "Auto-Pickup");
-        AddToggle(
+        page.AddToggle(
             card,
             "Gold",
             "Gold",
-            () => Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_Gold,
-            value => Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_Gold = value
+            () => ModSettings.ItemsPickup.AutoPickupGold.Value,
+            ModSettings.ItemsPickup.AutoPickupGold.Set
         );
-        AddToggle(
+        page.AddToggle(
             card,
             "Keys",
             "Keys",
-            () => Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_Keys,
-            value => Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_Keys = value
+            () => ModSettings.ItemsPickup.AutoPickupKeys.Value,
+            ModSettings.ItemsPickup.AutoPickupKeys.Set
         );
-        AddToggle(
+        page.AddToggle(
             card,
             "Potions",
             "Potions",
-            () => Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_Potions,
-            value => Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_Potions = value
+            () => ModSettings.ItemsPickup.AutoPickupPotions.Value,
+            ModSettings.ItemsPickup.AutoPickupPotions.Set
         );
-        AddToggle(
+        page.AddToggle(
             card,
             "ExperienceTomes",
             "Experience Tomes",
-            () => Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_XpTome,
-            value => Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_XpTome = value
+            () => ModSettings.ItemsPickup.AutoPickupXpTome.Value,
+            ModSettings.ItemsPickup.AutoPickupXpTome.Set
         );
-        AddToggle(
+        page.AddToggle(
             card,
             "FavorTomes",
             "Favor Tomes",
-            () => Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_FavorTome,
-            value => Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_FavorTome = value
+            () => ModSettings.ItemsPickup.AutoPickupFavorTome.Value,
+            ModSettings.ItemsPickup.AutoPickupFavorTome.Set
         );
-        AddToggle(
+        page.AddToggle(
             card,
             "MemoryAmber",
             "Memory Amber",
-            () => Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_MemoryAmber,
-            value => Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_MemoryAmber = value
+            () => ModSettings.ItemsPickup.AutoPickupMemoryAmber.Value,
+            ModSettings.ItemsPickup.AutoPickupMemoryAmber.Set
         );
-        AddToggle(
+        page.AddToggle(
             card,
             "Materials",
             "Materials",
-            () => Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_Materials,
-            value => Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_Materials = value
+            () => ModSettings.ItemsPickup.AutoPickupMaterials.Value,
+            ModSettings.ItemsPickup.AutoPickupMaterials.Set
         );
-        AddToggle(
+        page.AddToggle(
             card,
             "WovenEchoes",
             "Woven Echoes",
-            () => Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_WovenEchoes,
-            value => Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_WovenEchoes = value
+            () => ModSettings.ItemsPickup.AutoPickupWovenEchoes.Value,
+            ModSettings.ItemsPickup.AutoPickupWovenEchoes.Set
         );
-        AddToggle(
+        page.AddToggle(
             card,
             "Filter",
             "Items In Filter",
-            () => Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_FromFilter,
-            value => Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_FromFilter = value
+            () => ModSettings.ItemsPickup.AutoPickupFromFilter.Value,
+            ModSettings.ItemsPickup.AutoPickupFromFilter.Set
         );
     }
 
     private static void BuildAutoStore()
     {
         var card = page.AddCard("AutoStore", "Auto-Store");
-        AddToggle(
+        page.AddToggle(
             card,
             "OnDrop",
             "On Drop",
-            () => Save_Manager.instance.data.Items.Pickup.Enable_AutoStore_OnDrop,
-            value => Save_Manager.instance.data.Items.Pickup.Enable_AutoStore_OnDrop = value
+            () => ModSettings.ItemsPickup.AutoStoreOnDrop.Value,
+            ModSettings.ItemsPickup.AutoStoreOnDrop.Set
         );
-        AddToggle(
+        page.AddToggle(
             card,
             "OnInventoryOpen",
             "On Inventory Open",
-            () => Save_Manager.instance.data.Items.Pickup.Enable_AutoStore_OnInventoryOpen,
-            value =>
-                Save_Manager.instance.data.Items.Pickup.Enable_AutoStore_OnInventoryOpen = value
+            () => ModSettings.ItemsPickup.AutoStoreOnInventoryOpen.Value,
+            ModSettings.ItemsPickup.AutoStoreOnInventoryOpen.Set
         );
-        AddToggle(
+        page.AddToggle(
             card,
             "EveryTenSeconds",
             "Every 10s",
-            () => Save_Manager.instance.data.Items.Pickup.Enable_AutoStore_Timer,
-            value =>
-            {
-                Save_Manager.instance.data.Items.Pickup.Enable_AutoStore_Timer = value;
-                Save_Manager.instance.data.Items.Pickup.AutoStore_Timer = 10;
-            }
+            () => ModSettings.ItemsPickup.AutoStoreTimer.Enabled,
+            SetStoreEveryTenSeconds
         );
         page.AddToggle(
             card,
@@ -150,75 +145,71 @@ internal static class UtilitiesQolPage
     private static void BuildAutoShatter()
     {
         var card = page.AddCard("AutoShatter", "Auto-Shatter");
-        AddToggle(
+        page.AddToggle(
             card,
             "NotInFilter",
             "Items Not In Filter",
-            () => Save_Manager.instance.data.Items.Pickup.Enable_AutoShatter_FromFilter,
-            value => Save_Manager.instance.data.Items.Pickup.Enable_AutoShatter_FromFilter = value
+            () => ModSettings.ItemsPickup.AutoShatterFromFilter.Value,
+            ModSettings.ItemsPickup.AutoShatterFromFilter.Set
         );
-        AddToggle(
+        page.AddToggle(
             card,
             "UseRune",
             "Use Rune of Shattering",
-            () => Save_Manager.instance.data.Items.Pickup.Enable_AutoShatter_UseRune,
-            value => Save_Manager.instance.data.Items.Pickup.Enable_AutoShatter_UseRune = value
+            () => ModSettings.ItemsPickup.AutoShatterUseRune.Value,
+            ModSettings.ItemsPickup.AutoShatterUseRune.Set
         );
         AddPercentSlider(
             card,
             "Chance",
             "Shatter Chance",
             ItemSliderLimits.AutoShatterChance,
-            () => Save_Manager.instance.data.Items.Pickup.AutoShatter_Chance,
-            value => Save_Manager.instance.data.Items.Pickup.AutoShatter_Chance = (int)value
+            ModSettings.ItemsPickup.AutoShatterChance
         );
         AddPercentSlider(
             card,
             "AffixChance",
             "Affix Obtained From Shatter Chance",
             ItemSliderLimits.AutoShatterAffixChance,
-            () => Save_Manager.instance.data.Items.Pickup.AutoShatter_AffixChance,
-            value => Save_Manager.instance.data.Items.Pickup.AutoShatter_AffixChance = (int)value
+            ModSettings.ItemsPickup.AutoShatterAffixChance
         );
         AddPercentSlider(
             card,
             "QuantityChance",
             "Affix Quantity Chance",
             ItemSliderLimits.AutoShatterQuantityChance,
-            () => Save_Manager.instance.data.Items.Pickup.AutoShatter_QuantityChance,
-            value => Save_Manager.instance.data.Items.Pickup.AutoShatter_QuantityChance = (int)value
+            ModSettings.ItemsPickup.AutoShatterQuantityChance
         );
     }
 
     private static void BuildAutoSell()
     {
         var card = page.AddCard("AutoSell", "Auto-Sell");
-        AddToggle(
+        page.AddToggle(
             card,
             "NotInFilter",
             "Items Not In Filter",
-            () => Save_Manager.instance.data.Items.Pickup.Enable_AutoSell_FromFilter,
-            value => Save_Manager.instance.data.Items.Pickup.Enable_AutoSell_FromFilter = value
+            () => ModSettings.ItemsPickup.AutoSellFromFilter.Value,
+            ModSettings.ItemsPickup.AutoSellFromFilter.Set
         );
     }
 
     private static void BuildMisc()
     {
         var card = page.AddCard("Misc", "Misc");
-        AddToggle(
+        page.AddToggle(
             card,
             "RangePickup",
             "Range Pickup",
-            () => Save_Manager.instance.data.Items.Pickup.Enable_RangePickup,
-            value => Save_Manager.instance.data.Items.Pickup.Enable_RangePickup = value
+            () => ModSettings.ItemsPickup.RangePickup.Value,
+            ModSettings.ItemsPickup.RangePickup.Set
         );
-        AddToggle(
+        page.AddToggle(
             card,
             "HideNotifications",
             "Hide Material Notifications",
-            () => Save_Manager.instance.data.Items.Pickup.Enable_HideMaterialsNotifications,
-            value =>
-                Save_Manager.instance.data.Items.Pickup.Enable_HideMaterialsNotifications = value
+            () => ModSettings.ItemsPickup.HideMaterialsNotifications.Value,
+            ModSettings.ItemsPickup.HideMaterialsNotifications.Set
         );
     }
 
@@ -248,24 +239,11 @@ internal static class UtilitiesQolPage
         );
     }
 
-    private static void AddToggle(
-        HudFormPage.Card card,
-        string id,
-        string label,
-        Func<bool> read,
-        Action<bool> write
-    )
+    private static void SetStoreEveryTenSeconds(bool enabled)
     {
-        page.AddToggle(
-            card,
-            id,
-            label,
-            () => HasSave() && read(),
-            value =>
-            {
-                if (HasSave())
-                    write(value);
-            }
+        ModSettings.ItemsPickup.AutoStoreTimer.SetEnabled(enabled);
+        ModSettings.ItemsPickup.AutoStoreTimer.SetValue(
+            ModSettings.ItemsPickup.AutoStoreTimerSeconds
         );
     }
 
@@ -274,8 +252,7 @@ internal static class UtilitiesQolPage
         string id,
         string label,
         SliderRange range,
-        Func<int> read,
-        Action<float> write
+        FloatSetting setting
     )
     {
         page.AddSlider(
@@ -286,15 +263,8 @@ internal static class UtilitiesQolPage
             range.Min,
             range.Max,
             range.WholeNumbers,
-            () => HasSave() ? read() : 0f,
-            value =>
-            {
-                if (HasSave())
-                    write(value);
-            }
+            () => setting.Value,
+            setting.SetValue
         );
     }
-
-    private static bool HasSave() =>
-        !Save_Manager.instance.IsNullOrDestroyed() && Save_Manager.instance.initialized;
 }

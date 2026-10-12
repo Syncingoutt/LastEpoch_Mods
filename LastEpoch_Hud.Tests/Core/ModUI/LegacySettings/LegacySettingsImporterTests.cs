@@ -523,6 +523,88 @@ public sealed class LegacySettingsImporterTests
         Assert.Equal(existing, problems[0]);
     }
 
+    [Theory]
+    [InlineData("true")]
+    [InlineData("1")]
+    [InlineData("\"True\"")]
+    public void TryImport_RequiresTrue_True_Imports(string required)
+    {
+        var problems = new List<LegacyImportProblem>();
+
+        JObject sections = Import(Gated(required, "5"), new[] { GatedField() }, problems);
+
+        Assert.Equal(5f, (float)sections["G"]["K"]["Value"]);
+        Assert.Empty(problems);
+    }
+
+    [Theory]
+    [InlineData("false")]
+    [InlineData(null)]
+    [InlineData("\"x\"")]
+    [InlineData("[]")]
+    [InlineData("0")]
+    public void TryImport_RequiresTrue_NotTrue_Skips(string required)
+    {
+        var problems = new List<LegacyImportProblem>();
+
+        JObject sections = Import(Gated(required, "5"), new[] { GatedField() }, problems);
+
+        Assert.Empty(sections.Properties());
+        Assert.Empty(problems);
+    }
+
+    [Fact]
+    public void TryImport_RequiresTrue_NotTrue_InvalidFieldNoProblem()
+    {
+        var problems = new List<LegacyImportProblem>();
+
+        JObject sections = Import(Gated("false", "\"abc\""), new[] { GatedField() }, problems);
+
+        Assert.Empty(sections.Properties());
+        Assert.Empty(problems);
+    }
+
+    [Fact]
+    public void TryImport_RequiresTrue_True_InvalidFieldReportsProblem()
+    {
+        var problems = new List<LegacyImportProblem>();
+
+        JObject sections = Import(Gated("true", "\"abc\""), new[] { GatedField() }, problems);
+
+        Assert.False(sections.ContainsKey("G"));
+        LegacyImportProblem problem = Assert.Single(problems);
+        Assert.Equal(LegacyImportProblemCode.InvalidValue, problem.Code);
+        Assert.Equal("F", problem.Path);
+    }
+
+    [Fact]
+    public void TryImport_RequiresTrue_True_FieldMissing_Skips()
+    {
+        var problems = new List<LegacyImportProblem>();
+
+        JObject sections = Import("{\"C\":true}", new[] { GatedField() }, problems);
+
+        Assert.Empty(sections.Properties());
+        Assert.Empty(problems);
+    }
+
+    private static LegacyFieldMapping GatedField()
+    {
+        return new LegacyFieldMapping(
+            "F",
+            "G",
+            "K",
+            LegacySettingPart.FloatValue,
+            RequiresTruePath: "C"
+        );
+    }
+
+    private static string Gated(string required, string field)
+    {
+        string gate = required == null ? string.Empty : "\"C\":" + required + ",";
+        return "{" + gate + "\"F\":" + field + "}";
+    }
+
     private static LegacyFieldMapping Field(
         string path,
         LegacySettingPart part,

@@ -110,6 +110,10 @@ public static class LegacySettingsImporter
         List<LegacyImportProblem> problems
     )
     {
+        if (!RequirementMet(root, mapping))
+        {
+            return;
+        }
         JToken token = LegacyJsonPath.Find(root, mapping.LegacyPath);
         if (token == null)
         {
@@ -130,6 +134,16 @@ public static class LegacySettingsImporter
         {
             Emit(sections, mapping, value);
         }
+    }
+
+    private static bool RequirementMet(JObject root, LegacyFieldMapping mapping)
+    {
+        if (mapping.RequiresTruePath == null)
+        {
+            return true;
+        }
+        JToken gate = LegacyJsonPath.Find(root, mapping.RequiresTruePath);
+        return LegacyValueReader.TryReadBool(gate, out bool on) && on;
     }
 
     private static bool TryConvert(

@@ -15,6 +15,17 @@ public sealed class LegacySettingsMapTests
     }
 
     [Fact]
+    public void All_RequiresTruePathsExistInDefaultFixture()
+    {
+        IEnumerable<string> missing = LegacySettingsMap
+            .All.Where(m => m.RequiresTruePath != null)
+            .Where(m => LegacyJsonPath.Find(LegacyDefaultSave.Root, m.RequiresTruePath) == null)
+            .Select(m => m.RequiresTruePath);
+
+        Assert.Empty(missing);
+    }
+
+    [Fact]
     public void All_GroupKeyPartIsUnique()
     {
         IEnumerable<IGrouping<(string, string, LegacySettingPart), LegacyFieldMapping>> dupes =

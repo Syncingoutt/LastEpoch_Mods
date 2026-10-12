@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
 
 namespace LastEpoch_Hud.Scripts.Mods.Items.Pickup;
 
@@ -260,13 +261,8 @@ public class Items_AutoStore_OnPickup
                 (!__result)
                 || (storing)
                 || (__0.IsNullOrDestroyed())
-                || (Save_Manager.instance.IsNullOrDestroyed())
-                || (Save_Manager.instance.data.IsNullOrDestroyed())
+                || (!ModSettings.ItemsPickup.AutoStoreOnDrop.Value)
             )
-            {
-                return;
-            }
-            if (!Save_Manager.instance.data.Items.Pickup.Enable_AutoStore_OnDrop)
             {
                 return;
             }
