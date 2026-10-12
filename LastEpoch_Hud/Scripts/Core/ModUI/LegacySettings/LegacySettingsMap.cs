@@ -16,7 +16,8 @@ public static class LegacySettingsMap
             CharacterCheatsMap.All,
             CharacterMultipliersMap.All,
             SkillsGeneralMap.All,
-            SkillsMovementMap.All
+            SkillsMovementMap.All,
+            SkillsCompanionsMap.All
         );
 
     private static LegacyFieldMapping[] Concat(params IReadOnlyList<LegacyFieldMapping>[] maps)

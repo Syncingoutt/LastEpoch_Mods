@@ -70,5 +70,32 @@ public static partial class ModSettings
         );
         public static readonly BoolSetting IgnoreSimplePath = Group.Bool("IgnoreSimplePath");
     }
+
+    /// <summary>Companion cheats on Skills > Companions.</summary>
+    public static class SkillsCompanions
+    {
+        public static readonly SettingsGroup Group = new(SkillsCompanionsMap.Group);
+
+        public static readonly FloatSetting MaximumCompanions = Group.Float(
+            "MaximumCompanions",
+            defaultValue: 255f,
+            min: SkillSliderLimits.CompanionsMaximum.Min,
+            max: SkillSliderLimits.CompanionsMaximum.Max
+        );
+        public static readonly BoolSetting WolfSummonMaximum = Group.Bool("WolfSummonMaximum");
+        public static readonly FloatSetting WolfSummonLimit = Group.Float(
+            "WolfSummonLimit",
+            defaultValue: 255f,
+            min: SkillSliderLimits.WolfSummonLimit.Min,
+            max: SkillSliderLimits.WolfSummonLimit.Max
+        );
+        public static readonly BoolSetting WolfStunImmunity = Group.Bool("WolfStunImmunity");
+        public static readonly FloatSetting ScorpionBabyQuantity = Group.Float(
+            "ScorpionBabyQuantity",
+            defaultValue: 255f,
+            min: SkillSliderLimits.ScorpionBabyQuantity.Min,
+            max: SkillSliderLimits.ScorpionBabyQuantity.Max
+        );
+    }
 #pragma warning restore CA1034
 }

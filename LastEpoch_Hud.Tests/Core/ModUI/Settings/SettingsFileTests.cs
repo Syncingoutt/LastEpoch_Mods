@@ -97,6 +97,35 @@ public sealed class SettingsFileTests : IDisposable
     }
 
     [Fact]
+    public void WriteAtomic_StaleTempFromCrash_OverwritesAndLeavesNoTemp()
+    {
+        string path = _dir.File("s.json");
+        File.WriteAllText(path, "old");
+        File.WriteAllText(path + ".tmp", "partial");
+
+        bool ok = SettingsFile.WriteAtomic(path, "new", out string error);
+
+        Assert.True(ok);
+        Assert.Null(error);
+        Assert.Equal("new", File.ReadAllText(path));
+        Assert.False(File.Exists(path + ".tmp"));
+    }
+
+    [Fact]
+    public void WriteAtomic_StaleTempWithoutTarget_OverwritesAndLeavesNoTemp()
+    {
+        string path = _dir.File("s.json");
+        File.WriteAllText(path + ".tmp", "partial");
+
+        bool ok = SettingsFile.WriteAtomic(path, "new", out string error);
+
+        Assert.True(ok);
+        Assert.Null(error);
+        Assert.Equal("new", File.ReadAllText(path));
+        Assert.False(File.Exists(path + ".tmp"));
+    }
+
+    [Fact]
     public void WriteAtomic_TargetLocked_FailsKeepsOriginalAndLeavesNoTemp()
     {
         Assert.SkipUnless(OperatingSystem.IsWindows(), "Rename ignores file locks on Unix.");

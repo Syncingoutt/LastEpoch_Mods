@@ -214,44 +214,27 @@ public class Skills_Use
                     //Companions
                     else if (il2cpp_type.ToString() == "SummonWolfMutator")
                     {
-                        if (Save_Manager.instance.data.Skills.Companion.Wolf.Enable_SummonLimit)
+                        if (ModSettings.SkillsCompanions.WolfSummonLimit.Enabled)
                         {
                             var ab = __1.TryCast<SummonWolfMutator>();
                             if (!ab.IsNullOrDestroyed())
                             {
-                                ab.wolfLimit = Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Companion
-                                    .Wolf
-                                    .SummonLimit;
+                                ab.wolfLimit = (int)
+                                    ModSettings.SkillsCompanions.WolfSummonLimit.Value;
                             }
                         }
                     }
                     else if (il2cpp_type.ToString() == "SummonScorpionMutator")
                     {
-                        if (
-                            Save_Manager.instance.data.Skills.Companion.Scorpion.Enable_BabyQuantity
-                        )
+                        if (ModSettings.SkillsCompanions.ScorpionBabyQuantity.Enabled)
                         {
                             var ab = __1.TryCast<SummonScorpionMutator>();
                             if (!ab.IsNullOrDestroyed())
                             {
-                                ab.babyScorpionQuantity = Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Companion
-                                    .Scorpion
-                                    .BabyQuantity;
-                                ab.babyScorpionsToSpawnOnAbilityActivation = Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Companion
-                                    .Scorpion
-                                    .BabyQuantity;
+                                int babies = (int)
+                                    ModSettings.SkillsCompanions.ScorpionBabyQuantity.Value;
+                                ab.babyScorpionQuantity = babies;
+                                ab.babyScorpionsToSpawnOnAbilityActivation = babies;
                                 //ab.increasedBabySpawnRate = 1;
                             }
                         }

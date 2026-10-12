@@ -1,68 +1,51 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
 
 namespace LastEpoch_Hud.Scripts.Mods.Skills;
 
 public class Skills_Companions
 {
-    public static bool CanRun()
-    {
-        if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
-        {
-            if (!Save_Manager.instance.data.IsNullOrDestroyed())
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
-    }
-
     [HarmonyPatch(typeof(AbilityStatsMutatorManager), "OnStatsUpdate")]
     public class AbilityStatsMutatorManager_OnStatsUpdate
     {
         [HarmonyPostfix]
         static void Postfix(ref AbilityStatsMutatorManager __instance)
         {
-            if (CanRun())
+            if (!Scenes.IsGameScene())
             {
-                if (Save_Manager.instance.data.Skills.Companion.Wolf.Enable_SummonMax)
-                {
-                    __instance.canSummonWolvesUpToMaxCompanions = true;
-                }
-                if (
-                    Save_Manager
-                        .instance
-                        .data
-                        .Skills
-                        .Minions
-                        .BoneGolems
-                        .Enable_addedGolemsPer4Skeletons
-                )
-                {
-                    __instance.addedGolemsPer4Skeletons = Save_Manager
-                        .instance
-                        .data
-                        .Skills
-                        .Minions
-                        .BoneGolems
-                        .addedGolemsPer4Skeletons;
-                }
-                if (Save_Manager.instance.data.Skills.Companion.Wolf.Enable_StunImmunity)
-                {
-                    __instance.wolfStunImmunity = true;
-                }
-                else
-                {
-                    __instance.wolfStunImmunity = false;
-                }
+                return;
             }
+            if (ModSettings.SkillsCompanions.WolfSummonMaximum.Value)
+            {
+                __instance.canSummonWolvesUpToMaxCompanions = true;
+            }
+            __instance.wolfStunImmunity = ModSettings.SkillsCompanions.WolfStunImmunity.Value;
+            ApplyLegacyBoneGolems(__instance);
+        }
+
+        // Removed with the minions settings migration.
+        private static void ApplyLegacyBoneGolems(AbilityStatsMutatorManager manager)
+        {
+            if (Save_Manager.instance.IsNullOrDestroyed())
+            {
+                return;
+            }
+            if (Save_Manager.instance.data.IsNullOrDestroyed())
+            {
+                return;
+            }
+            Save_Manager.Data.BoneGolems golems = Save_Manager
+                .instance
+                .data
+                .Skills
+                .Minions
+                .BoneGolems;
+            if (!golems.Enable_addedGolemsPer4Skeletons)
+            {
+                return;
+            }
+            manager.addedGolemsPer4Skeletons = golems.addedGolemsPer4Skeletons;
         }
     }
 
@@ -72,13 +55,15 @@ public class Skills_Companions
         [HarmonyPostfix]
         static void Postfix(CharacterStats __instance, ref int __result)
         {
-            if (CanRun())
+            if (!Scenes.IsGameScene())
             {
-                if (Save_Manager.instance.data.Skills.Companion.Enable_Limit)
-                {
-                    __result = Save_Manager.instance.data.Skills.Companion.Limit;
-                }
+                return;
             }
+            if (!ModSettings.SkillsCompanions.MaximumCompanions.Enabled)
+            {
+                return;
+            }
+            __result = (int)ModSettings.SkillsCompanions.MaximumCompanions.Value;
         }
     }
 }
