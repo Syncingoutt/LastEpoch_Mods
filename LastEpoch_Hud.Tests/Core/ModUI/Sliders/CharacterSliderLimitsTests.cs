@@ -4,7 +4,7 @@ namespace LastEpoch_Hud.Tests.Core.ModUI.Sliders;
 
 public sealed class CharacterSliderLimitsTests
 {
-    private const int RangeCount = 19;
+    private const int RangeCount = 21;
 
     [Fact]
     public void EveryRange_HasMinBelowMax()
@@ -13,5 +13,12 @@ public sealed class CharacterSliderLimitsTests
 
         Assert.Equal(RangeCount, ranges.Length);
         Assert.All(ranges, range => Assert.True(range.Min < range.Max));
+    }
+
+    [Fact]
+    public void WeaverRanges_KeepFormerPageLimits()
+    {
+        Assert.Equal(new SliderRange(0f, 200f, true), CharacterSliderLimits.WeaverTreePoints);
+        Assert.Equal(new SliderRange(0f, 10f, true), CharacterSliderLimits.WeaverPointMultiplier);
     }
 }

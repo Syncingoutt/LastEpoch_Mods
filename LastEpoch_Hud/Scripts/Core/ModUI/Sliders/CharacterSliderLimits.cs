@@ -59,4 +59,10 @@ public static class CharacterSliderLimits
 
     // Source: no prefab match; UtilitiesMultipliersPage inline limits
     public static readonly SliderRange Multiplier = new(0f, 255f, true);
+
+    // Source: no prefab slider; former UtilitiesCharacterPage inline limits
+    public static readonly SliderRange WeaverTreePoints = new(0f, 200f, true);
+
+    // Source: no prefab slider; former UtilitiesCharacterPage inline limits
+    public static readonly SliderRange WeaverPointMultiplier = new(0f, 10f, true);
 }

@@ -252,77 +252,32 @@ internal static class UtilitiesCharacterPage
             position => PointMultiplier.Clamp(position),
             Mods.Skills.Skills_Level.Sync
         );
-        _page.AddSlider(
+        AddOffAtZeroSlider(
             card,
             "WeaverPoints",
             "Weaver Tree Points",
             string.Empty,
-            0f,
-            Mods.Factions.TheWoven.Faction_Woven_TreePoints.SliderMax,
-            true,
-            () =>
-                HasSave() && Save_Manager.instance.data.Factions.TheWoven.Enable_TreePoints
-                    ? Save_Manager.instance.data.Factions.TheWoven.TreePoints
-                    : 0f,
-            value =>
-            {
-                if (!HasSave())
-                {
-                    return;
-                }
-                bool enabled = value > 0.0001f;
-                Save_Manager.instance.data.Factions.TheWoven.Enable_TreePoints = enabled;
-                if (enabled)
-                {
-                    Save_Manager.instance.data.Factions.TheWoven.TreePoints = (int)value;
-                    Mods.Factions.TheWoven.Faction_Woven_TreePoints.ApplyToPlayer();
-                }
-                else
-                {
-                    Mods.Factions.TheWoven.Faction_Woven_TreePoints.ReleaseToRealPoints();
-                }
-            }
+            CharacterSliderLimits.WeaverTreePoints,
+            ModSettings.FactionsWoven.TreePoints,
+            position => position,
+            Mods.Factions.TheWoven.Faction_Woven_TreePoints.SyncTreePoints
         );
-        _page.AddSlider(
+        AddOffAtZeroSlider(
             card,
             "WeaverMultiplier",
             "Weaver Tree Points Multiplier",
             "x",
-            0f,
-            10f,
-            true,
-            () =>
-                HasSave() && Save_Manager.instance.data.Factions.TheWoven.Enable_PointMultiplier
-                    ? Save_Manager.instance.data.Factions.TheWoven.PointMultiplier
-                    : 0f,
-            value =>
-            {
-                if (!HasSave())
-                {
-                    return;
-                }
-                bool enabled = value > 0.0001f;
-                Save_Manager.instance.data.Factions.TheWoven.Enable_PointMultiplier = enabled;
-                if (enabled)
-                {
-                    Save_Manager.instance.data.Factions.TheWoven.PointMultiplier =
-                        PointMultiplier.Clamp(value);
-                }
-                Mods.Factions.TheWoven.Faction_Woven_TreePoints.ApplyToPlayer();
-            }
+            CharacterSliderLimits.WeaverPointMultiplier,
+            ModSettings.FactionsWoven.PointMultiplier,
+            position => PointMultiplier.Clamp(position),
+            Mods.Factions.TheWoven.Faction_Woven_TreePoints.ApplyToPlayer
         );
         _page.AddToggle(
             card,
             "FreeWeaverRespec",
             "Free Weaver Respec",
-            () => HasSave() && Save_Manager.instance.data.Factions.TheWoven.Enable_FreeRespe,
-            value =>
-            {
-                if (HasSave())
-                {
-                    Save_Manager.instance.data.Factions.TheWoven.Enable_FreeRespe = value;
-                }
-            }
+            () => ModSettings.FactionsWoven.FreeRespec.Value,
+            ModSettings.FactionsWoven.FreeRespec.Set
         );
     }
 
@@ -737,7 +692,4 @@ internal static class UtilitiesCharacterPage
 
         Refs_Manager.player_data.CharacterClass = classId;
     }
-
-    private static bool HasSave() =>
-        !Save_Manager.instance.IsNullOrDestroyed() && Save_Manager.instance.initialized;
 }

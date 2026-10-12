@@ -23,7 +23,8 @@ public static class LegacySettingsMap
             ScenesCameraMap.All,
             ScenesMinimapMap.All,
             ScenesDungeonsMap.All,
-            ScenesMonolithsMap.All
+            ScenesMonolithsMap.All,
+            FactionsWovenMap.All
         );
 
     private static LegacyFieldMapping[] Concat(params IReadOnlyList<LegacyFieldMapping>[] maps)

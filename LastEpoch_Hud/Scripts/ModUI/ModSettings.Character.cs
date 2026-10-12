@@ -215,5 +215,26 @@ public static partial class ModSettings
             max: CharacterSliderLimits.Multiplier.Max
         );
     }
+
+    /// <summary>Weaver tree cheats on Utilities > Character.</summary>
+    public static class FactionsWoven
+    {
+        public static readonly SettingsGroup Group = new(FactionsWovenMap.Group);
+
+        public static readonly FloatSetting TreePoints = Group.Float(
+            "TreePoints",
+            min: CharacterSliderLimits.WeaverTreePoints.Min,
+            max: CharacterSliderLimits.WeaverTreePoints.Max
+        );
+
+        public static readonly FloatSetting PointMultiplier = Group.Float(
+            "PointMultiplier",
+            defaultValue: 2f,
+            min: CharacterSliderLimits.WeaverPointMultiplier.Min,
+            max: CharacterSliderLimits.WeaverPointMultiplier.Max
+        );
+
+        public static readonly BoolSetting FreeRespec = Group.Bool("FreeRespec");
+    }
 #pragma warning restore CA1034
 }
