@@ -1,157 +1,102 @@
-﻿namespace LastEpoch_Hud.Scripts.Mods.Camera;
+using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
+
+namespace LastEpoch_Hud.Scripts.Mods.Camera;
 
 public class Camera_Override
 {
+    private const float GameZoomMinimum = -7f;
+    private const float GameZoomPerScroll = 0.15f;
+    private const float GameZoomSpeed = 2.5f;
+    private const float GameDefaultRotation = 95f;
+    private const float GameOffsetMinimum = -1f;
+    private const float GameOffsetMaximum = 0.31f;
+    private const float GameAngleMinimum = 35f;
+    private const float GameAngleMaximum = 49f;
+
+    /// <summary>Writes each enabled camera setting to the game camera.</summary>
     public static void Set()
     {
-        if (
-            (Scenes.IsGameScene())
-            && (!Save_Manager.instance.data.IsNullOrDestroyed())
-            && (!Refs_Manager.camera_manager.IsNullOrDestroyed())
-        )
+        if (!Scenes.IsGameScene())
         {
-            if (Save_Manager.instance.data.Scenes.Camera.Enable_ZoomMinimum)
-            {
-                Refs_Manager.camera_manager.zoomMin = Save_Manager
-                    .instance
-                    .data
-                    .Scenes
-                    .Camera
-                    .ZoomMinimum;
-            }
-            if (Save_Manager.instance.data.Scenes.Camera.Enable_ZoomPerScroll)
-            {
-                Refs_Manager.camera_manager.zoomPerScroll = Save_Manager
-                    .instance
-                    .data
-                    .Scenes
-                    .Camera
-                    .ZoomPerScroll;
-            }
-            if (Save_Manager.instance.data.Scenes.Camera.Enable_ZoomSpeed)
-            {
-                Refs_Manager.camera_manager.zoomSpeed = Save_Manager
-                    .instance
-                    .data
-                    .Scenes
-                    .Camera
-                    .ZoomSpeed;
-            }
-            if (Save_Manager.instance.data.Scenes.Camera.Enable_DefaultRotation)
-            {
-                Refs_Manager.camera_manager.cameraRotationDefault = Save_Manager
-                    .instance
-                    .data
-                    .Scenes
-                    .Camera
-                    .DefaultRotation;
-            }
-            if (Save_Manager.instance.data.Scenes.Camera.Enable_OffsetMinimum)
-            {
-                Refs_Manager.camera_manager.offsetMin = Save_Manager
-                    .instance
-                    .data
-                    .Scenes
-                    .Camera
-                    .OffsetMinimum;
-            }
-            if (Save_Manager.instance.data.Scenes.Camera.Enable_OffsetMaximum)
-            {
-                Refs_Manager.camera_manager.offsetMax = Save_Manager
-                    .instance
-                    .data
-                    .Scenes
-                    .Camera
-                    .OffsetMaximum;
-            }
-            if (Save_Manager.instance.data.Scenes.Camera.Enable_AngleMinimum)
-            {
-                Refs_Manager.camera_manager.cameraAngleMin = Save_Manager
-                    .instance
-                    .data
-                    .Scenes
-                    .Camera
-                    .AngleMinimum;
-            }
-            if (Save_Manager.instance.data.Scenes.Camera.Enable_AngleMaximum)
-            {
-                Refs_Manager.camera_manager.cameraAngleMax = Save_Manager
-                    .instance
-                    .data
-                    .Scenes
-                    .Camera
-                    .AngleMaximum;
-            }
+            return;
+        }
+        CameraManager camera = Refs_Manager.camera_manager;
+        if (camera.IsNullOrDestroyed())
+        {
+            return;
+        }
+        if (ModSettings.ScenesCamera.ZoomMinimum.Enabled)
+        {
+            camera.zoomMin = ModSettings.ScenesCamera.ZoomMinimum.Value;
+        }
+        if (ModSettings.ScenesCamera.ZoomPerScroll.Enabled)
+        {
+            camera.zoomPerScroll = ModSettings.ScenesCamera.ZoomPerScroll.Value;
+        }
+        if (ModSettings.ScenesCamera.ZoomSpeed.Enabled)
+        {
+            camera.zoomSpeed = ModSettings.ScenesCamera.ZoomSpeed.Value;
+        }
+        if (ModSettings.ScenesCamera.DefaultRotation.Enabled)
+        {
+            camera.cameraRotationDefault = ModSettings.ScenesCamera.DefaultRotation.Value;
+        }
+        if (ModSettings.ScenesCamera.OffsetMinimum.Enabled)
+        {
+            camera.offsetMin = ModSettings.ScenesCamera.OffsetMinimum.Value;
+        }
+        if (ModSettings.ScenesCamera.OffsetMaximum.Enabled)
+        {
+            camera.offsetMax = ModSettings.ScenesCamera.OffsetMaximum.Value;
+        }
+        if (ModSettings.ScenesCamera.AngleMinimum.Enabled)
+        {
+            camera.cameraAngleMin = ModSettings.ScenesCamera.AngleMinimum.Value;
+        }
+        if (ModSettings.ScenesCamera.AngleMaximum.Enabled)
+        {
+            camera.cameraAngleMax = ModSettings.ScenesCamera.AngleMaximum.Value;
         }
     }
 
+    /// <summary>Stores the game camera values and applies them.</summary>
     public static void ResetToDefault()
     {
-        if (
-            (Scenes.IsGameScene())
-            && (!Save_Manager.instance.data.IsNullOrDestroyed())
-            && (!Refs_Manager.camera_manager.IsNullOrDestroyed())
-        )
+        if (!Scenes.IsGameScene())
         {
-            Save_Manager.instance.data.Scenes.Camera.ZoomMinimum = -7f;
-            Save_Manager.instance.data.Scenes.Camera.ZoomPerScroll = 0.15f;
-            Save_Manager.instance.data.Scenes.Camera.ZoomSpeed = 2.5f;
-            Save_Manager.instance.data.Scenes.Camera.DefaultRotation = 95f;
-            Save_Manager.instance.data.Scenes.Camera.OffsetMinimum = -1f;
-            Save_Manager.instance.data.Scenes.Camera.OffsetMaximum = 0.31f;
-            Save_Manager.instance.data.Scenes.Camera.AngleMinimum = 35f;
-            Save_Manager.instance.data.Scenes.Camera.AngleMaximum = 49f;
-            Save_Manager.instance.Save();
-
-            //force set
-            Refs_Manager.camera_manager.zoomMin = Save_Manager
-                .instance
-                .data
-                .Scenes
-                .Camera
-                .ZoomMinimum;
-            Refs_Manager.camera_manager.zoomPerScroll = Save_Manager
-                .instance
-                .data
-                .Scenes
-                .Camera
-                .ZoomPerScroll;
-            Refs_Manager.camera_manager.zoomSpeed = Save_Manager
-                .instance
-                .data
-                .Scenes
-                .Camera
-                .ZoomSpeed;
-            Refs_Manager.camera_manager.cameraRotationDefault = Save_Manager
-                .instance
-                .data
-                .Scenes
-                .Camera
-                .DefaultRotation;
-            Refs_Manager.camera_manager.offsetMin = Save_Manager
-                .instance
-                .data
-                .Scenes
-                .Camera
-                .OffsetMinimum;
-            Refs_Manager.camera_manager.offsetMax = Save_Manager
-                .instance
-                .data
-                .Scenes
-                .Camera
-                .OffsetMaximum;
-            Refs_Manager.camera_manager.cameraAngleMin = Save_Manager
-                .instance
-                .data
-                .Scenes
-                .Camera
-                .AngleMinimum;
-            Refs_Manager.camera_manager.cameraAngleMax = Save_Manager
-                .instance
-                .data
-                .Scenes
-                .Camera
-                .AngleMaximum;
+            return;
         }
+        CameraManager camera = Refs_Manager.camera_manager;
+        if (camera.IsNullOrDestroyed())
+        {
+            return;
+        }
+        StoreGameValues();
+        ApplyAll(camera);
+    }
+
+    private static void StoreGameValues()
+    {
+        ModSettings.ScenesCamera.ZoomMinimum.SetValue(GameZoomMinimum);
+        ModSettings.ScenesCamera.ZoomPerScroll.SetValue(GameZoomPerScroll);
+        ModSettings.ScenesCamera.ZoomSpeed.SetValue(GameZoomSpeed);
+        ModSettings.ScenesCamera.DefaultRotation.SetValue(GameDefaultRotation);
+        ModSettings.ScenesCamera.OffsetMinimum.SetValue(GameOffsetMinimum);
+        ModSettings.ScenesCamera.OffsetMaximum.SetValue(GameOffsetMaximum);
+        ModSettings.ScenesCamera.AngleMinimum.SetValue(GameAngleMinimum);
+        ModSettings.ScenesCamera.AngleMaximum.SetValue(GameAngleMaximum);
+    }
+
+    private static void ApplyAll(CameraManager camera)
+    {
+        camera.zoomMin = ModSettings.ScenesCamera.ZoomMinimum.Value;
+        camera.zoomPerScroll = ModSettings.ScenesCamera.ZoomPerScroll.Value;
+        camera.zoomSpeed = ModSettings.ScenesCamera.ZoomSpeed.Value;
+        camera.cameraRotationDefault = ModSettings.ScenesCamera.DefaultRotation.Value;
+        camera.offsetMin = ModSettings.ScenesCamera.OffsetMinimum.Value;
+        camera.offsetMax = ModSettings.ScenesCamera.OffsetMaximum.Value;
+        camera.cameraAngleMin = ModSettings.ScenesCamera.AngleMinimum.Value;
+        camera.cameraAngleMax = ModSettings.ScenesCamera.AngleMaximum.Value;
     }
 }

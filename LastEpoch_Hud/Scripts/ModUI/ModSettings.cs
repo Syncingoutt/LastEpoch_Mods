@@ -471,37 +471,6 @@ public static partial class ModSettings
     //     public static readonly FloatSetting Quantity = Group.Float("Quantity", panel: "Quantity");
     // }
 
-    //     public static class ScenesCamera
-    //     {
-    //         public static readonly BoolSetting EnableMod = new BoolSetting();
-
-    //         public static readonly SettingsGroup Group = new SettingsGroup("ScenesCamera")
-    //             .Tab("Scenes", "Btn_Menu_Scenes")
-    //             .Content("Scenes_Content")
-    //             .Viewport("Camera", "Scenes_Camera_Content")
-    //             .Prefix("Scenes_Camera_")
-    //             .OnBind((contentObj, _) =>
-    //             {
-    //                 var toggle = Prefab.ToggleInTitle(contentObj, "Camera", "Toggle_Scenes_Camera_Enable");
-    //                 if (toggle == null) return;
-    //                 toggle.isOn = EnableMod.Value;
-    //                 Prefab.BindToggle(toggle, new System.Action<bool>(v => EnableMod.Set(v)));
-    //             });
-
-    //         public static readonly ActionBinding Reset = Group.Button("Reset");
-    //         public static readonly ActionBinding Set   = Group.Button("Set");
-
-    //         public static readonly FloatSetting ZoomMinimum     = Group.Float("ZoomMinimum");
-    //         public static readonly FloatSetting ZoomPerScroll   = Group.Float("ZoomPerScroll");
-    //         public static readonly FloatSetting ZoomSpeed       = Group.Float("ZoomSpeed");
-    //         public static readonly FloatSetting DefaultRotation = Group.Float("DefaultRotation");
-    //         public static readonly FloatSetting OffsetMinimum   = Group.Float("OffsetMinimum");
-    //         public static readonly FloatSetting OffsetMaximum   = Group.Float("OffsetMaximum");
-    //         public static readonly FloatSetting AngleMinimum    = Group.Float("AngleMinimum");
-    //         public static readonly FloatSetting AngleMaximum    = Group.Float("AngleMaximum");
-    //         public static readonly BoolSetting  LoadOnStart     = Group.Bool("LoadOnStart");
-    //     }
-
     //     public static class ScenesDungeons
     //     {
     //         public static readonly SettingsGroup Group = new SettingsGroup("ScenesDungeons")
