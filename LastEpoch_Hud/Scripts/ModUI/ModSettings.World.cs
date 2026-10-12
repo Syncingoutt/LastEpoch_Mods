@@ -70,5 +70,23 @@ public static partial class ModSettings
 
         public static readonly BoolSetting LoadOnStart = Group.Bool("LoadOnStart");
     }
+
+    /// <summary>World > Misc minimap toggles.</summary>
+    public static class ScenesMinimap
+    {
+        public static readonly SettingsGroup Group = new(ScenesMinimapMap.Group);
+
+        public static readonly BoolSetting MaxZoomOut = Group.Bool("MaxZoomOut");
+
+        public static readonly BoolSetting RemoveFogOfWar = Group.Bool("RemoveFogOfWar");
+    }
+
+    /// <summary>World > Misc dungeon entry toggle.</summary>
+    public static class ScenesDungeons
+    {
+        public static readonly SettingsGroup Group = new(ScenesDungeonsMap.Group);
+
+        public static readonly BoolSetting EnterWithoutKey = Group.Bool("EnterWithoutKey");
+    }
 #pragma warning restore CA1034
 }

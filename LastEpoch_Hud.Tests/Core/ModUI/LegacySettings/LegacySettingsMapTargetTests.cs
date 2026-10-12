@@ -130,7 +130,7 @@ public sealed class LegacySettingsMapTargetTests
         using var module = ModuleDefinition.ReadModule(GameEnvironment.ModDll);
         IEnumerable<MethodDefinition> initializers = module
             .GetTypes()
-            .Where(t => t.FullName.StartsWith(ModSettingsPrefix, StringComparison.Ordinal))
+            .Where(t => t.IsNestedPublic && t.DeclaringType.FullName + "/" == ModSettingsPrefix)
             .SelectMany(t => t.Methods)
             .Where(m => m.IsConstructor && m.IsStatic && m.HasBody);
         foreach (MethodDefinition initializer in initializers)

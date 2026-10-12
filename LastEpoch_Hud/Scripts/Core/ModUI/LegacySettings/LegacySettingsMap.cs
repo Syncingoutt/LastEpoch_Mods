@@ -20,7 +20,9 @@ public static class LegacySettingsMap
             SkillsCompanionsMap.All,
             SkillsMinionsMap.All,
             SummonMap.All,
-            ScenesCameraMap.All
+            ScenesCameraMap.All,
+            ScenesMinimapMap.All,
+            ScenesDungeonsMap.All
         );
 
     private static LegacyFieldMapping[] Concat(params IReadOnlyList<LegacyFieldMapping>[] maps)

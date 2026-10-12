@@ -1,42 +1,23 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
 
 namespace LastEpoch_Hud.Scripts.Mods.Minimap;
 
 internal class Minimap_ZoomOut
 {
-    public static bool CanRun()
-    {
-        if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
-        {
-            if (!Save_Manager.instance.data.IsNullOrDestroyed())
-            {
-                return Save_Manager.instance.data.Scenes.Minimap.Enable_MaxZoomOut;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
-    }
+    private const float GameMaxZoom = 37.5f;
+
+    /// <summary>True in a game scene with Max Zoom Out on.</summary>
+    public static bool CanRun() =>
+        Scenes.IsGameScene() && ModSettings.ScenesMinimap.MaxZoomOut.Value;
 
     [HarmonyPatch(typeof(DMMapZoom), "ZoomOutMinimap")]
     public class DMMapZoom_ZoomOutMinimap
     {
         public static void Prefix(ref DMMapZoom __instance)
         {
-            if (CanRun())
-            {
-                __instance.maxMinimapZoom = float.MaxValue;
-            }
-            else
-            {
-                __instance.maxMinimapZoom = 37.5f;
-            } //Default
+            __instance.maxMinimapZoom = CanRun() ? float.MaxValue : GameMaxZoom;
         }
     }
 }

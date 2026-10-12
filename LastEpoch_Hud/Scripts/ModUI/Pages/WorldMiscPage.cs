@@ -1,4 +1,3 @@
-using System;
 using LastEpoch_Hud.Scripts.Core.ModUI;
 using LastEpoch_Hud.Scripts.ModUI.Settings;
 using LastEpoch_Hud.Scripts.ModUI.Shell;
@@ -27,12 +26,12 @@ internal static class WorldMiscPage
             () => ModSettings.DungeonReveal.Enabled.Value,
             ModSettings.DungeonReveal.Enabled.Set
         );
-        AddToggle(
+        page.AddToggle(
             dungeons,
             "EnterWithoutKey",
             "Enter Without Key",
-            () => Save_Manager.instance.data.Scenes.Dungeons.Enable_EnterWithoutKey,
-            v => Save_Manager.instance.data.Scenes.Dungeons.Enable_EnterWithoutKey = v
+            () => ModSettings.ScenesDungeons.EnterWithoutKey.Value,
+            ModSettings.ScenesDungeons.EnterWithoutKey.Set
         );
 
         var misc = page.AddCard("Misc", "Misc");
@@ -100,19 +99,19 @@ internal static class WorldMiscPage
         page.AddText(gains, "DragCounterHint", "Hold Alt and drag the counter to move it.", 48f);
 
         var minimap = page.AddCard("Minimap", "Minimap");
-        AddToggle(
+        page.AddToggle(
             minimap,
             "MaxZoomOut",
             "Max Zoom Out",
-            () => Save_Manager.instance.data.Scenes.Minimap.Enable_MaxZoomOut,
-            v => Save_Manager.instance.data.Scenes.Minimap.Enable_MaxZoomOut = v
+            () => ModSettings.ScenesMinimap.MaxZoomOut.Value,
+            ModSettings.ScenesMinimap.MaxZoomOut.Set
         );
-        AddToggle(
+        page.AddToggle(
             minimap,
             "RemoveFog",
             "Remove Fog Of War",
-            () => Save_Manager.instance.data.Scenes.Minimap.Enable_RemoveFogOfWar,
-            v => Save_Manager.instance.data.Scenes.Minimap.Enable_RemoveFogOfWar = v
+            () => ModSettings.ScenesMinimap.RemoveFogOfWar.Value,
+            ModSettings.ScenesMinimap.RemoveFogOfWar.Set
         );
     }
 
@@ -143,26 +142,4 @@ internal static class WorldMiscPage
                 Mods.UI.SessionGainCounters.Session.Paused ? "Resume" : "Pause"
             );
     }
-
-    private static void AddToggle(
-        HudFormPage.Card card,
-        string id,
-        string label,
-        Func<bool> read,
-        Action<bool> write
-    ) =>
-        page.AddToggle(
-            card,
-            id,
-            label,
-            () => HasSave() && read(),
-            v =>
-            {
-                if (HasSave())
-                    write(v);
-            }
-        );
-
-    private static bool HasSave() =>
-        !Save_Manager.instance.IsNullOrDestroyed() && Save_Manager.instance.initialized;
 }

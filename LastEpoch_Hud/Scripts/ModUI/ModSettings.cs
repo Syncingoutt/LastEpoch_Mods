@@ -471,27 +471,6 @@ public static partial class ModSettings
     //     public static readonly FloatSetting Quantity = Group.Float("Quantity", panel: "Quantity");
     // }
 
-    //     public static class ScenesDungeons
-    //     {
-    //         public static readonly SettingsGroup Group = new SettingsGroup("ScenesDungeons")
-    //             .Content("Scenes_Content")
-    //             .Viewport("Center", "Scenes_Dungeons_Content")
-    //             .Prefix("Scenes_Dungeons_");
-
-    //         public static readonly BoolSetting EnterWithoutKey = Group.Bool("EnterWithoutKey");
-    //     }
-
-    //     public static class ScenesMinimap
-    //     {
-    //         public static readonly SettingsGroup Group = new SettingsGroup("ScenesMinimap")
-    //             .Content("Scenes_Content")
-    //             .Viewport("Center", "Scenes_Minimap_Content")
-    //             .Prefix("Scenes_Minimap_");
-
-    //         public static readonly BoolSetting MaxZoomOut       = Group.Bool("MaxZoomOut");
-    //         public static readonly BoolSetting RemoveFogOfWar   = Group.Bool("RemoveFogOfWar");
-    //     }
-
     //     public static class ScenesMonoliths
     //     {
     //         public static readonly SettingsGroup Group = new SettingsGroup("ScenesMonoliths")
