@@ -15,6 +15,8 @@ public sealed class LegacySettingsMapTargetTests
     private const string FloatKind = "Float";
     private const string BoolKind = "Bool";
 
+    private static readonly object _nullFloat = new();
+
     private static readonly string[] _kinds =
     {
         BoolKind,
@@ -68,13 +70,18 @@ public sealed class LegacySettingsMapTargetTests
     }
 
     [Fact]
-    public void All_FloatValueLimitsEqualDeclaredLimits()
+    public void All_ValueLimitsEqualDeclaredLimits()
     {
         GameEnvironment.SkipWithoutModBuild();
         Dictionary<(string Group, string Key), DeclaredSetting> declared = ReadDeclaredSettings();
 
         IEnumerable<string> bad = LegacySettingsMap
-            .All.Where(m => m.Part == LegacySettingPart.FloatValue)
+            .All.Where(m =>
+                m.Part
+                    is LegacySettingPart.FloatValue
+                        or LegacySettingPart.RangeMin
+                        or LegacySettingPart.RangeMax
+            )
             .Where(m =>
                 !declared.TryGetValue((m.Group, m.Key), out DeclaredSetting setting)
                 || setting.MinLimit != m.MinLimit
@@ -89,7 +96,10 @@ public sealed class LegacySettingsMapTargetTests
     {
         return part == LegacySettingPart.Bool
             || part == LegacySettingPart.FloatEnabled
-            || part == LegacySettingPart.FloatValue;
+            || part == LegacySettingPart.FloatValue
+            || part == LegacySettingPart.RangeEnabled
+            || part == LegacySettingPart.RangeMin
+            || part == LegacySettingPart.RangeMax;
     }
 
     private static bool HasDefault(
@@ -107,6 +117,9 @@ public sealed class LegacySettingsMapTargetTests
         {
             LegacySettingPart.Bool => (bool?)imported == setting.BoolDefault,
             LegacySettingPart.FloatEnabled => (bool?)imported?["Enabled"] == setting.FloatEnabled,
+            LegacySettingPart.RangeEnabled => (bool?)imported?["Enabled"] == setting.RangeEnabled,
+            LegacySettingPart.RangeMin => (float?)imported?["Min"] == setting.RangeMin,
+            LegacySettingPart.RangeMax => (float?)imported?["Max"] == setting.RangeMax,
             _ => (float?)imported?["Value"] == setting.FloatValue,
         };
     }
@@ -153,6 +166,11 @@ public sealed class LegacySettingsMapTargetTests
                 pending = IsLimitsField(field) ? field : pending;
                 continue;
             }
+            if (instruction.OpCode == OpCodes.Initobj && IsNullableFloat(instruction.Operand))
+            {
+                args.Add(_nullFloat);
+                continue;
+            }
             if (instruction.Operand is not MethodReference call)
             {
                 continue;
@@ -191,11 +209,25 @@ public sealed class LegacySettingsMapTargetTests
     {
         if (kind == BoolKind)
         {
-            return new DeclaredSetting(kind, ToInt(numbers, 0) == 1, 0f, false, 0f, 0f);
+            return new DeclaredSetting(
+                kind,
+                ToInt(numbers, 0) == 1,
+                0f,
+                false,
+                0f,
+                0f,
+                false,
+                0f,
+                0f
+            );
+        }
+        if (kind == "Range")
+        {
+            return DeclareRange(numbers);
         }
         if (kind != FloatKind)
         {
-            return new DeclaredSetting(kind, false, 0f, false, 0f, 0f);
+            return new DeclaredSetting(kind, false, 0f, false, 0f, 0f, false, 0f, 0f);
         }
         return new DeclaredSetting(
             kind,
@@ -203,8 +235,40 @@ public sealed class LegacySettingsMapTargetTests
             ToFloat(numbers, 0),
             ToInt(numbers, 1) == 1,
             ToFloat(numbers, 3),
-            ToFloat(numbers, 4)
+            ToFloat(numbers, 4),
+            false,
+            0f,
+            0f
         );
+    }
+
+    private static DeclaredSetting DeclareRange(List<object> numbers)
+    {
+        float minLimit = ToFloat(numbers, 0);
+        float maxLimit = ToFloat(numbers, 1);
+        return new DeclaredSetting(
+            "Range",
+            false,
+            0f,
+            false,
+            minLimit,
+            maxLimit,
+            ToInt(numbers, 4) == 1,
+            ToFloatOr(numbers, 2, minLimit),
+            ToFloatOr(numbers, 3, maxLimit)
+        );
+    }
+
+    private static bool IsNullableFloat(object operand)
+    {
+        return operand is TypeReference type && type.FullName == "System.Nullable`1<System.Single>";
+    }
+
+    private static float ToFloatOr(List<object> numbers, int index, float fallback)
+    {
+        return index < numbers.Count && ReferenceEquals(numbers[index], _nullFloat)
+            ? fallback
+            : ToFloat(numbers, index);
     }
 
     private static int ToInt(List<object> numbers, int index)

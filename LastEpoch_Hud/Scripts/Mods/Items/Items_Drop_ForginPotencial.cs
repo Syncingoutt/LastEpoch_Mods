@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using HarmonyLib;
 using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -20,25 +21,15 @@ public class Items_Drop_ForginPotencial
 
     public static bool CanRun()
     {
-        if ((Hud_Manager.IsPauseOpen()) && (ModUI.ForceDrop.ForceDropModel.Enabled))
+        if (Hud_Manager.IsPauseOpen() && ModUI.ForceDrop.ForceDropModel.Enabled)
         {
             return false;
         }
-        else if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
-        {
-            if (!Save_Manager.instance.data.IsNullOrDestroyed())
-            {
-                return Save_Manager.instance.data.Items.Drop.Enable_ForginPotencial;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
+        if (!Scenes.IsGameScene())
         {
             return false;
         }
+        return ModSettings.ItemsDrop.ForgingPotential.Enabled;
     }
 
     public static void Keep(ItemData item, byte value)
@@ -74,8 +65,8 @@ public class Items_Drop_ForginPotencial
 
     static byte Roll()
     {
-        int min = Mathf.RoundToInt(Save_Manager.instance.data.Items.Drop.ForginPotencial_Min);
-        int max = Mathf.RoundToInt(Save_Manager.instance.data.Items.Drop.ForginPotencial_Max);
+        int min = Mathf.RoundToInt(ModSettings.ItemsDrop.ForgingPotential.Min);
+        int max = Mathf.RoundToInt(ModSettings.ItemsDrop.ForgingPotential.Max);
         if (max < min)
         {
             int swap = min;

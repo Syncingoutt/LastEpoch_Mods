@@ -7,7 +7,7 @@ namespace LastEpoch_Hud.Scripts.Core.ModUI.LegacySettings;
 public static class LegacySettingsMap
 {
     public static IReadOnlyList<LegacyFieldMapping> All { get; } =
-        Concat(ItemsRequirementsMap.All, PermanentBuffsMap.All);
+        Concat(ItemsRequirementsMap.All, PermanentBuffsMap.All, ItemsDropMap.All);
 
     private static LegacyFieldMapping[] Concat(params IReadOnlyList<LegacyFieldMapping>[] maps)
     {

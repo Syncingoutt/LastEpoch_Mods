@@ -445,29 +445,6 @@ public static partial class ModSettings
     // ITEMS TAB
     //
 
-    // public static class ItemsDrop
-    // {
-    //     public static readonly SettingsGroup Group = new SettingsGroup("ItemsDrop")
-    //         .Tab("Items", "Btn_Menu_Items")
-    //         .Content("Items_Content")
-    //         .Viewport("Items_Drop", "Items_Data_Content")
-    //         .Prefix("Items_Drop_");
-
-    //     public static readonly RadioSetting ForceRarity    = Group.Radio("ForceRarity", "Force", "ForceUnique", "ForceSet", "ForceLegendary");
-    //     public static readonly RangeSetting Implicits      = Group.Range("Implicits", 0, 255, format: DisplayFormat.Percent);
-    //     public static readonly RangeSetting ForginPotencial= Group.Range("ForginPotencial", 0, 255);
-    //     public static readonly BoolSetting  ForceSeal      = Group.Bool("ForceSeal");
-    //     public static readonly RangeSetting SealTier       = Group.Range("SealTier", 0, 6, format: DisplayFormat.Tier);
-    //     public static readonly RangeSetting SealValue      = Group.Range("SealValue", 0, 255, format: DisplayFormat.Percent);
-    //     public static readonly RangeSetting AffixCount     = Group.Range("AffixCount", 0, 6, defaultMax: 4, panel: "NbAffixes");
-    //     public static readonly RangeSetting IdolAffixCount = Group.Range("IdolAffixCount", 0, 4, defaultMax: 2);
-    //     public static readonly RangeSetting AffixTiers     = Group.Range("AffixTiers", 0, 6, format: DisplayFormat.Tier, panel: "AffixesTiers");
-    //     public static readonly RangeSetting AffixValues    = Group.Range("AffixValues", 0, 255, format: DisplayFormat.Percent, panel: "AffixesValues");
-    //     public static readonly RangeSetting UniqueMods     = Group.Range("UniqueMods", 0, 255, format: DisplayFormat.Percent);
-    //     public static readonly RangeSetting LegendaryPotencial = Group.Range("LegendaryPotencial", 0, 255, defaultMax: 4);
-    //     public static readonly RangeSetting WeaverWill     = Group.Range("WeaverWill", 0, 28);
-    // }
-
     // public static class ItemsPickup
     // {
     //     public static readonly SettingsGroup Group = new SettingsGroup("ItemsPickup")

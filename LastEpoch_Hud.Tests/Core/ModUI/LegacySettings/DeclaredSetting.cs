@@ -7,5 +7,8 @@ internal readonly record struct DeclaredSetting(
     float FloatValue,
     bool FloatEnabled,
     float MinLimit,
-    float MaxLimit
+    float MaxLimit,
+    bool RangeEnabled,
+    float RangeMin,
+    float RangeMax
 );

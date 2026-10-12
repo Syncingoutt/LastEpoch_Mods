@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using LastEpoch_Hud.Scripts.Core.ModUI.LegacySettings.Maps;
+using LastEpoch_Hud.Scripts.Core.ModUI.Sliders;
 using LastEpoch_Hud.Scripts.Mods.Items.Requirements;
 using LastEpoch_Hud.Scripts.ModUI.Settings;
 
@@ -27,6 +29,79 @@ public static partial class ModSettings
         {
             Items_Update.Reqs();
         }
+    }
+
+    /// <summary>Items &gt; Drop overrides for newly rolled drops.</summary>
+    public static class ItemsDrop
+    {
+        public static readonly SettingsGroup Group = new(ItemsDropMap.Group);
+
+        public static readonly BoolSetting ForceUnique = Group.Bool("ForceUnique");
+        public static readonly BoolSetting ForceSet = Group.Bool("ForceSet");
+        public static readonly BoolSetting ForceLegendary = Group.Bool("ForceLegendary");
+        public static readonly BoolSetting ForceSeal = Group.Bool("ForceSeal");
+
+        public static readonly RangeSetting Implicits = Group.Range(
+            "Implicits",
+            ItemSliderLimits.DropImplicits.Min,
+            ItemSliderLimits.DropImplicits.Max
+        );
+        public static readonly RangeSetting ForgingPotential = Group.Range(
+            "ForgingPotential",
+            ItemSliderLimits.DropForgingPotential.Min,
+            ItemSliderLimits.DropForgingPotential.Max
+        );
+        public static readonly RangeSetting SealTier = Group.Range(
+            "SealTier",
+            ItemSliderLimits.DropSealTier.Min,
+            ItemSliderLimits.DropSealTier.Max
+        );
+        public static readonly RangeSetting SealValue = Group.Range(
+            "SealValue",
+            ItemSliderLimits.DropSealValue.Min,
+            ItemSliderLimits.DropSealValue.Max
+        );
+        public static readonly RangeSetting AffixCount = Group.Range(
+            "AffixCount",
+            ItemSliderLimits.DropAffixCount.Min,
+            ItemSliderLimits.DropAffixCount.Max,
+            defaultMin: ItemSliderLimits.DropAffixCount.Min,
+            defaultMax: 4f
+        );
+        public static readonly RangeSetting IdolAffixCount = Group.Range(
+            "IdolAffixCount",
+            ItemSliderLimits.DropIdolAffixCount.Min,
+            ItemSliderLimits.DropIdolAffixCount.Max
+        );
+        public static readonly RangeSetting AffixTiers = Group.Range(
+            "AffixTiers",
+            ItemSliderLimits.DropAffixTiers.Min,
+            ItemSliderLimits.DropAffixTiers.Max
+        );
+        public static readonly RangeSetting AffixValues = Group.Range(
+            "AffixValues",
+            ItemSliderLimits.DropAffixValues.Min,
+            ItemSliderLimits.DropAffixValues.Max
+        );
+        public static readonly RangeSetting UniqueMods = Group.Range(
+            "UniqueMods",
+            ItemSliderLimits.DropUniqueMods.Min,
+            ItemSliderLimits.DropUniqueMods.Max
+        );
+        public static readonly RangeSetting LegendaryPotential = Group.Range(
+            "LegendaryPotential",
+            ItemSliderLimits.DropLegendaryPotential.Min,
+            ItemSliderLimits.DropLegendaryPotential.Max
+        );
+        public static readonly RangeSetting WeaverWill = Group.Range(
+            "WeaverWill",
+            ItemSliderLimits.DropWeaverWill.Min,
+            ItemSliderLimits.DropWeaverWill.Max
+        );
+
+        /// <summary>Settings the Unique/Set exclusivity clears.</summary>
+        public static IReadOnlyList<BoolSetting> ForcedRarities { get; } =
+            new[] { ForceUnique, ForceSet, ForceLegendary };
     }
 #pragma warning restore CA1034
 }
