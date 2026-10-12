@@ -88,5 +88,42 @@ public static partial class ModSettings
 
         public static readonly BoolSetting EnterWithoutKey = Group.Bool("EnterWithoutKey");
     }
+
+    /// <summary>World > Monoliths values.</summary>
+    public static class ScenesMonoliths
+    {
+        public static readonly SettingsGroup Group = new(ScenesMonolithsMap.Group);
+
+        public static readonly FloatSetting MaxStability = Group.Float(
+            "MaxStability",
+            min: SceneSliderLimits.MonolithMaxStability.Min,
+            max: SceneSliderLimits.MonolithMaxStability.Max
+        );
+        public static readonly FloatSetting MobsDensity = Group.Float(
+            "MobsDensity",
+            min: SceneSliderLimits.MonolithMobsDensity.Min,
+            max: SceneSliderLimits.MonolithMobsDensity.Max
+        );
+        public static readonly FloatSetting MobsDefeatOnStart = Group.Float(
+            "MobsDefeatOnStart",
+            min: SceneSliderLimits.MonolithMobsDefeat.Min,
+            max: SceneSliderLimits.MonolithMobsDefeat.Max
+        );
+        public static readonly FloatSetting BlessingSlots = Group.Float(
+            "BlessingSlots",
+            defaultValue: 3f,
+            min: SceneSliderLimits.MonolithBlessingSlots.Min,
+            max: SceneSliderLimits.MonolithBlessingSlots.Max
+        );
+        public static readonly BoolSetting MaxStabilityOnStart = Group.Bool("MaxStabilityOnStart");
+        public static readonly BoolSetting ObjectiveReveal = Group.Bool("ObjectiveReveal");
+        public static readonly BoolSetting CompleteObjective = Group.Bool("CompleteObjective");
+        public static readonly BoolSetting NoLostWhenDie = Group.Bool("NoLostWhenDie");
+        public static readonly BoolSetting MaxStabilityOnStabilityChanged = Group.Bool(
+            "MaxStabilityOnStabilityChanged"
+        );
+        public static readonly BoolSetting DropShadeGauntlet = Group.Bool("DropShadeGauntlet");
+        public static readonly BoolSetting Islands = Group.Bool("Islands");
+    }
 #pragma warning restore CA1034
 }

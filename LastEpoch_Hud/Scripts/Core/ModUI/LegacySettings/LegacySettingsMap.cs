@@ -22,7 +22,8 @@ public static class LegacySettingsMap
             SummonMap.All,
             ScenesCameraMap.All,
             ScenesMinimapMap.All,
-            ScenesDungeonsMap.All
+            ScenesDungeonsMap.All,
+            ScenesMonolithsMap.All
         );
 
     private static LegacyFieldMapping[] Concat(params IReadOnlyList<LegacyFieldMapping>[] maps)

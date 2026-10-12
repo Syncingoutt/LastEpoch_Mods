@@ -471,25 +471,6 @@ public static partial class ModSettings
     //     public static readonly FloatSetting Quantity = Group.Float("Quantity", panel: "Quantity");
     // }
 
-    //     public static class ScenesMonoliths
-    //     {
-    //         public static readonly SettingsGroup Group = new SettingsGroup("ScenesMonoliths")
-    //             .Content("Scenes_Content")
-    //             .Viewport("Monoliths", "Scenes_Monoliths_Content")
-    //             .Prefix("Scenes_Monoliths_");
-
-    //         public static readonly FloatSetting MaxStability    = Group.Float("MaxStability");
-    //         public static readonly FloatSetting MobsDensity     = Group.Float("MobsDensity", format: DisplayFormat.Percent);
-    //         public static readonly FloatSetting MobsDefeatOnStart = Group.Float("MobsDefeatOnStart", format: DisplayFormat.Percent);
-    //         public static readonly FloatSetting BlessingSlots   = Group.Float("BlessingSlots");
-    //         public static readonly BoolSetting  MaxStabilityOnStart = Group.Bool("MaxStabilityOnStart");
-    //         public static readonly BoolSetting  MaxStabilityOnStabilityChanged = Group.Bool("MaxStabilityOnStabilityChanged");
-    //         public static readonly BoolSetting  ObjectiveReveal = Group.Bool("ObjectiveReveal");
-    //         public static readonly BoolSetting  CompleteObjective = Group.Bool("CompleteObjective");
-    //         public static readonly BoolSetting  NoLostWhenDie   = Group.Bool("NoLostWhenDie");
-    //         public static readonly BoolSetting  Islands         = Group.Bool("Islands", panel: "EnableIslands");
-    //     }
-
     //     public static class ScenesHarbringers
     //     {
     //         public static readonly SettingsGroup Group = new SettingsGroup("ScenesHarbringers");
