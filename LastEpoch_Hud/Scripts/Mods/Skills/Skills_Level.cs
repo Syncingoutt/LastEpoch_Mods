@@ -2,6 +2,7 @@
 using HarmonyLib;
 using Il2Cpp;
 using LastEpoch_Hud.Scripts.Core.ModUI;
+using LastEpoch_Hud.Scripts.ModUI;
 using UnityEngine;
 
 namespace LastEpoch_Hud.Scripts.Mods.Skills;
@@ -15,36 +16,24 @@ public class Skills_Level
 
     static bool Ready()
     {
-        if (
-            (Scenes.IsGameScene())
-            && (!Save_Manager.instance.IsNullOrDestroyed())
-            && (!Refs_Manager.player_treedata.IsNullOrDestroyed())
-        )
-        {
-            if (
-                (!Save_Manager.instance.data.IsNullOrDestroyed())
-                && (!Refs_Manager.player_treedata.specialisedSkillTrees.IsNullOrDestroyed())
-            )
-            {
-                return true;
-            }
-        }
-        return false;
+        return Scenes.IsGameScene()
+            && !Refs_Manager.player_treedata.IsNullOrDestroyed()
+            && !Refs_Manager.player_treedata.specialisedSkillTrees.IsNullOrDestroyed();
     }
 
     static bool LevelOn()
     {
-        return Save_Manager.instance.data.Skills.Enable_SkillLevel;
+        return ModSettings.SkillsGeneral.SkillLevel.Enabled;
     }
 
     static bool MultiplierOn()
     {
-        return Save_Manager.instance.data.Skills.Enable_SkillLevelMultiplier;
+        return ModSettings.SkillsGeneral.SkillLevelMultiplier.Enabled;
     }
 
     public static byte ChosenLevel()
     {
-        int level = (int)Save_Manager.instance.data.Skills.SkillLevel;
+        int level = (int)ModSettings.SkillsGeneral.SkillLevel.Value;
         if (level < 0)
         {
             level = 0;
@@ -58,7 +47,7 @@ public class Skills_Level
 
     static int Multiplier()
     {
-        return PointMultiplier.Clamp(Save_Manager.instance.data.Skills.SkillLevelMultiplier);
+        return PointMultiplier.Clamp(ModSettings.SkillsGeneral.SkillLevelMultiplier.Value);
     }
 
     static bool writing;

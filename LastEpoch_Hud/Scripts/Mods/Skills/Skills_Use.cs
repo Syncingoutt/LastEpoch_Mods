@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
 
 namespace LastEpoch_Hud.Scripts.Mods.Skills;
 
@@ -37,21 +38,21 @@ public class Skills_Use
 
                 if (!ability.IsNullOrDestroyed())
                 {
-                    if (Save_Manager.instance.data.Skills.Enable_RemoveChannelCost)
+                    if (ModSettings.SkillsGeneral.RemoveChannelCost.Value)
                     {
                         ability.channelCost = 0f;
                     }
-                    if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
+                    if (ModSettings.SkillsGeneral.RemoveManaCost.Value)
                     {
                         ability.manaCost = 0f;
                         ability.minimumManaCost = 0f;
                         ability.manaCostPerDistance = 0f;
                     }
-                    if (Save_Manager.instance.data.Skills.Enable_NoManaRegenWhileChanneling)
+                    if (ModSettings.SkillsGeneral.ManaRegenWhileChanneling.Value)
                     {
                         ability.noManaRegenWhileChanneling = false;
                     }
-                    if (Save_Manager.instance.data.Skills.Enable_StopWhenOutOfMana)
+                    if (ModSettings.SkillsGeneral.ContinueWhenOutOfMana.Value)
                     {
                         ability.stopWhenOutOfMana = false;
                     }
@@ -60,24 +61,17 @@ public class Skills_Use
                         && (ability.moveOrAttackFallback == Ability.MoveOrAttackFallback.Move)
                     )
                     {
-                        if (Save_Manager.instance.data.Skills.MovementSkills.Enable_NoTarget)
+                        if (ModSettings.SkillsMovement.NoTarget.Value)
                         {
                             ability.playerRequiresTarget = false;
                             ability.requiredEnemyTargetMustBeAccessible = false;
                         }
-                        if (
-                            Save_Manager
-                                .instance
-                                .data
-                                .Skills
-                                .MovementSkills
-                                .Enable_ImmuneDuringMovement
-                        )
+                        if (ModSettings.SkillsMovement.ImmuneDuringMovement.Value)
                         {
                             ability.immuneDuringMovement = true;
                             ability.cannotDieDuringMovement = true;
                         }
-                        if (Save_Manager.instance.data.Skills.MovementSkills.Disable_SimplePath)
+                        if (ModSettings.SkillsMovement.IgnoreSimplePath.Value)
                         {
                             ability.limitRangeForPlayers = false;
                             ability.requireSimplePath = false;
@@ -103,7 +97,7 @@ public class Skills_Use
                     //ErasingStrike : Fix ManaCost
                     if (il2cpp_type.ToString() == "ErasingStrikeMutator")
                     {
-                        if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
+                        if (ModSettings.SkillsGeneral.RemoveManaCost.Value)
                         {
                             var ab = __1.TryCast<ErasingStrikeMutator>();
                             if (!ab.IsNullOrDestroyed())
@@ -125,7 +119,7 @@ public class Skills_Use
                     //Holy Aura : Fix ManaCost
                     if (il2cpp_type.ToString() == "HolyAuraMutator")
                     {
-                        if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
+                        if (ModSettings.SkillsGeneral.RemoveManaCost.Value)
                         {
                             var ab = __1.TryCast<HolyAuraMutator>();
                             if (!ab.IsNullOrDestroyed())
@@ -140,7 +134,7 @@ public class Skills_Use
                     //Warpath : Fix Channel Cost
                     if (il2cpp_type.ToString() == "WarpathMutator")
                     {
-                        if (Save_Manager.instance.data.Skills.Enable_RemoveChannelCost)
+                        if (ModSettings.SkillsGeneral.RemoveChannelCost.Value)
                         {
                             var ab = __1.TryCast<WarpathMutator>();
                             if (!ab.IsNullOrDestroyed())
@@ -154,7 +148,7 @@ public class Skills_Use
                     //Smite : Fix ManaCost
                     if (il2cpp_type.ToString() == "SmiteMutator")
                     {
-                        if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
+                        if (ModSettings.SkillsGeneral.RemoveManaCost.Value)
                         {
                             var ab = __1.TryCast<SmiteMutator>();
                             if (!ab.IsNullOrDestroyed())
@@ -168,7 +162,7 @@ public class Skills_Use
                     //Judgement : Fix ManaCost
                     if (il2cpp_type.ToString() == "JudgementMutator")
                     {
-                        if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
+                        if (ModSettings.SkillsGeneral.RemoveManaCost.Value)
                         {
                             var ab = __1.TryCast<JudgementMutator>();
                             if (!ab.IsNullOrDestroyed())
@@ -181,7 +175,7 @@ public class Skills_Use
                     }
                     if (il2cpp_type.ToString() == "JudgementAoEMutator")
                     {
-                        if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
+                        if (ModSettings.SkillsGeneral.RemoveManaCost.Value)
                         {
                             var ab = __1.TryCast<JudgementAoEMutator>();
                             if (!ab.IsNullOrDestroyed())
@@ -194,7 +188,7 @@ public class Skills_Use
                     //Sigil of Hope : Fix ManaCost
                     if (il2cpp_type.ToString() == "SigilsOfHopeMutator")
                     {
-                        if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
+                        if (ModSettings.SkillsGeneral.RemoveManaCost.Value)
                         {
                             var ab = __1.TryCast<SigilsOfHopeMutator>();
                             if (!ab.IsNullOrDestroyed())
@@ -208,7 +202,7 @@ public class Skills_Use
                     //Meteor : Fix ManaCost
                     if (il2cpp_type.ToString() == "MeteorMutator")
                     {
-                        if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
+                        if (ModSettings.SkillsGeneral.RemoveManaCost.Value)
                         {
                             var ab = __1.TryCast<MeteorMutator>();
                             if (!ab.IsNullOrDestroyed())
@@ -872,7 +866,7 @@ public class Skills_Use
                         var ab = __1.TryCast<FlameWardMutator>();
                         if (!ab.IsNullOrDestroyed())
                         {
-                            if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
+                            if (ModSettings.SkillsGeneral.RemoveManaCost.Value)
                             {
                                 ab.addedManaCost = 0f;
                             }
@@ -892,13 +886,9 @@ public class Skills_Use
             bool __4
         )
         {
-            if (
-                (Scenes.IsGameScene())
-                && (!__1.IsNullOrDestroyed())
-                && (!Save_Manager.instance.IsNullOrDestroyed())
-            )
+            if ((Scenes.IsGameScene()) && (!__1.IsNullOrDestroyed()))
             {
-                if (Save_Manager.instance.data.Skills.Enable_RemoveCooldown)
+                if (ModSettings.SkillsGeneral.RemoveCooldown.Value)
                 {
                     __1.RemoveCooldown();
                 }
@@ -914,9 +904,9 @@ public class Skills_Use
         //static void Prefix(float __0, Il2Cpp.Actor __1, UnityEngine.Vector3 __2, UnityEngine.Vector3 __3, Il2Cpp.AbilityAnimation __4, int __5, Il2Cpp.AbilityObjectConstructor __6, Il2Cpp.Ability __7, UnityEngine.Vector3 __8, UnityEngine.Vector3 __9, float __10, Il2Cpp.UseType __11, Il2CppSystem.Collections.Generic.List<Il2Cpp.Stats.Stat> __12, byte __13, bool __14, ref bool __15, ref int __16)
         static void Prefix(ref bool __15, ref int __16)
         {
-            if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
+            if (Scenes.IsGameScene())
             {
-                if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
+                if (ModSettings.SkillsGeneral.RemoveManaCost.Value)
                 {
                     __15 = false; //consumesMana
                     //__16 = 0; //manaConsumed

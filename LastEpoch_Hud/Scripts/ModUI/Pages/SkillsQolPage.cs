@@ -1,4 +1,3 @@
-using System;
 using LastEpoch_Hud.Scripts.Core.ModUI;
 using LastEpoch_Hud.Scripts.ModUI.Shell;
 using UnityEngine;
@@ -16,12 +15,12 @@ internal static class SkillsQolPage
         if (page == null)
             return;
         var general = page.AddCard("General", "General");
-        AddToggle(
+        page.AddToggle(
             general,
             "UnlockAllSkills",
             "Unlock All Skills",
-            () => Save_Manager.instance.data.Skills.Enable_AllSkills,
-            v => Save_Manager.instance.data.Skills.Enable_AllSkills = v
+            () => ModSettings.SkillsGeneral.UnlockAllSkills.Value,
+            ModSettings.SkillsGeneral.UnlockAllSkills.Set
         );
 
         var autoCast = page.AddCard("AutoCast", "Auto-Cast");
@@ -54,26 +53,26 @@ internal static class SkillsQolPage
         );
 
         var movement = page.AddCard("MovementSkills", "Movement Skills");
-        AddToggle(
+        page.AddToggle(
             movement,
             "NoTarget",
             "No Target Required",
-            () => Save_Manager.instance.data.Skills.MovementSkills.Enable_NoTarget,
-            v => Save_Manager.instance.data.Skills.MovementSkills.Enable_NoTarget = v
+            () => ModSettings.SkillsMovement.NoTarget.Value,
+            ModSettings.SkillsMovement.NoTarget.Set
         );
-        AddToggle(
+        page.AddToggle(
             movement,
             "Immune",
             "Immune During Movement",
-            () => Save_Manager.instance.data.Skills.MovementSkills.Enable_ImmuneDuringMovement,
-            v => Save_Manager.instance.data.Skills.MovementSkills.Enable_ImmuneDuringMovement = v
+            () => ModSettings.SkillsMovement.ImmuneDuringMovement.Value,
+            ModSettings.SkillsMovement.ImmuneDuringMovement.Set
         );
-        AddToggle(
+        page.AddToggle(
             movement,
             "SimplePath",
             "Disable Simple Path Requirement",
-            () => Save_Manager.instance.data.Skills.MovementSkills.Disable_SimplePath,
-            v => Save_Manager.instance.data.Skills.MovementSkills.Disable_SimplePath = v
+            () => ModSettings.SkillsMovement.IgnoreSimplePath.Value,
+            ModSettings.SkillsMovement.IgnoreSimplePath.Set
         );
     }
 
@@ -82,26 +81,4 @@ internal static class SkillsQolPage
     public static void Hide() => page?.Hide();
 
     public static void Refresh() => page?.RefreshValues();
-
-    private static void AddToggle(
-        HudFormPage.Card card,
-        string id,
-        string label,
-        Func<bool> read,
-        Action<bool> write
-    ) =>
-        page.AddToggle(
-            card,
-            id,
-            label,
-            () => HasSave() && read(),
-            v =>
-            {
-                if (HasSave())
-                    write(v);
-            }
-        );
-
-    private static bool HasSave() =>
-        !Save_Manager.instance.IsNullOrDestroyed() && Save_Manager.instance.initialized;
 }
