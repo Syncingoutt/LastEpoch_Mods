@@ -154,5 +154,66 @@ public static partial class ModSettings
             Character_UnlockAllIdols.Update();
         }
     }
+
+    /// <summary>Utilities > Multipliers values.</summary>
+    public static class CharacterMultipliers
+    {
+        public static readonly SettingsGroup Group = new(CharacterMultipliersMap.Group);
+
+        public static readonly FloatSetting Density = Group.Float(
+            "Density",
+            min: CharacterSliderLimits.Multiplier.Min,
+            max: CharacterSliderLimits.Multiplier.Max
+        );
+
+        public static readonly FloatSetting Experience = Group.Float(
+            "Experience",
+            min: CharacterSliderLimits.Multiplier.Min,
+            max: CharacterSliderLimits.Multiplier.Max
+        );
+
+        public static readonly FloatSetting Ability = Group.Float(
+            "Ability",
+            min: CharacterSliderLimits.Multiplier.Min,
+            max: CharacterSliderLimits.Multiplier.Max
+        );
+
+        public static readonly FloatSetting Favor = Group.Float(
+            "Favor",
+            min: CharacterSliderLimits.Multiplier.Min,
+            max: CharacterSliderLimits.Multiplier.Max
+        );
+
+        public static readonly FloatSetting ItemDropChance = Group.Float(
+            "ItemDropChance",
+            min: CharacterSliderLimits.Multiplier.Min,
+            max: CharacterSliderLimits.Multiplier.Max
+        );
+
+        public static readonly FloatSetting ItemDropMultiplier = Group.Float(
+            "ItemDropMultiplier",
+            min: CharacterSliderLimits.Multiplier.Min,
+            max: CharacterSliderLimits.Multiplier.Max
+        );
+
+        public static readonly FloatSetting GoldDropChance = Group.Float(
+            "GoldDropChance",
+            min: CharacterSliderLimits.Multiplier.Min,
+            max: CharacterSliderLimits.Multiplier.Max
+        );
+
+        public static readonly FloatSetting GoldDropMultiplier = Group.Float(
+            "GoldDropMultiplier",
+            min: CharacterSliderLimits.Multiplier.Min,
+            max: CharacterSliderLimits.Multiplier.Max
+        );
+
+        public static readonly FloatSetting MemoryAmber = Group.Float(
+            "MemoryAmber",
+            defaultValue: 1f,
+            min: CharacterSliderLimits.Multiplier.Min,
+            max: CharacterSliderLimits.Multiplier.Max
+        );
+    }
 #pragma warning restore CA1034
 }

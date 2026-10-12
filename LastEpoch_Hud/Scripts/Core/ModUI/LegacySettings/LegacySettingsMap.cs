@@ -13,7 +13,8 @@ public static class LegacySettingsMap
             ItemsDropMap.All,
             ItemsPickupMap.All,
             ItemsCraftingSlotMap.All,
-            CharacterCheatsMap.All
+            CharacterCheatsMap.All,
+            CharacterMultipliersMap.All
         );
 
     private static LegacyFieldMapping[] Concat(params IReadOnlyList<LegacyFieldMapping>[] maps)

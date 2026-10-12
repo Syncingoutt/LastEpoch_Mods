@@ -56,4 +56,7 @@ public static class CharacterSliderLimits
 
     // Source: no prefab slider; former UtilitiesBuffsPage inline max, commit 511ad5e0
     public static readonly SliderRange BuffAreaOfEffect = new(0f, 100f, false);
+
+    // Source: no prefab match; UtilitiesMultipliersPage inline limits
+    public static readonly SliderRange Multiplier = new(0f, 255f, true);
 }

@@ -1,4 +1,6 @@
 ﻿using HarmonyLib;
+using LastEpoch_Hud.Scripts.Core.Character;
+using LastEpoch_Hud.Scripts.ModUI;
 using UnityEngine;
 
 namespace LastEpoch_Hud.Scripts.Mods.Character;
@@ -7,19 +9,9 @@ public class Character_MemoryAmber_Multiplier
 {
     public static bool CanRun()
     {
-        if (
-            (Scenes.IsGameScene())
-            && (!Save_Manager.instance.IsNullOrDestroyed())
-            && (!Refs_Manager.player_actor.IsNullOrDestroyed())
-        )
-        {
-            return !Save_Manager.instance.data.IsNullOrDestroyed()
-                && Save_Manager.instance.data.Character.Cheats.Enable_MemoryAmberMultiplier;
-        }
-        else
-        {
-            return false;
-        }
+        return Scenes.IsGameScene()
+            && !Refs_Manager.player_actor.IsNullOrDestroyed()
+            && ModSettings.CharacterMultipliers.MemoryAmber.Enabled;
     }
 
     [HarmonyPatch(
@@ -49,12 +41,10 @@ public class Character_MemoryAmber_Multiplier
                 && __1.PlayerActor == Refs_Manager.player_actor
             )
             {
-                __3 = (uint)
-                    System.Math.Min(
-                        uint.MaxValue,
-                        (ulong)Save_Manager.instance.data.Character.Cheats.MemoryAmberMultiplier
-                            * __3
-                    );
+                __3 = RewardMultiplier.ScaleSaturated(
+                    __3,
+                    ModSettings.CharacterMultipliers.MemoryAmber.Value
+                );
             }
         }
     }

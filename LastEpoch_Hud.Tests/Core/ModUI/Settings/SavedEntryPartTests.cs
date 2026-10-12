@@ -59,6 +59,28 @@ public sealed class SavedEntryPartTests
         Assert.Equal(new SavedFloat(false, 10f, 100f, true), read);
     }
 
+    [Theory]
+    [InlineData("NaN")]
+    [InlineData("\"NaN\"")]
+    public void ReadFloat_NanValue_KeepsCurrentAndFlags(string raw)
+    {
+        var entry = JObject.Parse("{\"Value\":" + raw + "}");
+
+        SavedFloat read = SavedEntryPart.ReadFloat(entry, false, 1f, 0f, 255f, true);
+
+        Assert.Equal(new SavedFloat(false, 1f, float.NaN, true), read);
+    }
+
+    [Fact]
+    public void ReadFloat_InfinityValue_ClampsToMax()
+    {
+        var entry = JObject.Parse("{\"Value\":Infinity}");
+
+        SavedFloat read = SavedEntryPart.ReadFloat(entry, false, 1f, 0f, 255f, true);
+
+        Assert.Equal(new SavedFloat(false, 255f, float.PositiveInfinity, true), read);
+    }
+
     [Fact]
     public void ReadFloat_NoLimits_DoesNotClamp()
     {

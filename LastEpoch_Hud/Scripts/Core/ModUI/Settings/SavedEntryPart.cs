@@ -26,8 +26,14 @@ public static class SavedEntryPart
     )
     {
         float raw = Float(entry, "Value", value);
+        bool on = Bool(entry, "Enabled", enabled);
+        if (float.IsNaN(raw))
+        {
+            return new SavedFloat(on, value, raw, true);
+        }
+
         float clamped = hasLimits ? Math.Clamp(raw, min, max) : raw;
-        return new SavedFloat(Bool(entry, "Enabled", enabled), clamped, raw, clamped != raw);
+        return new SavedFloat(on, clamped, raw, clamped != raw);
     }
 
     public static SavedRange ReadRange(
