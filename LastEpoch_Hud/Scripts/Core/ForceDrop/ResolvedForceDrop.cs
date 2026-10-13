@@ -58,6 +58,8 @@ public sealed class ResolvedForceDrop
     public IReadOnlyList<int> UniqueRolls { get; }
     public IReadOnlyList<ResolvedForceDropAffix> Affixes { get; }
     public IReadOnlyList<int> VariantIds { get; }
+    public IReadOnlyList<int> VariantTiers { get; }
+    public IReadOnlyList<int> VariantRolls { get; }
     public ResolvedForceDropAffix Corruption { get; }
     public ForceDropMode Mode { get; }
     public bool IsIllegal => Mode == ForceDropMode.Illegal;
@@ -76,7 +78,9 @@ public sealed class ResolvedForceDrop
         IEnumerable<ResolvedForceDropAffix> affixes,
         IEnumerable<int> variantIds,
         ResolvedForceDropAffix corruption,
-        ForceDropMode mode = ForceDropMode.Legal
+        ForceDropMode mode = ForceDropMode.Legal,
+        IEnumerable<int> variantTiers = null,
+        IEnumerable<int> variantRolls = null
     )
     {
         CheckRange(itemType, byte.MaxValue, nameof(itemType));
@@ -113,6 +117,18 @@ public sealed class ResolvedForceDrop
         VariantIds = Array.AsReadOnly(
             (variantIds ?? throw new ArgumentNullException(nameof(variantIds))).ToArray()
         );
+        VariantTiers = Array.AsReadOnly(
+            (variantTiers ?? Enumerable.Repeat(0, VariantIds.Count)).ToArray()
+        );
+        VariantRolls = Array.AsReadOnly(
+            (variantRolls ?? Enumerable.Repeat(255, VariantIds.Count)).ToArray()
+        );
+        if (VariantTiers.Count != VariantIds.Count || VariantRolls.Count != VariantIds.Count)
+            throw new ArgumentException("Every unique modifier needs a resolved tier and roll.");
+        foreach (int tier in VariantTiers)
+            CheckRange(tier, 6, nameof(variantTiers));
+        foreach (int roll in VariantRolls)
+            CheckRange(roll, byte.MaxValue, nameof(variantRolls));
         Corruption = corruption;
         var ids = new HashSet<int>();
         int regularSeals = 0,
@@ -132,6 +148,10 @@ public sealed class ResolvedForceDrop
             else if (affix.Seal != ForceDropSeal.None)
                 throw new ArgumentException("Corruption must use its separate corruption slot.");
         }
+        if (!IsIllegal && rarity >= 7 && (regularSeals != 0 || primordialSeals != 0))
+            throw new ArgumentException(
+                "Unique and Set items require Illegal mode for regular or Primordial seals."
+            );
         if (primordialSeals > 1)
             throw new ArgumentException("Only one Primordial seal can be represented.");
         if (regularSeals > 1)
@@ -146,6 +166,10 @@ public sealed class ResolvedForceDrop
             )
         )
             throw new ArgumentException("Corruption must use its own distinct corruption seal.");
+        if (rarity >= 7 && Affixes.Count + VariantIds.Count + (corruption == null ? 0 : 1) > 7)
+            throw new ArgumentException(
+                "Legendary native storage allows at most seven affixes, including exclusive modifiers and sealed slots."
+            );
     }
 
     static IReadOnlyList<int> CopyRolls(IEnumerable<int> source, string name)
