@@ -35,6 +35,11 @@ public static class LegacySettingsImporter
         return true;
     }
 
+    internal static bool IsJsonObject(string text)
+    {
+        return TryParseRoot(text, new List<LegacyImportProblem>(), out _);
+    }
+
     private static bool TryParseRoot(
         string text,
         List<LegacyImportProblem> problems,

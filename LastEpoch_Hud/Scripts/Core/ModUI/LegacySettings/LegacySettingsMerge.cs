@@ -12,14 +12,16 @@ public static class LegacySettingsMerge
         JObject root,
         IReadOnlyList<LegacyFieldMapping> map,
         ILegacyKeyNames keys,
-        List<LegacyImportProblem> problems
+        List<LegacyImportProblem> problems,
+        out bool groupsOnDiskBefore
     )
     {
+        IReadOnlyList<string> groups = LegacyImportGroups.MissingFrom(root, map);
+        groupsOnDiskBefore = groups.Count == 0;
         if (legacyJson == null && !legacyReadFailed)
         {
             return LegacyImportOutcome.NoLegacyFile;
         }
-        IReadOnlyList<string> groups = LegacyImportGroups.MissingFrom(root, map);
         if (groups.Count == 0)
         {
             return LegacyImportOutcome.NothingMissing;

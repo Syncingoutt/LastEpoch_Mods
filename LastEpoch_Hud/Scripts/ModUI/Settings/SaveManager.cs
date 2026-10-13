@@ -132,8 +132,10 @@ public class SaveManager : MonoBehaviour
         }
         // Taken before the import: imported groups are missing on disk and must be saved.
         bool hasMissingEntries = state == SettingsFileState.Loaded && AnyMissingEntries(fileRoot);
+        // ImportLegacy clears _legacyText; keep it for the rename check.
+        string legacyText = _legacyText;
         JObject root = fileRoot ?? new JObject();
-        LegacyImportOutcome outcome = ImportLegacy(root);
+        LegacyImportOutcome outcome = ImportLegacy(root, out bool legacyGroupsOnDisk);
         WarnUnknownMapTargets();
         bool allGroupsLoaded = LoadGroups(root);
         SettingsLoadPlan plan = SettingsLoadPlanner.Plan(
@@ -165,17 +167,50 @@ public class SaveManager : MonoBehaviour
         }
         initialized = true;
 
-        if (!plan.WriteNow && !conflictFixed)
+        bool saved = WriteIfNeeded(plan.WriteNow || conflictFixed);
+        RetireLegacyFile(legacyText, legacyGroupsOnDisk, saved);
+    }
+
+    private bool WriteIfNeeded(bool needed)
+    {
+        if (!needed)
+        {
+            return false;
+        }
+        if (!TrySave())
+        {
+            return false;
+        }
+        Main.logger_instance?.Msg("ModUI SaveManager: Wrote fresh schema to " + filename);
+        return true;
+    }
+
+    // Moves Save.json aside once every legacy group is on disk. Never overwrites or deletes.
+    private void RetireLegacyFile(string legacyText, bool groupsOnDiskBefore, bool savedThisRun)
+    {
+        if (
+            !LegacyFileRename.ShouldRename(
+                legacyText: legacyText,
+                writesBlocked: _writesBlocked,
+                groupsOnDiskBefore: groupsOnDiskBefore,
+                savedThisRun: savedThisRun
+            )
+        )
         {
             return;
         }
-        if (TrySave())
+        string source = ModPaths.FilePath(LegacyFileName);
+        if (!LegacyFileRename.TryMoveAside(source, out string target, out string error))
         {
-            Main.logger_instance?.Msg("ModUI SaveManager: Wrote fresh schema to " + filename);
+            ErrorLog.Report(error, "ModUI SaveManager.RetireLegacy");
+            return;
         }
+        Main.logger_instance?.Msg(
+            "ModUI SaveManager: Moved Save.json to " + Path.GetFileName(target)
+        );
     }
 
-    private LegacyImportOutcome ImportLegacy(JObject root)
+    private LegacyImportOutcome ImportLegacy(JObject root, out bool groupsOnDiskBefore)
     {
         List<LegacyImportProblem> problems = new();
         LegacyImportOutcome outcome = LegacySettingsMerge.ImportMissing(
@@ -184,7 +219,8 @@ public class SaveManager : MonoBehaviour
             root,
             LegacySettingsMap.All,
             new UnityKeyNames(),
-            problems
+            problems,
+            out groupsOnDiskBefore
         );
         _legacyText = null;
         ReportImport(outcome, problems);

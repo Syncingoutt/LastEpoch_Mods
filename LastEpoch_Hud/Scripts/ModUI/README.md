@@ -272,6 +272,7 @@ Text labels: searched as `Value` or `Label` child inside the toggle, then as dir
 | `ActionBinding` | nothing | Button | -- | subscribe to `.Clicked` |
 | `HeaderSetting` | nothing | Static text row | `.Text` | `.SetText(string)` |
 | `KeybindSetting` | tagged string | Capture Button + Reset Button | `.Value`, `.DefaultValue` | `.Set(string)`, `.ResetToDefault()` |
+| `TextSetting` | string | none | `.Value` | `.Set(string)` |
 
 All setting types (except `ActionBinding` and `HeaderSetting`) expose a `Changed` event for reactive updates.
 
@@ -298,6 +299,14 @@ if (KeybindMatcher.IsHeld(ModSettings.SkillsAutoCast.ModifierKey.Value)) { ... }
   Btn_{prefix}{panelName}_Reset    -- reset button (child Text "Reset")
 ```
 For arbitrary prefabs use `paths: new KeybindPaths(...)` instead of the convention layout.
+
+### Legacy Save.json import
+
+`Core/ModUI/LegacySettings` maps the old `Save.json` fields per group (`LegacySettingsMap.All`, area maps in `Maps/`).
+A group already present in `SaveModUI.json` is never imported again.
+Once every mapped group is on disk, `Save.json` moves to `Save.json.migrated` (`.2`, `.3`, ... if taken). It is never deleted.
+A `Save.json` that does not parse stays where it is.
+New settings need no map entry.
 
 ### Display formats
 
@@ -370,6 +379,7 @@ ModUI/
       HudScale.cs             Keeps the HUD canvas scale equal to the game's
   Settings/              Prefab binding, persistence and setting types
     SettingTypes.cs         Setting types + ActionBinding + display formatting
+    TextSetting.cs          Saved free-text value without a widget
     SettingsGroup.cs        Fluent API, factory methods, serialization, UI binding
     SettingsBuilder.cs      Convention-based + path-based prefab binding
     TabManager.cs           Tab switching and menu button wiring (Hud root only)

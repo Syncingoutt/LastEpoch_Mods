@@ -157,6 +157,60 @@ public sealed class LegacySettingsMergeTests
         Assert.Empty(problems);
     }
 
+    [Fact]
+    public void ImportMissing_MissingGroupsImported_NotOnDiskBefore()
+    {
+        JObject root = new();
+
+        LegacyImportOutcome outcome = RunWithFlag(
+            "{\"A\":{\"B\":true,\"C\":true}}",
+            root,
+            out bool groupsOnDiskBefore
+        );
+
+        Assert.Equal(LegacyImportOutcome.Imported, outcome);
+        Assert.True(root.ContainsKey("G"));
+        Assert.True(root.ContainsKey("H"));
+        Assert.False(groupsOnDiskBefore);
+    }
+
+    [Fact]
+    public void ImportMissing_AllGroupsPresent_OnDiskBefore()
+    {
+        var root = JObject.Parse("{\"G\":{\"K\":false},\"H\":{\"K\":false}}");
+
+        RunWithFlag("{}", root, out bool groupsOnDiskBefore);
+
+        Assert.True(groupsOnDiskBefore);
+    }
+
+    [Fact]
+    public void ImportMissing_OneGroupMissing_NotOnDiskBefore()
+    {
+        var root = JObject.Parse("{\"G\":{\"K\":false}}");
+
+        RunWithFlag("{\"A\":{\"B\":true,\"C\":true}}", root, out bool groupsOnDiskBefore);
+
+        Assert.False(groupsOnDiskBefore);
+    }
+
+    [Fact]
+    public void ImportedButSaveFailed_DoesNotRename()
+    {
+        string text = "{\"A\":{\"B\":true,\"C\":true}}";
+        JObject root = new();
+        RunWithFlag(text, root, out bool groupsOnDiskBefore);
+
+        bool rename = LegacyFileRename.ShouldRename(
+            text,
+            writesBlocked: false,
+            groupsOnDiskBefore: groupsOnDiskBefore,
+            savedThisRun: false
+        );
+
+        Assert.False(rename);
+    }
+
     private static LegacyImportOutcome Run(
         string text,
         JObject root,
@@ -170,7 +224,25 @@ public sealed class LegacySettingsMergeTests
             root,
             _map,
             new FakeKeyNames(),
-            problems
+            problems,
+            out _
+        );
+    }
+
+    private static LegacyImportOutcome RunWithFlag(
+        string text,
+        JObject root,
+        out bool groupsOnDiskBefore
+    )
+    {
+        return LegacySettingsMerge.ImportMissing(
+            text,
+            false,
+            root,
+            _map,
+            new FakeKeyNames(),
+            new List<LegacyImportProblem>(),
+            out groupsOnDiskBefore
         );
     }
 }
