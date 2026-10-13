@@ -26,7 +26,8 @@ public static class LegacySettingsMap
             ScenesMonolithsMap.All,
             FactionsWovenMap.All,
             KeyBindsMap.All,
-            DamageMeterMap.All
+            DamageMeterMap.All,
+            ModsNotInHudMap.All
         );
 
     private static LegacyFieldMapping[] Concat(params IReadOnlyList<LegacyFieldMapping>[] maps)

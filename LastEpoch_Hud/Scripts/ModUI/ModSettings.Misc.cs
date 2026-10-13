@@ -31,5 +31,17 @@ public static partial class ModSettings
 
         public static readonly BoolSetting SeparateHitAndDot = Group.Bool("SeparateHitAndDot");
     }
+
+    /// <summary>Options of features without a menu page.</summary>
+    public static class ModsNotInHud
+    {
+        public static readonly SettingsGroup Group = new(ModsNotInHudMap.Group);
+
+        public static readonly BoolSetting PotionReplenishment = Group.Bool("PotionReplenishment");
+
+        public static readonly BoolSetting ShrinesUnlimited = Group.Bool("ShrinesUnlimited");
+
+        public static readonly FloatSetting ShrinesOverride = Group.Float("ShrinesOverride");
+    }
 #pragma warning restore CA1034
 }
