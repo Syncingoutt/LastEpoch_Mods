@@ -99,7 +99,9 @@ public sealed class LegacySettingsMapTargetTests
             || part == LegacySettingPart.FloatValue
             || part == LegacySettingPart.RangeEnabled
             || part == LegacySettingPart.RangeMin
-            || part == LegacySettingPart.RangeMax;
+            || part == LegacySettingPart.RangeMax
+            || part == LegacySettingPart.Dropdown
+            || part == LegacySettingPart.Keybind;
     }
 
     private static bool HasDefault(
@@ -120,6 +122,8 @@ public sealed class LegacySettingsMapTargetTests
             LegacySettingPart.RangeEnabled => (bool?)imported?["Enabled"] == setting.RangeEnabled,
             LegacySettingPart.RangeMin => (float?)imported?["Min"] == setting.RangeMin,
             LegacySettingPart.RangeMax => (float?)imported?["Max"] == setting.RangeMax,
+            LegacySettingPart.Dropdown => (int?)imported == setting.DropdownDefault,
+            LegacySettingPart.Keybind => (string)imported == setting.KeybindDefault,
             _ => (float?)imported?["Value"] == setting.FloatValue,
         };
     }
@@ -199,13 +203,17 @@ public sealed class LegacySettingsMapTargetTests
             if (group != null && key != null)
             {
                 var numbers = args.Where(a => a is not string).ToList();
-                declared[(group, key)] = Declare(call.Name, numbers);
+                declared[(group, key)] = Declare(
+                    call.Name,
+                    numbers,
+                    args.OfType<string>().ToList()
+                );
             }
             args.Clear();
         }
     }
 
-    private static DeclaredSetting Declare(string kind, List<object> numbers)
+    private static DeclaredSetting Declare(string kind, List<object> numbers, List<string> strings)
     {
         if (kind == BoolKind)
         {
@@ -224,6 +232,37 @@ public sealed class LegacySettingsMapTargetTests
         if (kind == "Range")
         {
             return DeclareRange(numbers);
+        }
+        if (kind == "Dropdown")
+        {
+            return new DeclaredSetting(
+                kind,
+                false,
+                0f,
+                false,
+                0f,
+                0f,
+                false,
+                0f,
+                0f,
+                ToInt(numbers, 0)
+            );
+        }
+        if (kind == "Keybind")
+        {
+            return new DeclaredSetting(
+                kind,
+                false,
+                0f,
+                false,
+                0f,
+                0f,
+                false,
+                0f,
+                0f,
+                0,
+                strings.Count > 1 ? strings[1] : null
+            );
         }
         if (kind != FloatKind)
         {

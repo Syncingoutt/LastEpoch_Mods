@@ -10,5 +10,7 @@ internal readonly record struct DeclaredSetting(
     float MaxLimit,
     bool RangeEnabled,
     float RangeMin,
-    float RangeMax
+    float RangeMax,
+    int DropdownDefault = 0,
+    string KeybindDefault = null
 );

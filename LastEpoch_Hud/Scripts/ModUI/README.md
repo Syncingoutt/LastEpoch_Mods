@@ -395,6 +395,7 @@ ModUI/
     KeybindRewired.cs       Rewired IGamepadTemplate walking + button table
     KeybindCapture.cs       Capture state machine ticked from SaveManager.Update
     UnityKeyNames.cs        KeyCode names from Unity for the legacy Save.json import
+    KeyCodeCache.cs         KeyCode of a single-key binding for per-frame key checks
     KeybindMatcher.cs       Public IsHeld API consumed by feature code
 ```
 
