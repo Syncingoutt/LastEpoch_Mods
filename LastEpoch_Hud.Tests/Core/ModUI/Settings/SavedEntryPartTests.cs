@@ -129,6 +129,27 @@ public sealed class SavedEntryPartTests
         Assert.Equal(new SavedRange(false, 0f, 10f, false), read);
     }
 
+    [Theory]
+    [InlineData("\"Skill A\"", "Skill A")]
+    [InlineData("\"\"", "")]
+    public void TryReadText_String_ReadsValue(string raw, string expected)
+    {
+        bool read = SavedEntryPart.TryReadText(JToken.Parse(raw), out string value);
+
+        Assert.True(read);
+        Assert.Equal(expected, value);
+    }
+
+    [Theory]
+    [InlineData("5")]
+    [InlineData("true")]
+    [InlineData("null")]
+    [InlineData("{}")]
+    public void TryReadText_NotString_Fails(string raw)
+    {
+        Assert.False(SavedEntryPart.TryReadText(JToken.Parse(raw), out string _));
+    }
+
     [Fact]
     public void ReadRange_EmptyEntry_KeepsCurrent()
     {

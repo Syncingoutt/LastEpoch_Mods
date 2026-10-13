@@ -164,6 +164,58 @@ public static partial class ModSettings
         );
     }
 
+    /// <summary>Headhunter drop options.</summary>
+    public static class Headhunter
+    {
+        public static readonly SettingsGroup Group = new(HeadhunterMap.Group);
+
+        public static readonly BoolSetting WeaverWill = Group.Bool("WeaverWill");
+        public static readonly BoolSetting UniqueDrop = Group.Bool("UniqueDrop", true);
+        public static readonly BoolSetting BaseDrop = Group.Bool("BaseDrop", true);
+    }
+
+    /// <summary>Mjolner drop, trigger and requirement options.</summary>
+    public static class Mjolner
+    {
+        public static readonly SettingsGroup Group = new(MjolnerMap.Group);
+
+        public static readonly BoolSetting EnableMod = Group.Bool("EnableMod", true);
+        public static readonly BoolSetting UniqueDrop = Group.Bool("UniqueDrop", true);
+        public static readonly BoolSetting WeaverWill = Group.Bool("WeaverWill");
+        public static readonly BoolSetting ProcAnyLightningSpell = Group.Bool(
+            "ProcAnyLightningSpell",
+            true
+        );
+
+        public static readonly FloatSetting MinTriggerChance = Group.Float(
+            "MinTriggerChance",
+            0.3f
+        );
+        public static readonly FloatSetting MaxTriggerChance = Group.Float(
+            "MaxTriggerChance",
+            0.5f
+        );
+        public static readonly FloatSetting IntRequirement = Group.Float("IntRequirement", 95f);
+        public static readonly FloatSetting StrRequirement = Group.Float("StrRequirement", 105f);
+        public static readonly FloatSetting SocketedCooldown = Group.Float(
+            "SocketedCooldown",
+            250f
+        );
+
+        public static readonly TextSetting SocketedSkill0 = Group.Text(
+            "SocketedSkill0",
+            "Lightning Nova"
+        );
+        public static readonly TextSetting SocketedSkill1 = Group.Text(
+            "SocketedSkill1",
+            "Elemental Nova"
+        );
+        public static readonly TextSetting SocketedSkill2 = Group.Text(
+            "SocketedSkill2",
+            "Storm Bolt"
+        );
+    }
+
     /// <summary>Items &gt; Crafting Slot overrides applied when an item enters the crafting slot.</summary>
     public static class ItemsCraftingSlot
     {

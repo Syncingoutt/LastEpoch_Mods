@@ -254,6 +254,13 @@ public class SettingsGroup
         return s;
     }
 
+    public TextSetting Text(string key, string defaultValue = "")
+    {
+        var s = new TextSetting(defaultValue);
+        entries.Add(new Entry(key, key, EntryType.Text, textSetting: s));
+        return s;
+    }
+
     // Resolves the viewport hierarchy and binds all settings to their prefab UI elements.
     // Handles both viewport-based and flat content layouts.
 
@@ -433,6 +440,9 @@ public class SettingsGroup
             case EntryType.Keybind:
                 section[e.Key] = e.KeybindSetting.Value;
                 break;
+            case EntryType.Text:
+                section[e.Key] = e.TextSetting.Value;
+                break;
         }
     }
 
@@ -546,6 +556,14 @@ public class SettingsGroup
                 }
                 e.KeybindSetting.Value = kb;
                 break;
+            case EntryType.Text:
+                if (SavedEntryPart.TryReadText(token, out string text))
+                {
+                    e.TextSetting.Value = text;
+                    break;
+                }
+                WarnInvalid(e.Key, "not a string, kept '" + e.TextSetting.Value + "'");
+                break;
         }
     }
 
@@ -586,6 +604,7 @@ public class SettingsGroup
         Button,
         Header,
         Keybind,
+        Text,
     }
 
     private readonly struct Entry
@@ -604,6 +623,7 @@ public class SettingsGroup
         public readonly ActionBinding ActionBinding;
         public readonly HeaderSetting HeaderSetting;
         public readonly KeybindSetting KeybindSetting;
+        public readonly TextSetting TextSetting;
         public readonly FloatPaths? FloatPaths;
         public readonly RangePaths? RangePaths;
         public readonly KeybindPaths? KeybindPaths;
@@ -627,7 +647,8 @@ public class SettingsGroup
             FloatPaths? floatPaths = null,
             RangePaths? rangePaths = null,
             KeybindPaths? keybindPaths = null,
-            RadioPaths? radioPaths = null
+            RadioPaths? radioPaths = null,
+            TextSetting textSetting = null
         )
         {
             Key = key;
@@ -644,6 +665,7 @@ public class SettingsGroup
             ActionBinding = actionBinding;
             HeaderSetting = headerSetting;
             KeybindSetting = keybindSetting;
+            TextSetting = textSetting;
             FloatPaths = floatPaths;
             RangePaths = rangePaths;
             KeybindPaths = keybindPaths;

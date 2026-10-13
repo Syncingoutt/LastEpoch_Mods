@@ -27,7 +27,9 @@ public static class LegacySettingsMap
             FactionsWovenMap.All,
             KeyBindsMap.All,
             DamageMeterMap.All,
-            ModsNotInHudMap.All
+            ModsNotInHudMap.All,
+            HeadhunterMap.All,
+            MjolnerMap.All
         );
 
     private static LegacyFieldMapping[] Concat(params IReadOnlyList<LegacyFieldMapping>[] maps)

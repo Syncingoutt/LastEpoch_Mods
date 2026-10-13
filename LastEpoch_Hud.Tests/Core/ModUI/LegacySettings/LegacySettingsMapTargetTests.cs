@@ -24,6 +24,7 @@ public sealed class LegacySettingsMapTargetTests
         "Range",
         "Dropdown",
         "Keybind",
+        "Text",
     };
 
     [Fact]
@@ -101,7 +102,8 @@ public sealed class LegacySettingsMapTargetTests
             || part == LegacySettingPart.RangeMin
             || part == LegacySettingPart.RangeMax
             || part == LegacySettingPart.Dropdown
-            || part == LegacySettingPart.Keybind;
+            || part == LegacySettingPart.Keybind
+            || part == LegacySettingPart.Text;
     }
 
     private static bool HasDefault(
@@ -124,6 +126,7 @@ public sealed class LegacySettingsMapTargetTests
             LegacySettingPart.RangeMax => (float?)imported?["Max"] == setting.RangeMax,
             LegacySettingPart.Dropdown => (int?)imported == setting.DropdownDefault,
             LegacySettingPart.Keybind => (string)imported == setting.KeybindDefault,
+            LegacySettingPart.Text => (string)imported == setting.TextDefault,
             _ => (float?)imported?["Value"] == setting.FloatValue,
         };
     }
@@ -261,6 +264,23 @@ public sealed class LegacySettingsMapTargetTests
                 0f,
                 0f,
                 0,
+                strings.Count > 1 ? strings[1] : null
+            );
+        }
+        if (kind == "Text")
+        {
+            return new DeclaredSetting(
+                kind,
+                false,
+                0f,
+                false,
+                0f,
+                0f,
+                false,
+                0f,
+                0f,
+                0,
+                null,
                 strings.Count > 1 ? strings[1] : null
             );
         }

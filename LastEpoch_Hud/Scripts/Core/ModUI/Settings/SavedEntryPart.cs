@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace LastEpoch_Hud.Scripts.Core.ModUI.Settings;
 
-/// <summary>Reads one part of a saved Float/Range entry, keeping the current value when absent.</summary>
+/// <summary>Reads one part of a saved setting entry, keeping the current value when absent.</summary>
 public static class SavedEntryPart
 {
     public static bool Bool(JObject entry, string part, bool current)
@@ -14,6 +14,12 @@ public static class SavedEntryPart
     public static float Float(JObject entry, string part, float current)
     {
         return entry[part] == null ? current : entry.Value<float>(part);
+    }
+
+    public static bool TryReadText(JToken token, out string value)
+    {
+        value = token.Type == JTokenType.String ? token.Value<string>() : null;
+        return value != null;
     }
 
     public static SavedFloat ReadFloat(
