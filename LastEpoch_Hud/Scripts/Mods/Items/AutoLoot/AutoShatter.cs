@@ -1,5 +1,6 @@
 using Il2Cpp;
 using LastEpoch_Hud.Scripts.Core.Items.AutoLoot;
+using LastEpoch_Hud.Scripts.ModUI;
 
 namespace LastEpoch_Hud.Scripts.Mods.Items.AutoLoot;
 
@@ -10,8 +11,7 @@ public static class AutoShatter
 
     public static bool TryShatter(ItemDataUnpacked item)
     {
-        Save_Manager.Data.Pickup pickup = Save_Manager.instance.data.Items.Pickup;
-        if (!ShatterRoll.Triggers(pickup.AutoShatter_Chance, _random))
+        if (!ShatterRoll.Triggers((int)ModSettings.ItemsPickup.AutoShatterChance.Value, _random))
         {
             return false;
         }
@@ -21,7 +21,7 @@ public static class AutoShatter
         {
             return false;
         }
-        if (pickup.Enable_AutoShatter_UseRune && !HasRune(manager))
+        if (ModSettings.ItemsPickup.AutoShatterUseRune.Value && !HasRune(manager))
         {
             return false;
         }
@@ -29,14 +29,14 @@ public static class AutoShatter
             !GrantShards(
                 manager,
                 item,
-                pickup.AutoShatter_AffixChance,
-                pickup.AutoShatter_QuantityChance
+                (int)ModSettings.ItemsPickup.AutoShatterAffixChance.Value,
+                (int)ModSettings.ItemsPickup.AutoShatterQuantityChance.Value
             )
         )
         {
             return false;
         }
-        if (pickup.Enable_AutoShatter_UseRune)
+        if (ModSettings.ItemsPickup.AutoShatterUseRune.Value)
         {
             ConsumeRune(manager);
         }

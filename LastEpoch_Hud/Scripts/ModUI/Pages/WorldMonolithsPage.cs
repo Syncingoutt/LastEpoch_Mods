@@ -1,4 +1,3 @@
-using System;
 using LastEpoch_Hud.Scripts.Core.ModUI;
 using LastEpoch_Hud.Scripts.Core.ModUI.Sliders;
 using LastEpoch_Hud.Scripts.ModUI.Settings;
@@ -23,51 +22,39 @@ internal static class WorldMonolithsPage
             "MaxStability",
             "Max Stability",
             SceneSliderLimits.MonolithMaxStability,
-            () => Save_Manager.instance.data.Scenes.Monoliths.Enable_MaxStability,
-            v => Save_Manager.instance.data.Scenes.Monoliths.Enable_MaxStability = v,
-            () => Save_Manager.instance.data.Scenes.Monoliths.MaxStability,
-            v => Save_Manager.instance.data.Scenes.Monoliths.MaxStability = v
+            ModSettings.ScenesMonoliths.MaxStability
         );
         AddToggle(
             card,
             "MaxStabilityOnStart",
             "Stability = Max Stability",
-            () => Save_Manager.instance.data.Scenes.Monoliths.Enable_MaxStabilityOnStart,
-            v => Save_Manager.instance.data.Scenes.Monoliths.Enable_MaxStabilityOnStart = v
+            ModSettings.ScenesMonoliths.MaxStabilityOnStart
         );
         AddSlider(
             card,
             "MobsDensity",
             "Mobs Density",
             SceneSliderLimits.MonolithMobsDensity,
-            () => Save_Manager.instance.data.Scenes.Monoliths.Enable_MobsDensity,
-            v => Save_Manager.instance.data.Scenes.Monoliths.Enable_MobsDensity = v,
-            () => Save_Manager.instance.data.Scenes.Monoliths.MobsDensity,
-            v => Save_Manager.instance.data.Scenes.Monoliths.MobsDensity = v
+            ModSettings.ScenesMonoliths.MobsDensity
         );
         AddSlider(
             card,
             "MobsDefeat",
             "Mobs Defeat",
             SceneSliderLimits.MonolithMobsDefeat,
-            () => Save_Manager.instance.data.Scenes.Monoliths.Enable_MobsDefeatOnStart,
-            v => Save_Manager.instance.data.Scenes.Monoliths.Enable_MobsDefeatOnStart = v,
-            () => Save_Manager.instance.data.Scenes.Monoliths.MobsDefeatOnStart,
-            v => Save_Manager.instance.data.Scenes.Monoliths.MobsDefeatOnStart = v
+            ModSettings.ScenesMonoliths.MobsDefeatOnStart
         );
         AddToggle(
             card,
             "ObjectiveReveal",
             "Objective Reveal",
-            () => Save_Manager.instance.data.Scenes.Monoliths.Enable_ObjectiveReveal,
-            v => Save_Manager.instance.data.Scenes.Monoliths.Enable_ObjectiveReveal = v
+            ModSettings.ScenesMonoliths.ObjectiveReveal
         );
         AddToggle(
             card,
             "CompleteObjective",
             "Complete Objective",
-            () => Save_Manager.instance.data.Scenes.Monoliths.Enable_CompleteObjective,
-            v => Save_Manager.instance.data.Scenes.Monoliths.Enable_CompleteObjective = v
+            ModSettings.ScenesMonoliths.CompleteObjective
         );
         page.AddText(
             card,
@@ -79,54 +66,48 @@ internal static class WorldMonolithsPage
             "BlessingSlots",
             "Blessing Slots Reward",
             SceneSliderLimits.MonolithBlessingSlots,
-            () => Save_Manager.instance.data.Scenes.Monoliths.Enable_BlessingSlots,
-            v => Save_Manager.instance.data.Scenes.Monoliths.Enable_BlessingSlots = v,
-            () => Save_Manager.instance.data.Scenes.Monoliths.BlessingSlots,
-            v => Save_Manager.instance.data.Scenes.Monoliths.BlessingSlots = (int)v
+            ModSettings.ScenesMonoliths.BlessingSlots
         );
         AddToggle(
             card,
             "NoLoss",
             "No Stability Lost When You Die",
-            () => Save_Manager.instance.data.Scenes.Monoliths.Enable_NoLostWhenDie,
-            v => Save_Manager.instance.data.Scenes.Monoliths.Enable_NoLostWhenDie = v
+            ModSettings.ScenesMonoliths.NoLostWhenDie
         );
         AddToggle(
             card,
             "MaxOnChange",
             "Stability = Max Stability On Stability Change",
-            () => Save_Manager.instance.data.Scenes.Monoliths.Enable_MaxStabilityOnStabilityChanged,
-            v =>
-                Save_Manager.instance.data.Scenes.Monoliths.Enable_MaxStabilityOnStabilityChanged =
-                    v
+            ModSettings.ScenesMonoliths.MaxStabilityOnStabilityChanged
         );
 
+        // Echo encounter: checked = guaranteed in every echo; unchecked = the game's own rate.
         var encounters = page.AddCard("EchoEncounters", "Echo Encounters");
-        AddAlways(
+        AddToggle(
             encounters,
             "AlwaysNemesis",
             "Always Spawn Nemesis",
             ModSettings.EchoEncounters.AlwaysNemesis
         );
-        AddAlways(
+        AddToggle(
             encounters,
             "AlwaysBloodRitual",
             "Always Spawn Blood Ritual",
             ModSettings.EchoEncounters.AlwaysBloodRitual
         );
-        AddAlways(
+        AddToggle(
             encounters,
             "AlwaysLostCache",
             "Always Spawn Lost Cache",
             ModSettings.EchoEncounters.AlwaysLostCache
         );
-        AddAlways(
+        AddToggle(
             encounters,
             "AlwaysRiftBeast",
             "Always Spawn Rift Beast",
             ModSettings.EchoEncounters.AlwaysRiftBeast
         );
-        AddAlways(
+        AddToggle(
             encounters,
             "AlwaysOmenWindow",
             "Always Spawn Omen Window",
@@ -175,30 +156,15 @@ internal static class WorldMonolithsPage
         HudFormPage.Card card,
         string id,
         string label,
-        Func<bool> read,
-        Action<bool> write
-    ) =>
-        page.AddToggle(
-            card,
-            id,
-            label,
-            () => HasSave() && read(),
-            v =>
-            {
-                if (HasSave())
-                    write(v);
-            }
-        );
+        BoolSetting setting
+    ) => page.AddToggle(card, id, label, () => setting.Value, setting.Set);
 
     private static void AddSlider(
         HudFormPage.Card card,
         string id,
         string label,
         SliderRange range,
-        Func<bool> readEnabled,
-        Action<bool> writeEnabled,
-        Func<float> read,
-        Action<float> write
+        FloatSetting setting
     )
     {
         page.AddToggleSlider(
@@ -209,28 +175,12 @@ internal static class WorldMonolithsPage
             range.Min,
             range.Max,
             range.WholeNumbers,
-            () => HasSave() && readEnabled(),
-            v =>
-            {
-                if (HasSave())
-                    writeEnabled(v);
-            },
-            () => HasSave() ? read() : range.Min,
-            v =>
-            {
-                if (HasSave())
-                    write(v);
-            }
+            () => setting.Enabled,
+            setting.SetEnabled,
+            () => setting.Value,
+            setting.SetValue
         );
     }
-
-    // Echo encounter: checked = guaranteed in every echo; unchecked = the game's own rate.
-    private static void AddAlways(
-        HudFormPage.Card card,
-        string id,
-        string label,
-        BoolSetting setting
-    ) => page.AddToggle(card, id, label, () => setting.Value, v => setting.Set(v));
 
     // Echo encounter count: off = the game's own rate; on = exactly 0-10 per echo zone.
     private static void AddCount(
@@ -252,7 +202,4 @@ internal static class WorldMonolithsPage
             () => setting.Value,
             v => setting.SetValue(v)
         );
-
-    private static bool HasSave() =>
-        !Save_Manager.instance.IsNullOrDestroyed() && Save_Manager.instance.initialized;
 }

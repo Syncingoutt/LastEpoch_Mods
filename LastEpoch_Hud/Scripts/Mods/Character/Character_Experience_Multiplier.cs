@@ -1,5 +1,7 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using LastEpoch_Hud.Scripts.Core.Character;
+using LastEpoch_Hud.Scripts.ModUI;
 
 namespace LastEpoch_Hud.Scripts.Mods.Character;
 
@@ -7,21 +9,7 @@ public class Character_Experience_Multiplier
 {
     public static bool CanRun()
     {
-        if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
-        {
-            if (!Save_Manager.instance.data.IsNullOrDestroyed())
-            {
-                return Save_Manager.instance.data.Character.Cheats.Enable_ExperienceMultiplier;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
+        return Scenes.IsGameScene() && ModSettings.CharacterMultipliers.Experience.Enabled;
     }
 
     [HarmonyPatch(typeof(ExperienceTracker), "GainExp")]
@@ -30,10 +18,11 @@ public class Character_Experience_Multiplier
         [HarmonyPrefix]
         static void Prefix(ref long __0)
         {
-            if (CanRun())
+            if (!CanRun())
             {
-                __0 *= (long)Save_Manager.instance.data.Character.Cheats.ExperienceMultiplier;
+                return;
             }
+            __0 = RewardMultiplier.Scale(__0, ModSettings.CharacterMultipliers.Experience.Value);
         }
     }
 }

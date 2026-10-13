@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
 
 namespace LastEpoch_Hud.Scripts.Mods.Character;
 
@@ -7,21 +8,7 @@ public class Character_Waypoints
 {
     public static bool CanRun()
     {
-        if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
-        {
-            if (!Save_Manager.instance.data.IsNullOrDestroyed())
-            {
-                return Save_Manager.instance.data.Character.Cheats.Enable_WaypointsUnlock;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
+        return Scenes.IsGameScene() && ModSettings.CharacterCheats.WaypointsUnlock.Value;
     }
 
     [HarmonyPatch(typeof(UIWaypointStandard), "OnPointerEnter")]

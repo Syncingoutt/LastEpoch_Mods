@@ -48,10 +48,7 @@ internal static class DungeonRevealControls
             .96f,
             ModSettings.DungeonReveal.Enabled.Value
         );
-        bool keyless =
-            !Save_Manager.instance.IsNullOrDestroyed()
-            && Save_Manager.instance.initialized
-            && Save_Manager.instance.data.Scenes.Dungeons.Enable_EnterWithoutKey;
+        bool keyless = ModSettings.ScenesDungeons.EnterWithoutKey.Value;
         Checkbox(
             section,
             KeylessName,
@@ -187,15 +184,12 @@ internal static class DungeonRevealControls
         if (toggle.IsNullOrDestroyed())
             return;
         if (toggle.name == RevealName)
-            ModSettings.DungeonReveal.Enabled.Set(toggle.isOn);
-        else if (
-            toggle.name == KeylessName
-            && !Save_Manager.instance.IsNullOrDestroyed()
-            && Save_Manager.instance.initialized
-        )
         {
-            Save_Manager.instance.data.Scenes.Dungeons.Enable_EnterWithoutKey = toggle.isOn;
-            Save_Manager.instance.Save();
+            ModSettings.DungeonReveal.Enabled.Set(toggle.isOn);
+        }
+        if (toggle.name == KeylessName)
+        {
+            ModSettings.ScenesDungeons.EnterWithoutKey.Set(toggle.isOn);
         }
     }
 

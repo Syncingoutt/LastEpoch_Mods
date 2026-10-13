@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
 using LastEpoch_Hud.Scripts.Core.ModUI;
+using LastEpoch_Hud.Scripts.ModUI;
 
 namespace LastEpoch_Hud.Scripts.Mods.Skills;
 
@@ -8,26 +9,12 @@ public class Passives_Points
 {
     public static bool CanRun()
     {
-        if (
-            (Scenes.IsGameScene())
-            && (!Save_Manager.instance.IsNullOrDestroyed())
-            && (!Refs_Manager.player_treedata.IsNullOrDestroyed())
-        )
-        {
-            if (!Save_Manager.instance.data.IsNullOrDestroyed())
-            {
-                return Save_Manager.instance.data.Skills.Enable_PassivePoints
-                    || Save_Manager.instance.data.Skills.Enable_PassivePointMultiplier;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
+        return Scenes.IsGameScene()
+            && !Refs_Manager.player_treedata.IsNullOrDestroyed()
+            && (
+                ModSettings.SkillsGeneral.PassivePoints.Enabled
+                || ModSettings.SkillsGeneral.PassivePointMultiplier.Enabled
+            );
     }
 
     static int RealPoints()
@@ -37,18 +24,16 @@ public class Passives_Points
 
     static int Target()
     {
-        int points = Save_Manager.instance.data.Skills.Enable_PassivePoints
-            ? (int)Save_Manager.instance.data.Skills.PassivePoints
+        int points = ModSettings.SkillsGeneral.PassivePoints.Enabled
+            ? (int)ModSettings.SkillsGeneral.PassivePoints.Value
             : RealPoints();
         if (points < 0)
         {
             points = 0;
         }
-        if (Save_Manager.instance.data.Skills.Enable_PassivePointMultiplier)
+        if (ModSettings.SkillsGeneral.PassivePointMultiplier.Enabled)
         {
-            points *= PointMultiplier.Clamp(
-                Save_Manager.instance.data.Skills.PassivePointMultiplier
-            );
+            points *= PointMultiplier.Clamp(ModSettings.SkillsGeneral.PassivePointMultiplier.Value);
         }
         if (points > ushort.MaxValue)
         {

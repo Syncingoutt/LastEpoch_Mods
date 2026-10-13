@@ -1,28 +1,13 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
 
 namespace LastEpoch_Hud.Scripts.Mods.Monoliths;
 
 public class Monoliths_MobsDensity
 {
-    public static bool CanRun()
-    {
-        if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
-        {
-            if (!Save_Manager.instance.data.IsNullOrDestroyed())
-            {
-                return Save_Manager.instance.data.Scenes.Monoliths.Enable_MobsDensity;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
-    }
+    public static bool CanRun() =>
+        Scenes.IsGameScene() && ModSettings.ScenesMonoliths.MobsDensity.Enabled;
 
     [HarmonyPatch(typeof(MonolithRun), "calculateIncreasedRarityAndExperienceFromMods")]
     public class MonolithRun_calculateIncreasedRarityAndExperienceFromMods
@@ -30,15 +15,14 @@ public class Monoliths_MobsDensity
         [HarmonyPostfix]
         static void Postfix(ref MonolithRun __instance)
         {
-            if (CanRun())
+            if (!CanRun())
             {
-                __instance.timeline.enemyDensityModifier = Save_Manager
-                    .instance
-                    .data
-                    .Scenes
-                    .Monoliths
-                    .MobsDensity;
+                return;
             }
+            __instance.timeline.enemyDensityModifier = ModSettings
+                .ScenesMonoliths
+                .MobsDensity
+                .Value;
         }
     }
 }

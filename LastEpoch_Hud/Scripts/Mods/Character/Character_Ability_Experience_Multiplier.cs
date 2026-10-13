@@ -1,4 +1,6 @@
 ﻿using HarmonyLib;
+using LastEpoch_Hud.Scripts.Core.Character;
+using LastEpoch_Hud.Scripts.ModUI;
 
 namespace LastEpoch_Hud.Scripts.Mods.Character;
 
@@ -10,13 +12,11 @@ public class Character_Ability_Experience_Multiplier
         [HarmonyPrefix]
         static void Prefix(ref long __1)
         {
-            if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
+            if (!Scenes.IsGameScene() || !ModSettings.CharacterMultipliers.Ability.Enabled)
             {
-                if (Save_Manager.instance.data.Character.Cheats.Enable_AbilityMultiplier)
-                {
-                    __1 *= (long)Save_Manager.instance.data.Character.Cheats.AbilityMultiplier;
-                }
+                return;
             }
+            __1 = RewardMultiplier.Scale(__1, ModSettings.CharacterMultipliers.Ability.Value);
         }
     }
 }

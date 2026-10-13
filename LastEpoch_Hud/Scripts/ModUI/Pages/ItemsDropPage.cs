@@ -1,6 +1,6 @@
-using System;
 using LastEpoch_Hud.Scripts.Core.ModUI;
 using LastEpoch_Hud.Scripts.Core.ModUI.Sliders;
+using LastEpoch_Hud.Scripts.ModUI.Settings;
 using LastEpoch_Hud.Scripts.ModUI.Shell;
 using UnityEngine;
 
@@ -18,11 +18,13 @@ internal static class ItemsDropPage
     {
         page = HudFormPage.Build(parent, hud, font, pageId);
         if (page == null)
+        {
             return;
+        }
 
         var card = page.AddCard("Drop", "Drop");
-        AddExclusiveRarity(card, "ForceUnique", "Force Unique", 0);
-        AddExclusiveRarity(card, "ForceSet", "Force Set", 1);
+        AddExclusiveRarity(card, "ForceUnique", "Force Unique", ModSettings.ItemsDrop.ForceUnique);
+        AddExclusiveRarity(card, "ForceSet", "Force Set", ModSettings.ItemsDrop.ForceSet);
         // The legacy rarity-9 override produces unrelated unique identities.
         // Do not expose it as a working item-generation feature until a proper
         // native legendary creation path has been implemented.
@@ -32,145 +34,85 @@ internal static class ItemsDropPage
             "Force Legendary is temporarily unavailable: forcing rarity 9 creates invalid unique identities. Use Force Drop for explicit legendary items.",
             76f
         );
-        AddToggle(
-            card,
-            "ForceSeal",
-            "Force Seal",
-            () => Save_Manager.instance.data.Items.Drop.Enable_ForceSeal,
-            value => Save_Manager.instance.data.Items.Drop.Enable_ForceSeal = value
-        );
+        BoolSetting seal = ModSettings.ItemsDrop.ForceSeal;
+        page.AddToggle(card, "ForceSeal", "Force Seal", () => seal.Value, seal.Set);
 
         AddRange(
             card,
             "Implicits",
             "Implicit Value",
             ItemSliderLimits.DropImplicits,
-            () => Save_Manager.instance.data.Items.Drop.Enable_Implicits,
-            value => Save_Manager.instance.data.Items.Drop.Enable_Implicits = value,
-            () => Save_Manager.instance.data.Items.Drop.Implicits_Min,
-            value => Save_Manager.instance.data.Items.Drop.Implicits_Min = value,
-            () => Save_Manager.instance.data.Items.Drop.Implicits_Max,
-            value => Save_Manager.instance.data.Items.Drop.Implicits_Max = value
+            ModSettings.ItemsDrop.Implicits
         );
         AddRange(
             card,
             "ForgingPotential",
             "Forging Potential",
             ItemSliderLimits.DropForgingPotential,
-            () => Save_Manager.instance.data.Items.Drop.Enable_ForginPotencial,
-            value => Save_Manager.instance.data.Items.Drop.Enable_ForginPotencial = value,
-            () => Save_Manager.instance.data.Items.Drop.ForginPotencial_Min,
-            value => Save_Manager.instance.data.Items.Drop.ForginPotencial_Min = value,
-            () => Save_Manager.instance.data.Items.Drop.ForginPotencial_Max,
-            value => Save_Manager.instance.data.Items.Drop.ForginPotencial_Max = value
+            ModSettings.ItemsDrop.ForgingPotential
         );
         AddRange(
             card,
             "SealTier",
             "Seal Tier",
             ItemSliderLimits.DropSealTier,
-            () => Save_Manager.instance.data.Items.Drop.Enable_SealTier,
-            v => Save_Manager.instance.data.Items.Drop.Enable_SealTier = v,
-            () => Save_Manager.instance.data.Items.Drop.SealTier_Min,
-            v => Save_Manager.instance.data.Items.Drop.SealTier_Min = v,
-            () => Save_Manager.instance.data.Items.Drop.SealTier_Max,
-            v => Save_Manager.instance.data.Items.Drop.SealTier_Max = v
+            ModSettings.ItemsDrop.SealTier
         );
         AddRange(
             card,
             "SealValue",
             "Seal Value",
             ItemSliderLimits.DropSealValue,
-            () => Save_Manager.instance.data.Items.Drop.Enable_SealValue,
-            v => Save_Manager.instance.data.Items.Drop.Enable_SealValue = v,
-            () => Save_Manager.instance.data.Items.Drop.SealValue_Min,
-            v => Save_Manager.instance.data.Items.Drop.SealValue_Min = v,
-            () => Save_Manager.instance.data.Items.Drop.SealValue_Max,
-            v => Save_Manager.instance.data.Items.Drop.SealValue_Max = v
+            ModSettings.ItemsDrop.SealValue
         );
         AddRange(
             card,
             "AffixCount",
             "Affix Count",
             ItemSliderLimits.DropAffixCount,
-            () => Save_Manager.instance.data.Items.Drop.Enable_AffixCount,
-            v => Save_Manager.instance.data.Items.Drop.Enable_AffixCount = v,
-            () => Save_Manager.instance.data.Items.Drop.AffixCount_Min,
-            v => Save_Manager.instance.data.Items.Drop.AffixCount_Min = v,
-            () => Save_Manager.instance.data.Items.Drop.AffixCount_Max,
-            v => Save_Manager.instance.data.Items.Drop.AffixCount_Max = v
+            ModSettings.ItemsDrop.AffixCount
         );
         AddRange(
             card,
             "IdolAffixCount",
             "Idol Affix Count",
             ItemSliderLimits.DropIdolAffixCount,
-            () => Save_Manager.instance.data.Items.Drop.Enable_IdolAffixCount,
-            v => Save_Manager.instance.data.Items.Drop.Enable_IdolAffixCount = v,
-            () => Save_Manager.instance.data.Items.Drop.IdolAffixCount_Min,
-            v => Save_Manager.instance.data.Items.Drop.IdolAffixCount_Min = v,
-            () => Save_Manager.instance.data.Items.Drop.IdolAffixCount_Max,
-            v => Save_Manager.instance.data.Items.Drop.IdolAffixCount_Max = v
+            ModSettings.ItemsDrop.IdolAffixCount
         );
         AddRange(
             card,
             "AffixTiers",
             "Affix Tier",
             ItemSliderLimits.DropAffixTiers,
-            () => Save_Manager.instance.data.Items.Drop.Enable_AffixTiers,
-            v => Save_Manager.instance.data.Items.Drop.Enable_AffixTiers = v,
-            () => Save_Manager.instance.data.Items.Drop.AffixTiers_Min,
-            v => Save_Manager.instance.data.Items.Drop.AffixTiers_Min = v,
-            () => Save_Manager.instance.data.Items.Drop.AffixTiers_Max,
-            v => Save_Manager.instance.data.Items.Drop.AffixTiers_Max = v
+            ModSettings.ItemsDrop.AffixTiers
         );
         AddRange(
             card,
             "AffixValues",
             "Affix Value",
             ItemSliderLimits.DropAffixValues,
-            () => Save_Manager.instance.data.Items.Drop.Enable_AffixValues,
-            v => Save_Manager.instance.data.Items.Drop.Enable_AffixValues = v,
-            () => Save_Manager.instance.data.Items.Drop.AffixValues_Min,
-            v => Save_Manager.instance.data.Items.Drop.AffixValues_Min = v,
-            () => Save_Manager.instance.data.Items.Drop.AffixValues_Max,
-            v => Save_Manager.instance.data.Items.Drop.AffixValues_Max = v
+            ModSettings.ItemsDrop.AffixValues
         );
         AddRange(
             card,
             "UniqueMods",
             "Unique Mod Value",
             ItemSliderLimits.DropUniqueMods,
-            () => Save_Manager.instance.data.Items.Drop.Enable_UniqueMods,
-            v => Save_Manager.instance.data.Items.Drop.Enable_UniqueMods = v,
-            () => Save_Manager.instance.data.Items.Drop.UniqueMods_Min,
-            v => Save_Manager.instance.data.Items.Drop.UniqueMods_Min = v,
-            () => Save_Manager.instance.data.Items.Drop.UniqueMods_Max,
-            v => Save_Manager.instance.data.Items.Drop.UniqueMods_Max = v
+            ModSettings.ItemsDrop.UniqueMods
         );
         AddRange(
             card,
             "LegendaryPotential",
             "Legendary Potential",
             ItemSliderLimits.DropLegendaryPotential,
-            () => Save_Manager.instance.data.Items.Drop.Enable_LegendaryPotencial,
-            v => Save_Manager.instance.data.Items.Drop.Enable_LegendaryPotencial = v,
-            () => Save_Manager.instance.data.Items.Drop.LegendaryPotencial_Min,
-            v => Save_Manager.instance.data.Items.Drop.LegendaryPotencial_Min = v,
-            () => Save_Manager.instance.data.Items.Drop.LegendaryPotencial_Max,
-            v => Save_Manager.instance.data.Items.Drop.LegendaryPotencial_Max = v
+            ModSettings.ItemsDrop.LegendaryPotential
         );
         AddRange(
             card,
             "WeaverWill",
             "Weaver Will",
             ItemSliderLimits.DropWeaverWill,
-            () => Save_Manager.instance.data.Items.Drop.Enable_WeaverWill,
-            v => Save_Manager.instance.data.Items.Drop.Enable_WeaverWill = v,
-            () => Save_Manager.instance.data.Items.Drop.WeaverWill_Min,
-            v => Save_Manager.instance.data.Items.Drop.WeaverWill_Min = v,
-            () => Save_Manager.instance.data.Items.Drop.WeaverWill_Max,
-            v => Save_Manager.instance.data.Items.Drop.WeaverWill_Max = v
+            ModSettings.ItemsDrop.WeaverWill
         );
     }
 
@@ -184,58 +126,27 @@ internal static class ItemsDropPage
         HudFormPage.Card card,
         string id,
         string label,
-        int rarity
+        BoolSetting setting
     )
     {
-        AddToggle(
-            card,
-            id,
-            label,
-            () =>
-                rarity == 0 ? Save_Manager.instance.data.Items.Drop.Enable_ForceUnique
-                : rarity == 1 ? Save_Manager.instance.data.Items.Drop.Enable_ForceSet
-                : Save_Manager.instance.data.Items.Drop.Enable_ForceLegendary,
-            value =>
-            {
-                if (rarity == 0)
-                    Save_Manager.instance.data.Items.Drop.Enable_ForceUnique = value;
-                else if (rarity == 1)
-                    Save_Manager.instance.data.Items.Drop.Enable_ForceSet = value;
-                else
-                    Save_Manager.instance.data.Items.Drop.Enable_ForceLegendary = value;
-                if (value)
-                {
-                    if (rarity != 0)
-                        Save_Manager.instance.data.Items.Drop.Enable_ForceUnique = false;
-                    if (rarity != 1)
-                        Save_Manager.instance.data.Items.Drop.Enable_ForceSet = false;
-                    if (rarity != 2)
-                        Save_Manager.instance.data.Items.Drop.Enable_ForceLegendary = false;
-                    page.RefreshValues();
-                }
-            }
-        );
+        page.AddToggle(card, id, label, () => setting.Value, value => SetExclusive(setting, value));
     }
 
-    private static void AddToggle(
-        HudFormPage.Card card,
-        string id,
-        string label,
-        Func<bool> read,
-        Action<bool> write
-    )
+    private static void SetExclusive(BoolSetting chosen, bool value)
     {
-        page.AddToggle(
-            card,
-            id,
-            label,
-            () => HasSave() && read(),
-            value =>
+        chosen.Set(value);
+        if (!value)
+        {
+            return;
+        }
+        foreach (BoolSetting other in ModSettings.ItemsDrop.ForcedRarities)
+        {
+            if (other != chosen)
             {
-                if (HasSave())
-                    write(value);
+                other.Set(false);
             }
-        );
+        }
+        page.RefreshValues();
     }
 
     private static void AddRange(
@@ -243,15 +154,10 @@ internal static class ItemsDropPage
         string id,
         string label,
         SliderRange range,
-        Func<bool> readEnabled,
-        Action<bool> writeEnabled,
-        Func<float> readMinimum,
-        Action<float> writeMinimum,
-        Func<float> readMaximum,
-        Action<float> writeMaximum
+        RangeSetting setting
     )
     {
-        AddToggle(card, id, label, readEnabled, writeEnabled);
+        page.AddToggle(card, id, label, () => setting.Enabled, setting.SetEnabled);
         var minimumSlider = page.AddSlider(
             card,
             id + "Minimum",
@@ -260,14 +166,10 @@ internal static class ItemsDropPage
             range.Min,
             range.Max,
             range.WholeNumbers,
-            () => HasSave() ? readMinimum() : range.Min,
+            () => setting.Min,
             value =>
             {
-                if (!HasSave())
-                    return;
-                MinMaxPair pair = new MinMaxPair(readMinimum(), readMaximum()).WithMin(value);
-                writeMinimum(pair.Min);
-                writeMaximum(pair.Max);
+                setting.SetMin(value);
                 page.RefreshValues();
             }
         );
@@ -279,21 +181,14 @@ internal static class ItemsDropPage
             range.Min,
             range.Max,
             range.WholeNumbers,
-            () => HasSave() ? readMaximum() : range.Max,
+            () => setting.Max,
             value =>
             {
-                if (!HasSave())
-                    return;
-                MinMaxPair pair = new MinMaxPair(readMinimum(), readMaximum()).WithMax(value);
-                writeMinimum(pair.Min);
-                writeMaximum(pair.Max);
+                setting.SetMax(value);
                 page.RefreshValues();
             }
         );
-        page.SetVisibleWhen(minimumSlider, () => HasSave() && readEnabled());
-        page.SetVisibleWhen(maximumSlider, () => HasSave() && readEnabled());
+        page.SetVisibleWhen(minimumSlider, () => setting.Enabled);
+        page.SetVisibleWhen(maximumSlider, () => setting.Enabled);
     }
-
-    private static bool HasSave() =>
-        !Save_Manager.instance.IsNullOrDestroyed() && Save_Manager.instance.initialized;
 }

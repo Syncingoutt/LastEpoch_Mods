@@ -109,18 +109,8 @@ internal static class UtilitiesCharacterPage
             card,
             "UnlockAllIdols",
             "Unlock All Idol Slots",
-            () =>
-                HasSave() && Save_Manager.instance.data.Character.Cheats.Enable_UnlockAllIdolsSlots,
-            value =>
-            {
-                if (!HasSave())
-                {
-                    return;
-                }
-
-                Save_Manager.instance.data.Character.Cheats.Enable_UnlockAllIdolsSlots = value;
-                Mods.Character.Character_UnlockAllIdols.Update();
-            }
+            () => ModSettings.CharacterCheats.UnlockAllIdolsSlots.Value,
+            value => ModSettings.CharacterCheats.UnlockAllIdolsSlots.Set(value)
         );
         _page.AddToggle(
             card,
@@ -141,14 +131,8 @@ internal static class UtilitiesCharacterPage
             card,
             "GodMode",
             "God Mode",
-            () => HasSave() && Save_Manager.instance.data.Character.Cheats.Enable_GodMode,
-            value =>
-            {
-                if (HasSave())
-                {
-                    Save_Manager.instance.data.Character.Cheats.Enable_GodMode = value;
-                }
-            }
+            () => ModSettings.CharacterCheats.GodMode.Value,
+            value => ModSettings.CharacterCheats.GodMode.Set(value)
         );
         _page.AddToggle(
             card,
@@ -161,80 +145,43 @@ internal static class UtilitiesCharacterPage
             card,
             "LowLife",
             "Force Low Life",
-            () => HasSave() && Save_Manager.instance.data.Character.Cheats.Enable_LowLife,
-            value =>
-            {
-                if (HasSave())
-                {
-                    Save_Manager.instance.data.Character.Cheats.Enable_LowLife = value;
-                }
-            }
+            () => ModSettings.CharacterCheats.LowLife.Value,
+            value => ModSettings.CharacterCheats.LowLife.Set(value)
         );
         _page.AddToggle(
             card,
             "WeaponRestrictions",
             "Ignore Weapon Restrictions",
-            () =>
-                HasSave() && Save_Manager.instance.data.Character.Cheats.Enable_TwoHandedWithShield,
-            value =>
-            {
-                if (HasSave())
-                {
-                    Save_Manager.instance.data.Character.Cheats.Enable_TwoHandedWithShield = value;
-                }
-            }
+            () => ModSettings.CharacterCheats.TwoHandedWithShield.Value,
+            value => ModSettings.CharacterCheats.TwoHandedWithShield.Set(value)
         );
         _page.AddToggle(
             card,
             "ManaCost",
             "Remove Mana Cost",
-            () => HasSave() && Save_Manager.instance.data.Skills.Enable_RemoveManaCost,
-            value =>
-            {
-                if (HasSave())
-                {
-                    Save_Manager.instance.data.Skills.Enable_RemoveManaCost = value;
-                }
-            }
+            () => ModSettings.SkillsGeneral.RemoveManaCost.Value,
+            ModSettings.SkillsGeneral.RemoveManaCost.Set
         );
         _page.AddToggle(
             card,
             "ChannelCost",
             "Remove Mana Cost While Channeling",
-            () => HasSave() && Save_Manager.instance.data.Skills.Enable_RemoveChannelCost,
-            value =>
-            {
-                if (HasSave())
-                {
-                    Save_Manager.instance.data.Skills.Enable_RemoveChannelCost = value;
-                }
-            }
+            () => ModSettings.SkillsGeneral.RemoveChannelCost.Value,
+            ModSettings.SkillsGeneral.RemoveChannelCost.Set
         );
         _page.AddToggle(
             card,
             "ChannelRegen",
             "Mana Regeneration While Channeling",
-            () => HasSave() && Save_Manager.instance.data.Skills.Enable_NoManaRegenWhileChanneling,
-            value =>
-            {
-                if (HasSave())
-                {
-                    Save_Manager.instance.data.Skills.Enable_NoManaRegenWhileChanneling = value;
-                }
-            }
+            () => ModSettings.SkillsGeneral.ManaRegenWhileChanneling.Value,
+            ModSettings.SkillsGeneral.ManaRegenWhileChanneling.Set
         );
         _page.AddToggle(
             card,
             "ContinueOutOfMana",
             "Don't Stop When Out Of Mana Channeling",
-            () => HasSave() && Save_Manager.instance.data.Skills.Enable_StopWhenOutOfMana,
-            value =>
-            {
-                if (HasSave())
-                {
-                    Save_Manager.instance.data.Skills.Enable_StopWhenOutOfMana = value;
-                }
-            }
+            () => ModSettings.SkillsGeneral.ContinueWhenOutOfMana.Value,
+            ModSettings.SkillsGeneral.ContinueWhenOutOfMana.Set
         );
         _page.AddToggle(
             card,
@@ -254,211 +201,83 @@ internal static class UtilitiesCharacterPage
             card,
             "Cooldown",
             "No Cooldown",
-            () => HasSave() && Save_Manager.instance.data.Skills.Enable_RemoveCooldown,
-            value =>
-            {
-                if (HasSave())
-                {
-                    Save_Manager.instance.data.Skills.Enable_RemoveCooldown = value;
-                }
-            }
+            () => ModSettings.SkillsGeneral.RemoveCooldown.Value,
+            ModSettings.SkillsGeneral.RemoveCooldown.Set
         );
         _page.AddToggle(
             card,
             "NodeRequirements",
             "Remove Node Requirements",
-            () => HasSave() && Save_Manager.instance.data.Skills.Disable_NodeRequirement,
-            value =>
-            {
-                if (HasSave())
-                {
-                    Save_Manager.instance.data.Skills.Disable_NodeRequirement = value;
-                }
-            }
+            () => ModSettings.SkillsGeneral.RemoveNodeRequirements.Value,
+            ModSettings.SkillsGeneral.RemoveNodeRequirements.Set
         );
 
-        _page.AddSlider(
+        AddOffAtZeroSlider(
             card,
             "PassivePoints",
             "Passive Points",
             string.Empty,
-            0f,
-            255f,
-            true,
-            () =>
-                HasSave() && Save_Manager.instance.data.Skills.Enable_PassivePoints
-                    ? Save_Manager.instance.data.Skills.PassivePoints
-                    : 0f,
-            value =>
-            {
-                if (!HasSave())
-                {
-                    return;
-                }
-                bool enabled = value > 0.0001f;
-                Save_Manager.instance.data.Skills.Enable_PassivePoints = enabled;
-                if (enabled)
-                {
-                    Save_Manager.instance.data.Skills.PassivePoints = value;
-                }
-                Mods.Skills.Passives_Points.Sync();
-            }
+            SkillSliderLimits.PassivePoints,
+            ModSettings.SkillsGeneral.PassivePoints,
+            position => position,
+            Mods.Skills.Passives_Points.Sync
         );
-        _page.AddSlider(
+        AddOffAtZeroSlider(
             card,
             "PassiveMultiplier",
             "Passive Point Multiplier Per Level",
             "x",
-            0f,
-            10f,
-            true,
-            () =>
-                HasSave() && Save_Manager.instance.data.Skills.Enable_PassivePointMultiplier
-                    ? Save_Manager.instance.data.Skills.PassivePointMultiplier
-                    : 0f,
-            value =>
-            {
-                if (!HasSave())
-                {
-                    return;
-                }
-                bool enabled = value > 0.0001f;
-                Save_Manager.instance.data.Skills.Enable_PassivePointMultiplier = enabled;
-                if (enabled)
-                {
-                    Save_Manager.instance.data.Skills.PassivePointMultiplier =
-                        PointMultiplier.Clamp(value);
-                }
-                Mods.Skills.Passives_Points.Sync();
-            }
+            SkillSliderLimits.PointMultiplier,
+            ModSettings.SkillsGeneral.PassivePointMultiplier,
+            position => PointMultiplier.Clamp(position),
+            Mods.Skills.Passives_Points.Sync
         );
-        _page.AddSlider(
+        AddOffAtZeroSlider(
             card,
             "SkillLevel",
             "Skill Level",
             string.Empty,
-            0f,
-            255f,
-            true,
-            () =>
-                HasSave() && Save_Manager.instance.data.Skills.Enable_SkillLevel
-                    ? Save_Manager.instance.data.Skills.SkillLevel
-                    : 0f,
-            value =>
-            {
-                if (!HasSave())
-                {
-                    return;
-                }
-                bool enabled = value > 0.0001f;
-                Save_Manager.instance.data.Skills.Enable_SkillLevel = enabled;
-                if (enabled)
-                {
-                    Save_Manager.instance.data.Skills.SkillLevel = value;
-                }
-                Mods.Skills.Skills_Level.Sync();
-            }
+            SkillSliderLimits.SkillLevel,
+            ModSettings.SkillsGeneral.SkillLevel,
+            position => position,
+            Mods.Skills.Skills_Level.Sync
         );
-        _page.AddSlider(
+        AddOffAtZeroSlider(
             card,
             "SkillMultiplier",
             "Skill Point Multiplier",
             "x",
-            0f,
-            10f,
-            true,
-            () =>
-                HasSave() && Save_Manager.instance.data.Skills.Enable_SkillLevelMultiplier
-                    ? Save_Manager.instance.data.Skills.SkillLevelMultiplier
-                    : 0f,
-            value =>
-            {
-                if (!HasSave())
-                {
-                    return;
-                }
-                bool enabled = value > 0.0001f;
-                Save_Manager.instance.data.Skills.Enable_SkillLevelMultiplier = enabled;
-                if (enabled)
-                {
-                    Save_Manager.instance.data.Skills.SkillLevelMultiplier = PointMultiplier.Clamp(
-                        value
-                    );
-                }
-                Mods.Skills.Skills_Level.Sync();
-            }
+            SkillSliderLimits.PointMultiplier,
+            ModSettings.SkillsGeneral.SkillLevelMultiplier,
+            position => PointMultiplier.Clamp(position),
+            Mods.Skills.Skills_Level.Sync
         );
-        _page.AddSlider(
+        AddOffAtZeroSlider(
             card,
             "WeaverPoints",
             "Weaver Tree Points",
             string.Empty,
-            0f,
-            Mods.Factions.TheWoven.Faction_Woven_TreePoints.SliderMax,
-            true,
-            () =>
-                HasSave() && Save_Manager.instance.data.Factions.TheWoven.Enable_TreePoints
-                    ? Save_Manager.instance.data.Factions.TheWoven.TreePoints
-                    : 0f,
-            value =>
-            {
-                if (!HasSave())
-                {
-                    return;
-                }
-                bool enabled = value > 0.0001f;
-                Save_Manager.instance.data.Factions.TheWoven.Enable_TreePoints = enabled;
-                if (enabled)
-                {
-                    Save_Manager.instance.data.Factions.TheWoven.TreePoints = (int)value;
-                    Mods.Factions.TheWoven.Faction_Woven_TreePoints.ApplyToPlayer();
-                }
-                else
-                {
-                    Mods.Factions.TheWoven.Faction_Woven_TreePoints.ReleaseToRealPoints();
-                }
-            }
+            CharacterSliderLimits.WeaverTreePoints,
+            ModSettings.FactionsWoven.TreePoints,
+            position => position,
+            Mods.Factions.TheWoven.Faction_Woven_TreePoints.SyncTreePoints
         );
-        _page.AddSlider(
+        AddOffAtZeroSlider(
             card,
             "WeaverMultiplier",
             "Weaver Tree Points Multiplier",
             "x",
-            0f,
-            10f,
-            true,
-            () =>
-                HasSave() && Save_Manager.instance.data.Factions.TheWoven.Enable_PointMultiplier
-                    ? Save_Manager.instance.data.Factions.TheWoven.PointMultiplier
-                    : 0f,
-            value =>
-            {
-                if (!HasSave())
-                {
-                    return;
-                }
-                bool enabled = value > 0.0001f;
-                Save_Manager.instance.data.Factions.TheWoven.Enable_PointMultiplier = enabled;
-                if (enabled)
-                {
-                    Save_Manager.instance.data.Factions.TheWoven.PointMultiplier =
-                        PointMultiplier.Clamp(value);
-                }
-                Mods.Factions.TheWoven.Faction_Woven_TreePoints.ApplyToPlayer();
-            }
+            CharacterSliderLimits.WeaverPointMultiplier,
+            ModSettings.FactionsWoven.PointMultiplier,
+            position => PointMultiplier.Clamp(position),
+            Mods.Factions.TheWoven.Faction_Woven_TreePoints.ApplyToPlayer
         );
         _page.AddToggle(
             card,
             "FreeWeaverRespec",
             "Free Weaver Respec",
-            () => HasSave() && Save_Manager.instance.data.Factions.TheWoven.Enable_FreeRespe,
-            value =>
-            {
-                if (HasSave())
-                {
-                    Save_Manager.instance.data.Factions.TheWoven.Enable_FreeRespe = value;
-                }
-            }
+            () => ModSettings.FactionsWoven.FreeRespec.Value,
+            ModSettings.FactionsWoven.FreeRespec.Set
         );
     }
 
@@ -670,6 +489,39 @@ internal static class UtilitiesCharacterPage
         );
     }
 
+    private static void AddOffAtZeroSlider(
+        HudFormPage.Card card,
+        string id,
+        string label,
+        string unit,
+        SliderRange limits,
+        FloatSetting setting,
+        Func<float, float> toValue,
+        Action sync
+    )
+    {
+        _page.AddSlider(
+            card,
+            id,
+            label,
+            unit,
+            limits.Min,
+            limits.Max,
+            limits.WholeNumbers,
+            () => OffAtZeroSlider.Position(setting.Enabled, setting.Value),
+            position =>
+            {
+                bool on = OffAtZeroSlider.IsOn(position);
+                setting.SetEnabled(on);
+                if (on)
+                {
+                    setting.SetValue(toValue(position));
+                }
+                sync();
+            }
+        );
+    }
+
     private static void AddFactionSlider(
         HudFormPage.Card card,
         string id,
@@ -840,7 +692,4 @@ internal static class UtilitiesCharacterPage
 
         Refs_Manager.player_data.CharacterClass = classId;
     }
-
-    private static bool HasSave() =>
-        !Save_Manager.instance.IsNullOrDestroyed() && Save_Manager.instance.initialized;
 }

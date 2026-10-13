@@ -1,4 +1,5 @@
-﻿using MelonLoader;
+﻿using LastEpoch_Hud.Scripts.ModUI;
+using MelonLoader;
 using UnityEngine;
 
 namespace LastEpoch_Hud.Scripts.Mods.Character;
@@ -18,49 +19,37 @@ public class Character_GodMode : MonoBehaviour
 
     bool CanRun()
     {
-        if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
-        {
-            if (!Save_Manager.instance.data.IsNullOrDestroyed())
-            {
-                return Save_Manager.instance.data.Character.Cheats.Enable_GodMode;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
+        return Scenes.IsGameScene() && ModSettings.CharacterCheats.GodMode.Value;
     }
 
     void Update()
     {
-        if (!Refs_Manager.player_health.IsNullOrDestroyed())
+        if (Refs_Manager.player_health.IsNullOrDestroyed())
         {
-            if (CanRun())
-            {
-                if (Refs_Manager.player_health.damageable)
-                {
-                    Refs_Manager.player_health.damageable = false;
-                }
-                if (Refs_Manager.player_health.canDie)
-                {
-                    Refs_Manager.player_health.canDie = false;
-                }
-            }
-            else
-            {
-                if (!Refs_Manager.player_health.damageable)
-                {
-                    Refs_Manager.player_health.damageable = true;
-                }
-                if (!Refs_Manager.player_health.canDie)
-                {
-                    Refs_Manager.player_health.canDie = true;
-                }
-            }
+            return;
+        }
+        SetInvulnerable(CanRun());
+    }
+
+    // Update stops with the object, so the game values are restored here.
+    private void OnDisable()
+    {
+        if (Refs_Manager.player_health.IsNullOrDestroyed())
+        {
+            return;
+        }
+        SetInvulnerable(false);
+    }
+
+    private static void SetInvulnerable(bool invulnerable)
+    {
+        if (Refs_Manager.player_health.damageable == invulnerable)
+        {
+            Refs_Manager.player_health.damageable = !invulnerable;
+        }
+        if (Refs_Manager.player_health.canDie == invulnerable)
+        {
+            Refs_Manager.player_health.canDie = !invulnerable;
         }
     }
 }

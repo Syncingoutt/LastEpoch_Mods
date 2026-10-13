@@ -110,9 +110,9 @@ public class Items_HeadHunter : MonoBehaviour
             Description = HeadhunterLocales.Description,
             Flags = () =>
                 new CustomUniqueFlags(
-                    Save_Manager.instance.data.Items.Headhunter.WeaverWill,
-                    Save_Manager.instance.data.Items.Headhunter.UniqueDrop,
-                    Save_Manager.instance.data.Items.Headhunter.BaseDrop
+                    ModSettings.Headhunter.WeaverWill.Value,
+                    ModSettings.Headhunter.UniqueDrop.Value,
+                    ModSettings.Headhunter.BaseDrop.Value
                 ),
             Implicits = CustomUniqueAffixes.HeadhunterImplicits,
             Mods = CustomUniqueAffixes.HeadhunterMods,
