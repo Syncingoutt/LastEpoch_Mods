@@ -1,6 +1,8 @@
 using Il2Cpp;
 using LastEpoch_Hud.Scripts.Core.CustomItems;
 using LastEpoch_Hud.Scripts.Core.CustomItems.Mjolner;
+using LastEpoch_Hud.Scripts.ModUI;
+using LastEpoch_Hud.Scripts.ModUI.Settings;
 using MelonLoader;
 
 namespace LastEpoch_Hud.Scripts.Mods.Items.CustomItems.Mjolner;
@@ -78,9 +80,7 @@ internal static class MjolnerHitEvents
 
     private static bool IsEnabled()
     {
-        return !Save_Manager.instance.IsNullOrDestroyed()
-            && Save_Manager.instance.initialized
-            && Save_Manager.instance.data.Items.Mjolner.enable;
+        return SaveManager.IsLoaded && ModSettings.Mjolner.EnableMod.Value;
     }
 
     private static long PlayerId()
@@ -105,10 +105,7 @@ internal static class MjolnerHitEvents
             return;
         }
 
-        if (
-            Save_Manager.instance.data.Items.Mjolner.ProcAnyLightningSpell
-            && !ability.tags.HasFlag(AT.Spell)
-        )
+        if (ModSettings.Mjolner.ProcAnyLightningSpell.Value && !ability.tags.HasFlag(AT.Spell))
         {
             MjolnerTrigger.AllSkills(hitActor);
             return;
@@ -119,15 +116,14 @@ internal static class MjolnerHitEvents
 
     private static bool IsMjolnerActive()
     {
-        Save_Manager.Data.Mjolner settings = Save_Manager.instance.data.Items.Mjolner;
-        return settings.enable
+        return ModSettings.Mjolner.EnableMod.Value
             && Refs_Manager.player_actor.itemContainersManager.hasUniqueEquipped(
                 CustomUniqueSpecs.Mjolner.UniqueId
             )
             && Refs_Manager.player_actor.stats.GetAttributeValue(CoreAttribute.Attribute.Strength)
-                >= settings.StrRequirement
+                >= ModSettings.Mjolner.StrRequirement.Value
             && Refs_Manager.player_actor.stats.GetAttributeValue(
                 CoreAttribute.Attribute.Intelligence
-            ) >= settings.IntRequirement;
+            ) >= ModSettings.Mjolner.IntRequirement.Value;
     }
 }

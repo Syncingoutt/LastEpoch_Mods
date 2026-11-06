@@ -1,6 +1,8 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
 using LastEpoch_Hud.Scripts.Core.Items;
+using LastEpoch_Hud.Scripts.ModUI;
+using LastEpoch_Hud.Scripts.ModUI.Settings;
 using UnityEngine;
 
 namespace LastEpoch_Hud.Scripts.Mods.Items.Drop;
@@ -9,25 +11,15 @@ public class Items_Drop_LegendaryPotencial
 {
     public static bool CanRun()
     {
-        if ((Hud_Manager.IsPauseOpen()) && (ModUI.ForceDrop.ForceDropModel.Enabled))
+        if (Hud_Manager.IsPauseOpen() && ModUI.ForceDrop.ForceDropModel.Enabled)
         {
             return false;
         }
-        else if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
-        {
-            if (!Save_Manager.instance.data.IsNullOrDestroyed())
-            {
-                return Save_Manager.instance.data.Items.Drop.Enable_LegendaryPotencial;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
+        if (!Scenes.IsGameScene())
         {
             return false;
         }
+        return ModSettings.ItemsDrop.LegendaryPotential.Enabled;
     }
 
     [HarmonyPatch(typeof(ItemData), "RollLegendaryPotential")]
@@ -41,12 +33,8 @@ public class Items_Drop_LegendaryPotencial
                 return true;
             }
 
-            var drop = Save_Manager.instance.data.Items.Drop;
-            __result = LegendaryPotentialRoll.Pick(
-                drop.LegendaryPotencial_Min,
-                drop.LegendaryPotencial_Max,
-                Random.value
-            );
+            RangeSetting legendary = ModSettings.ItemsDrop.LegendaryPotential;
+            __result = LegendaryPotentialRoll.Pick(legendary.Min, legendary.Max, Random.value);
             return false;
         }
     }

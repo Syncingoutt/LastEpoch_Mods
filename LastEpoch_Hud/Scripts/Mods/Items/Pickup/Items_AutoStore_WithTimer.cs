@@ -1,4 +1,5 @@
-﻿using MelonLoader;
+﻿using LastEpoch_Hud.Scripts.ModUI;
+using MelonLoader;
 using UnityEngine;
 
 namespace LastEpoch_Hud.Scripts.Mods.Items.Pickup;
@@ -25,23 +26,13 @@ public class Items_AutoStore_WithTimer : MonoBehaviour
         // active even when the periodic timer feature itself is disabled.
         Items_AutoStore_OnPickup.FlushPending();
 
-        if (
-            (!Scenes.IsGameScene())
-            || Save_Manager.instance.IsNullOrDestroyed()
-            || Save_Manager.instance.data.IsNullOrDestroyed()
-        )
+        if (!Scenes.IsGameScene() || !ModSettings.ItemsPickup.AutoStoreTimer.Enabled)
         {
             running = false;
             return;
         }
 
-        if (!Save_Manager.instance.data.Items.Pickup.Enable_AutoStore_Timer)
-        {
-            running = false;
-            return;
-        }
-
-        float interval = Mathf.Max(1f, Save_Manager.instance.data.Items.Pickup.AutoStore_Timer);
+        float interval = Mathf.Max(1f, (int)ModSettings.ItemsPickup.AutoStoreTimer.Value);
         float now = Time.realtimeSinceStartup;
 
         if (!running)

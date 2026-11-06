@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using LastEpoch_Hud.Scripts.ModUI;
 
 namespace LastEpoch_Hud.Scripts.Mods.Items.Pickup;
 
@@ -6,21 +7,7 @@ public class Items_AutoStore_OnInventoryOpen
 {
     public static bool CanRun()
     {
-        if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
-        {
-            if (!Save_Manager.instance.data.IsNullOrDestroyed())
-            {
-                return Save_Manager.instance.data.Items.Pickup.Enable_AutoStore_OnInventoryOpen;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
+        return ModSettings.ItemsPickup.AutoStoreOnInventoryOpen.Value && Scenes.IsGameScene();
     }
 
     [HarmonyPatch(typeof(Il2CppLE.UI.PanelSystem.InventoryPanel), "OnOpen")]

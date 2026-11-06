@@ -2,6 +2,9 @@
 using Il2Cpp;
 using Il2CppLE.AssetBundles;
 using Il2CppTMPro;
+using LastEpoch_Hud.Scripts.Core.ModUI;
+using LastEpoch_Hud.Scripts.ModUI;
+using LastEpoch_Hud.Scripts.ModUI.Keybind;
 using MelonLoader;
 using UnityEngine;
 using UnityEngine.UI;
@@ -94,22 +97,15 @@ public class DamageMeter : MonoBehaviour
     public static int Frames = 30; //Update append every x frames (to avoid too much performance cost)
     public static int Current_Frame = 0;
 
+    private static readonly KeyCodeCache _toggleKey = new();
+
     void Awake()
     {
         instance = this;
         UI.Reset();
     }
 
-    static KeyCode ToggleKey()
-    {
-        // Saves written before this bind existed load it as None.
-        KeyCode key = KeyCode.None;
-        if (!Save_Manager.instance.IsNullOrDestroyed())
-        {
-            key = Save_Manager.instance.data.KeyBinds.DamageMeter;
-        }
-        return key == KeyCode.None ? KeyCode.F7 : key;
-    }
+    private static KeyCode ToggleKey() => _toggleKey.Get(ModSettings.KeyBinds.DamageMeter.Value);
 
     static bool BottomScreenReady()
     {
@@ -474,24 +470,10 @@ public class DamageMeter : MonoBehaviour
                                             new Dropdown.OptionData("Damage per Second")
                                         );
                                     }
-                                    if (
-                                        (Save_Manager.instance.data.DamageMeter.DamageType > 0)
-                                        && (
-                                            Save_Manager.instance.data.DamageMeter.DamageType
-                                            <= DamageType_Dps
-                                        )
-                                    )
-                                    {
-                                        DamageType_Dropdown.value = Save_Manager
-                                            .instance
-                                            .data
-                                            .DamageMeter
-                                            .DamageType;
-                                    }
-                                    else
-                                    {
-                                        DamageType_Dropdown.value = 0;
-                                    }
+                                    DamageType_Dropdown.value = DropdownIndex.OrFirst(
+                                        ModSettings.DamageMeter.DamageType.Value,
+                                        DamageType_Dps + 1
+                                    );
                                     Events.Set_DropDown_Event(
                                         DamageType_Dropdown,
                                         Events.DamageType_Dropdown_Action
@@ -504,11 +486,10 @@ public class DamageMeter : MonoBehaviour
                                 SeparateDot_Toggle = toggle.GetComponent<Toggle>();
                                 if (!SeparateDot_Toggle.IsNullOrDestroyed())
                                 {
-                                    SeparateDot_Toggle.isOn = Save_Manager
-                                        .instance
-                                        .data
+                                    SeparateDot_Toggle.isOn = ModSettings
                                         .DamageMeter
-                                        .SeparateHitAndDot;
+                                        .SeparateHitAndDot
+                                        .Value;
                                     Events.Set_Toggle_Event(
                                         SeparateDot_Toggle,
                                         Events.SeparateDot_Toggle_Action
@@ -1576,13 +1557,7 @@ public class DamageMeter : MonoBehaviour
 
         private static void Set_DamageType(int value)
         {
-            if (
-                (!Save_Manager.instance.IsNullOrDestroyed())
-                && (!DamageType_Dropdown.IsNullOrDestroyed())
-            )
-            {
-                Save_Manager.instance.data.DamageMeter.DamageType = DamageType_Dropdown.value;
-            }
+            ModSettings.DamageMeter.DamageType.Set(value);
         }
 
         public static readonly System.Action<bool> SeparateDot_Toggle_Action =
@@ -1590,13 +1565,7 @@ public class DamageMeter : MonoBehaviour
 
         private static void Set_SeparateDot_Enable(bool enable)
         {
-            if (
-                (!Save_Manager.instance.IsNullOrDestroyed())
-                && (!SeparateDot_Toggle.IsNullOrDestroyed())
-            )
-            {
-                Save_Manager.instance.data.DamageMeter.SeparateHitAndDot = SeparateDot_Toggle.isOn;
-            }
+            ModSettings.DamageMeter.SeparateHitAndDot.Set(enable);
         }
 
         //Select Top Skill

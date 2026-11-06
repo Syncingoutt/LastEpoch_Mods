@@ -1,6 +1,7 @@
 using Il2Cpp;
 using LastEpoch_Hud.Scripts.Core.CustomItems;
 using LastEpoch_Hud.Scripts.Core.CustomItems.Affixes;
+using LastEpoch_Hud.Scripts.ModUI;
 using MelonLoader;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -46,8 +47,8 @@ public class Items_Mjolner : MonoBehaviour
             Description = MjolnerLocales.CurrentDescription,
             Flags = () =>
                 new CustomUniqueFlags(
-                    Save_Manager.instance.data.Items.Mjolner.WeaverWill,
-                    Save_Manager.instance.data.Items.Mjolner.UniqueDrop,
+                    ModSettings.Mjolner.WeaverWill.Value,
+                    ModSettings.Mjolner.UniqueDrop.Value,
                     true
                 ),
             Mods = CustomUniqueAffixes.MjolnerMods,

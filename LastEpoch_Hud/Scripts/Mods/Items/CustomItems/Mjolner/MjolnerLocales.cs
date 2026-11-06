@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using Il2Cpp;
 using LastEpoch_Hud.Scripts.Core.CustomItems.Mjolner;
-using MelonLoader;
+using LastEpoch_Hud.Scripts.ModUI;
 
 namespace LastEpoch_Hud.Scripts.Mods.Items.CustomItems.Mjolner;
 
@@ -9,31 +8,25 @@ internal static class MjolnerLocales
 {
     internal static string CurrentDescription(IReadOnlyDictionary<string, string> texts)
     {
-        if (Save_Manager.instance.IsNullOrDestroyed() || !Save_Manager.instance.initialized)
-        {
-            return null;
-        }
-
-        Save_Manager.Data.Mjolner mjolner = Save_Manager.instance.data.Items.Mjolner;
-        if (mjolner.ProcAnyLightningSpell)
+        if (ModSettings.Mjolner.ProcAnyLightningSpell.Value)
         {
             return MjolnerDescription.LightningProc(
                 texts,
-                mjolner.StrRequirement,
-                mjolner.IntRequirement,
-                mjolner.MinTriggerChance,
-                mjolner.MaxTriggerChance
+                (int)ModSettings.Mjolner.StrRequirement.Value,
+                (int)ModSettings.Mjolner.IntRequirement.Value,
+                ModSettings.Mjolner.MinTriggerChance.Value,
+                ModSettings.Mjolner.MaxTriggerChance.Value
             );
         }
 
         return MjolnerDescription.SocketedSkills(
             texts,
-            mjolner.StrRequirement,
-            mjolner.IntRequirement,
-            mjolner.SocketedCooldown,
-            mjolner.SockectedSkill_0,
-            mjolner.SockectedSkill_1,
-            mjolner.SockectedSkill_2
+            (int)ModSettings.Mjolner.StrRequirement.Value,
+            (int)ModSettings.Mjolner.IntRequirement.Value,
+            ModSettings.Mjolner.SocketedCooldown.Value,
+            ModSettings.Mjolner.SocketedSkill0.Value,
+            ModSettings.Mjolner.SocketedSkill1.Value,
+            ModSettings.Mjolner.SocketedSkill2.Value
         );
     }
 }

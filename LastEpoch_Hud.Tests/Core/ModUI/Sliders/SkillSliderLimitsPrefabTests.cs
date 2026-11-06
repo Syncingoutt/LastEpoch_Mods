@@ -6,6 +6,7 @@ namespace LastEpoch_Hud.Tests.Core.ModUI.Sliders;
 public sealed class SkillSliderLimitsPrefabTests
 {
     [Theory]
+    [InlineData(nameof(SkillSliderLimits.SpecializationSlots), "Slider_SpecializationSlots")]
     [InlineData(nameof(SkillSliderLimits.CompanionsMaximum), "Slider_MaximumCompanions")]
     [InlineData(nameof(SkillSliderLimits.WolfSummonLimit), "Slider_Wolf_SummonLimit")]
     [InlineData(nameof(SkillSliderLimits.ScorpionBabyQuantity), "Slider_Scorpions_SummonLimit")]

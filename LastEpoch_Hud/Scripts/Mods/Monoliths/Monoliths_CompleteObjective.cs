@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
 using MelonLoader;
 using UnityEngine;
 
@@ -223,6 +224,8 @@ public class Monoliths_CompleteObjective : MonoBehaviour
         return position;
     }
 
+    public static bool CanRun() => ModSettings.ScenesMonoliths.CompleteObjective.Value;
+
     bool MoveTo(Vector3 position, bool tp)
     {
         bool result = false;
@@ -274,20 +277,6 @@ public class Monoliths_CompleteObjective : MonoBehaviour
         {
             Main.logger_instance?.Error("Error MoveAndKill : " + name);
         }
-    }
-
-    public static bool CanRun()
-    {
-        bool result = false;
-        if (!Save_Manager.instance.IsNullOrDestroyed())
-        {
-            if (!Save_Manager.instance.data.IsNullOrDestroyed())
-            {
-                result = Save_Manager.instance.data.Scenes.Monoliths.Enable_CompleteObjective;
-            }
-        }
-
-        return result;
     }
 
     [HarmonyPatch(typeof(MonolithZoneManager), "initialise")]

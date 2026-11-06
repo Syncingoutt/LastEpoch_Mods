@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
 
 namespace LastEpoch_Hud.Scripts.Mods.Character;
 
@@ -31,21 +32,7 @@ public class Character_UnlockAllIdols
 
     private static bool CanRun()
     {
-        if (!Save_Manager.instance.IsNullOrDestroyed())
-        {
-            if (!Save_Manager.instance.data.IsNullOrDestroyed())
-            {
-                return Save_Manager.instance.data.Character.Cheats.Enable_UnlockAllIdolsSlots;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
+        return ModSettings.CharacterCheats.UnlockAllIdolsSlots.Value;
     }
 
     [HarmonyPatch(typeof(ItemContainersManager), "setIdolUnlockState")]

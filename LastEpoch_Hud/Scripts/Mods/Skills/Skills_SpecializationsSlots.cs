@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
 
 namespace LastEpoch_Hud.Scripts.Mods.Skills;
 
@@ -7,21 +8,7 @@ public class Skills_SpecializationsSlots
 {
     public static bool CanRun()
     {
-        if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
-        {
-            if (!Save_Manager.instance.data.IsNullOrDestroyed())
-            {
-                return Save_Manager.instance.data.Skills.Enable_SpecializationSlots;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
+        return Scenes.IsGameScene() && ModSettings.SkillsGeneral.SpecializationSlots.Enabled;
     }
 
     [HarmonyPatch(typeof(SkillsPanelManager), "OnEnable")]
@@ -47,7 +34,7 @@ public class Skills_SpecializationsSlots
         {
             if (CanRun())
             {
-                __result = (byte)Save_Manager.instance.data.Skills.SpecializationSlots;
+                __result = (byte)ModSettings.SkillsGeneral.SpecializationSlots.Value;
                 return false;
             }
             else

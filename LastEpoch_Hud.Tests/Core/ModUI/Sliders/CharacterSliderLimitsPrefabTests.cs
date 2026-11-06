@@ -12,7 +12,36 @@ public sealed class CharacterSliderLimitsPrefabTests
         nameof(CharacterSliderLimits.FactionReputation),
         "Slider_Character_Factions_Reputation"
     )]
-    public void FactionRange_MatchesPrefab(string field, string slider)
+    [InlineData(nameof(CharacterSliderLimits.BuffMoveSpeed), "Slider_Character_Buffs_MoveSpeed")]
+    [InlineData(nameof(CharacterSliderLimits.BuffCastSpeed), "Slider_Character_Buffs_CastingSpeed")]
+    [InlineData(
+        nameof(CharacterSliderLimits.BuffAttackSpeed),
+        "Slider_Character_Buffs_AttackSpeed"
+    )]
+    [InlineData(nameof(CharacterSliderLimits.BuffDamage), "Slider_Character_Buffs_Damage")]
+    [InlineData(nameof(CharacterSliderLimits.BuffManaRegen), "Slider_Character_Buffs_ManaRegen")]
+    [InlineData(
+        nameof(CharacterSliderLimits.BuffHealthRegen),
+        "Slider_Character_Buffs_HealthRegen"
+    )]
+    [InlineData(
+        nameof(CharacterSliderLimits.BuffCriticalChance),
+        "Slider_Character_Buffs_CriticalChance"
+    )]
+    [InlineData(
+        nameof(CharacterSliderLimits.BuffCriticalMultiplier),
+        "Slider_Character_Buffs_CriticalMultiplier"
+    )]
+    [InlineData(nameof(CharacterSliderLimits.BuffStrength), "Slider_Character_Buffs_Strenght")]
+    [InlineData(
+        nameof(CharacterSliderLimits.BuffIntelligence),
+        "Slider_Character_Buffs_Intelligence"
+    )]
+    [InlineData(nameof(CharacterSliderLimits.BuffDexterity), "Slider_Character_Buffs_Dexterity")]
+    [InlineData(nameof(CharacterSliderLimits.BuffVitality), "Slider_Character_Buffs_Vitality")]
+    [InlineData(nameof(CharacterSliderLimits.BuffAttunement), "Slider_Character_Buffs_Attunement")]
+    [InlineData(nameof(CharacterSliderLimits.AutoPotion), "Slider_Character_Cheats_AutoPotions")]
+    public void Range_MatchesPrefab(string field, string slider)
     {
         IReadOnlyDictionary<string, SliderRange> prefab = PrefabSliders.Load(
             PrefabSliders.HudPrefabPath

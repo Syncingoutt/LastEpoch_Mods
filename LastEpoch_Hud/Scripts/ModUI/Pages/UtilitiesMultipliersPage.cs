@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using LastEpoch_Hud.Scripts.Core.ModUI;
+using LastEpoch_Hud.Scripts.Core.ModUI.Sliders;
+using LastEpoch_Hud.Scripts.ModUI.Settings;
 using LastEpoch_Hud.Scripts.ModUI.Shell;
 using UnityEngine;
 
@@ -27,97 +29,43 @@ internal static class UtilitiesMultipliersPage
                 Multiplier(
                     "Density",
                     "Density Multiplier",
-                    () => Save_Manager.instance.data.Character.Cheats.Enable_DensityMultiplier,
-                    () => Save_Manager.instance.data.Character.Cheats.DensityMultiplier,
-                    (enabled, value) =>
-                    {
-                        Save_Manager.instance.data.Character.Cheats.Enable_DensityMultiplier =
-                            enabled;
-                        Save_Manager.instance.data.Character.Cheats.DensityMultiplier = value;
-                    }
+                    ModSettings.CharacterMultipliers.Density
                 ),
                 Multiplier(
                     "Experience",
                     "Experience Multiplier",
-                    () => Save_Manager.instance.data.Character.Cheats.Enable_ExperienceMultiplier,
-                    () => Save_Manager.instance.data.Character.Cheats.ExperienceMultiplier,
-                    (enabled, value) =>
-                    {
-                        Save_Manager.instance.data.Character.Cheats.Enable_ExperienceMultiplier =
-                            enabled;
-                        Save_Manager.instance.data.Character.Cheats.ExperienceMultiplier = value;
-                    }
+                    ModSettings.CharacterMultipliers.Experience
                 ),
                 Multiplier(
                     "AbilityExperience",
                     "Ability Experience Multiplier",
-                    () => Save_Manager.instance.data.Character.Cheats.Enable_AbilityMultiplier,
-                    () => Save_Manager.instance.data.Character.Cheats.AbilityMultiplier,
-                    (enabled, value) =>
-                    {
-                        Save_Manager.instance.data.Character.Cheats.Enable_AbilityMultiplier =
-                            enabled;
-                        Save_Manager.instance.data.Character.Cheats.AbilityMultiplier = value;
-                    }
+                    ModSettings.CharacterMultipliers.Ability
                 ),
+                Multiplier("Favor", "Favor Multiplier", ModSettings.CharacterMultipliers.Favor),
                 Multiplier(
-                    "Favor",
-                    "Favor Multiplier",
-                    () => Save_Manager.instance.data.Character.Cheats.Enable_FavorMultiplier,
-                    () => Save_Manager.instance.data.Character.Cheats.FavorMultiplier,
-                    (enabled, value) =>
-                    {
-                        Save_Manager.instance.data.Character.Cheats.Enable_FavorMultiplier =
-                            enabled;
-                        Save_Manager.instance.data.Character.Cheats.FavorMultiplier = value;
-                    }
+                    "MemoryAmber",
+                    "Memory Amber Multiplier",
+                    ModSettings.CharacterMultipliers.MemoryAmber
                 ),
-                MemoryAmber(),
                 Multiplier(
                     "ItemDropQuantity",
                     "Item Drop Multiplier",
-                    () => Save_Manager.instance.data.Character.Cheats.Enable_ItemDropMultiplier,
-                    () => Save_Manager.instance.data.Character.Cheats.ItemDropMultiplier,
-                    (enabled, value) =>
-                    {
-                        Save_Manager.instance.data.Character.Cheats.Enable_ItemDropMultiplier =
-                            enabled;
-                        Save_Manager.instance.data.Character.Cheats.ItemDropMultiplier = value;
-                    }
+                    ModSettings.CharacterMultipliers.ItemDropMultiplier
                 ),
                 Multiplier(
                     "ItemDropChance",
                     "Item Drop Chance",
-                    () => Save_Manager.instance.data.Character.Cheats.Enable_ItemDropChance,
-                    () => Save_Manager.instance.data.Character.Cheats.ItemDropChance,
-                    (enabled, value) =>
-                    {
-                        Save_Manager.instance.data.Character.Cheats.Enable_ItemDropChance = enabled;
-                        Save_Manager.instance.data.Character.Cheats.ItemDropChance = value;
-                    }
+                    ModSettings.CharacterMultipliers.ItemDropChance
                 ),
                 Multiplier(
                     "GoldDropQuantity",
                     "Gold Drop Multiplier",
-                    () => Save_Manager.instance.data.Character.Cheats.Enable_GoldDropMultiplier,
-                    () => Save_Manager.instance.data.Character.Cheats.GoldDropMultiplier,
-                    (enabled, value) =>
-                    {
-                        Save_Manager.instance.data.Character.Cheats.Enable_GoldDropMultiplier =
-                            enabled;
-                        Save_Manager.instance.data.Character.Cheats.GoldDropMultiplier = value;
-                    }
+                    ModSettings.CharacterMultipliers.GoldDropMultiplier
                 ),
                 Multiplier(
                     "GoldDropChance",
                     "Gold Drop Chance",
-                    () => Save_Manager.instance.data.Character.Cheats.Enable_GoldDropChance,
-                    () => Save_Manager.instance.data.Character.Cheats.GoldDropChance,
-                    (enabled, value) =>
-                    {
-                        Save_Manager.instance.data.Character.Cheats.Enable_GoldDropChance = enabled;
-                        Save_Manager.instance.data.Character.Cheats.GoldDropChance = value;
-                    }
+                    ModSettings.CharacterMultipliers.GoldDropChance
                 ),
             }
         );
@@ -130,9 +78,7 @@ internal static class UtilitiesMultipliersPage
     private static HudSliderCard.Definition Multiplier(
         string id,
         string label,
-        System.Func<bool> enabled,
-        System.Func<float> read,
-        System.Action<bool, float> write
+        FloatSetting setting
     )
     {
         return new HudSliderCard.Definition
@@ -140,62 +86,13 @@ internal static class UtilitiesMultipliersPage
             Id = id,
             Label = label,
             Unit = "x",
-            Minimum = 0f,
-            Maximum = 255f,
-            WholeNumbers = true,
-            Read = () => Save_Manager.instance.IsNullOrDestroyed() ? 0f : read(),
-            Write = value =>
-            {
-                if (!Save_Manager.instance.IsNullOrDestroyed())
-                    write(enabled(), value);
-            },
-            ReadEnabled = () => !Save_Manager.instance.IsNullOrDestroyed() && enabled(),
-            WriteEnabled = isEnabled =>
-            {
-                if (!Save_Manager.instance.IsNullOrDestroyed())
-                    write(isEnabled, read());
-            },
-        };
-    }
-
-    private static HudSliderCard.Definition MemoryAmber()
-    {
-        return new HudSliderCard.Definition
-        {
-            Id = "MemoryAmber",
-            Label = "Memory Amber Multiplier",
-            Unit = "x",
-            Minimum = 0f,
-            Maximum = 255f,
-            WholeNumbers = true,
-            Read = () =>
-            {
-                if (Save_Manager.instance.IsNullOrDestroyed())
-                    return 0f;
-                uint value = Save_Manager.instance.data.Character.Cheats.MemoryAmberMultiplier;
-                if (value > 255u)
-                {
-                    value = 255u;
-                    Save_Manager.instance.data.Character.Cheats.MemoryAmberMultiplier = value;
-                }
-                return value;
-            },
-            Write = value =>
-            {
-                if (Save_Manager.instance.IsNullOrDestroyed())
-                    return;
-                Save_Manager.instance.data.Character.Cheats.MemoryAmberMultiplier = (uint)
-                    Mathf.Clamp(Mathf.RoundToInt(value), 0, 255);
-            },
-            ReadEnabled = () =>
-                !Save_Manager.instance.IsNullOrDestroyed()
-                && Save_Manager.instance.data.Character.Cheats.Enable_MemoryAmberMultiplier,
-            WriteEnabled = enabled =>
-            {
-                if (!Save_Manager.instance.IsNullOrDestroyed())
-                    Save_Manager.instance.data.Character.Cheats.Enable_MemoryAmberMultiplier =
-                        enabled;
-            },
+            Minimum = setting.MinLimit,
+            Maximum = setting.MaxLimit,
+            WholeNumbers = CharacterSliderLimits.Multiplier.WholeNumbers,
+            Read = () => setting.Value,
+            Write = setting.SetValue,
+            ReadEnabled = () => setting.Enabled,
+            WriteEnabled = setting.SetEnabled,
         };
     }
 }

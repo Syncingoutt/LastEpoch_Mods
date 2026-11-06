@@ -1,4 +1,6 @@
-﻿using MelonLoader;
+﻿using LastEpoch_Hud.Scripts.Core.Character;
+using LastEpoch_Hud.Scripts.ModUI;
+using MelonLoader;
 using UnityEngine;
 
 namespace LastEpoch_Hud.Scripts.Mods.Character;
@@ -20,33 +22,33 @@ public class Character_AutoPotions : MonoBehaviour
 
     void Update()
     {
+        if (!ModSettings.CharacterCheats.AutoPot.Enabled)
+        {
+            return;
+        }
+        if (UnityEngine.Time.unscaledTime < nextPotionTime)
+        {
+            return;
+        }
         if (
-            (Scenes.IsGameScene())
-            && (!Refs_Manager.player_health.IsNullOrDestroyed())
-            && (!Refs_Manager.health_potion.IsNullOrDestroyed())
-            && (!Save_Manager.instance.IsNullOrDestroyed())
+            !Scenes.IsGameScene()
+            || Refs_Manager.player_health.IsNullOrDestroyed()
+            || Refs_Manager.health_potion.IsNullOrDestroyed()
         )
         {
-            if (Save_Manager.instance.data.Character.Cheats.Enable_AutoPot)
-            {
-                if (UnityEngine.Time.unscaledTime < nextPotionTime)
-                {
-                    return;
-                }
-                int player_health_percent = (int)(
-                    Refs_Manager.player_health.currentHealth
-                    / Refs_Manager.player_health.maxHealth
-                    * 100
-                );
-                int auto_pot_percent = (int)(
-                    Save_Manager.instance.data.Character.Cheats.autoPot / 255 * 100
-                );
-                if (player_health_percent < auto_pot_percent)
-                {
-                    nextPotionTime = UnityEngine.Time.unscaledTime + 0.35f;
-                    Refs_Manager.health_potion.UsePotion();
-                }
-            }
+            return;
         }
+        if (
+            !AutoPotionRule.ShouldDrink(
+                Refs_Manager.player_health.currentHealth,
+                Refs_Manager.player_health.maxHealth,
+                ModSettings.CharacterCheats.AutoPot.Value
+            )
+        )
+        {
+            return;
+        }
+        nextPotionTime = UnityEngine.Time.unscaledTime + 0.35f;
+        Refs_Manager.health_potion.UsePotion();
     }
 }

@@ -1,29 +1,13 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
 using UnityEngine;
 
 namespace LastEpoch_Hud.Scripts.Mods.Shrines;
 
 public class Shrines_ClickUnlimited
 {
-    public static bool CanRun()
-    {
-        if (!Save_Manager.instance.IsNullOrDestroyed())
-        {
-            if (!Save_Manager.instance.data.IsNullOrDestroyed())
-            {
-                return Save_Manager.instance.data.modsNotInHud.Shrines_Unlimited;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
-    }
+    public static bool CanRun() => ModSettings.ModsNotInHud.ShrinesUnlimited.Value;
 
     [HarmonyPatch(typeof(WorldObjectClickListener), "ObjectClick")]
     public class WorldObjectClickListener_ObjectClick

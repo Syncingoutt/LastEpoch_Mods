@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
 
 namespace LastEpoch_Hud.Scripts.Mods.Mobs;
 
@@ -7,21 +8,7 @@ public class Mobs_Density
 {
     public static bool CanRun()
     {
-        if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
-        {
-            if (!Save_Manager.instance.data.IsNullOrDestroyed())
-            {
-                return Save_Manager.instance.data.Character.Cheats.Enable_DensityMultiplier;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
+        return Scenes.IsGameScene() && ModSettings.CharacterMultipliers.Density.Enabled;
     }
 
     public static void Apply(SpawnerPlacementManager manager)
@@ -30,12 +17,7 @@ public class Mobs_Density
         {
             return;
         }
-        manager.defaultSpawnerDensity = Save_Manager
-            .instance
-            .data
-            .Character
-            .Cheats
-            .DensityMultiplier;
+        manager.defaultSpawnerDensity = ModSettings.CharacterMultipliers.Density.Value;
         manager.alwaysRollSpawnerDensity = false;
     }
 

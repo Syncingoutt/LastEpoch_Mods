@@ -1,18 +1,14 @@
 using HarmonyLib;
 using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
 
 namespace LastEpoch_Hud.Scripts.Mods.Dungeons;
 
 public class Dungeons_EnterWithoutKey
 {
-    public static bool CanRun()
-    {
-        return Scenes.IsGameScene()
-            && !Save_Manager.instance.IsNullOrDestroyed()
-            && Save_Manager.instance.initialized
-            && !Save_Manager.instance.data.IsNullOrDestroyed()
-            && Save_Manager.instance.data.Scenes.Dungeons.Enable_EnterWithoutKey;
-    }
+    /// <summary>True in a game scene with Enter Without Key on.</summary>
+    public static bool CanRun() =>
+        Scenes.IsGameScene() && ModSettings.ScenesDungeons.EnterWithoutKey.Value;
 
     [HarmonyPatch(typeof(ItemContainersManager), "IsOccupiedWithValidDungeonKey")]
     public class ItemContainersManager_IsOccupiedWithValidDungeonKey

@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using LastEpoch_Hud.Scripts.ModUI;
 using MelonLoader;
 using UnityEngine;
 
@@ -26,15 +27,7 @@ public class Character_TwoHandedShield : MonoBehaviour
 
     public static bool Enabled()
     {
-        if (
-            Save_Manager.instance.IsNullOrDestroyed()
-            || Save_Manager.instance.data.IsNullOrDestroyed()
-        )
-        {
-            return false;
-        }
-
-        return Save_Manager.instance.data.Character.Cheats.Enable_TwoHandedWithShield;
+        return ModSettings.CharacterCheats.TwoHandedWithShield.Value;
     }
 
     static Il2CppSystem.Collections.Generic.List<int> AllowedTypes()

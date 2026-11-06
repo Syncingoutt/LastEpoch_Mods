@@ -1,5 +1,7 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
+using LastEpoch_Hud.Scripts.ModUI.Settings;
 using UnityEngine;
 
 namespace LastEpoch_Hud.Scripts.Mods.Items.Drop;
@@ -8,39 +10,100 @@ public class Items_Drop_Affixs
 {
     private static bool CanRun()
     {
-        if ((Hud_Manager.IsPauseOpen()) && (ModUI.ForceDrop.ForceDropModel.Enabled))
+        if (Hud_Manager.IsPauseOpen() && ModUI.ForceDrop.ForceDropModel.Enabled)
         {
             return false;
         }
-        else if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
-        {
-            if (
-                (!Save_Manager.instance.data.IsNullOrDestroyed())
-                && (
-                    (Save_Manager.instance.data.Items.Drop.Enable_ForceUnique)
-                    || (Save_Manager.instance.data.Items.Drop.Enable_ForceSet)
-                    || (Save_Manager.instance.data.Items.Drop.Enable_ForceLegendary)
-                    || (Save_Manager.instance.data.Items.Drop.AffixCount_Min != 0)
-                    || (Save_Manager.instance.data.Items.Drop.AffixCount_Max != 4)
-                    || (Save_Manager.instance.data.Items.Drop.Enable_AffixTiers)
-                    || (Save_Manager.instance.data.Items.Drop.Enable_AffixValues)
-                    || (Save_Manager.instance.data.Items.Drop.Enable_ForceSeal)
-                    || (Save_Manager.instance.data.Items.Drop.Enable_SealTier)
-                    || (Save_Manager.instance.data.Items.Drop.Enable_SealValue)
-                )
-            )
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
+        if (!Scenes.IsGameScene())
         {
             return false;
         }
+        return ModSettings.ItemsDrop.ForceUnique.Value
+            || ModSettings.ItemsDrop.ForceSet.Value
+            || ModSettings.ItemsDrop.ForceLegendary.Value
+            || ModSettings.ItemsDrop.AffixCount.Min != 0
+            || ModSettings.ItemsDrop.AffixCount.Max != 4
+            || ModSettings.ItemsDrop.AffixTiers.Enabled
+            || ModSettings.ItemsDrop.AffixValues.Enabled
+            || ModSettings.ItemsDrop.ForceSeal.Value
+            || ModSettings.ItemsDrop.SealTier.Enabled
+            || ModSettings.ItemsDrop.SealValue.Enabled;
+    }
+
+    private static byte Roll(RangeSetting setting)
+    {
+        if (setting.Min == setting.Max)
+        {
+            return (byte)setting.Max;
+        }
+        return (byte)Random.RandomRange(setting.Min, setting.Max);
+    }
+
+    private static bool RollsAffixes()
+    {
+        return ModSettings.ItemsDrop.AffixTiers.Enabled
+            || ModSettings.ItemsDrop.AffixValues.Enabled
+            || ModSettings.ItemsDrop.SealTier.Enabled
+            || ModSettings.ItemsDrop.SealValue.Enabled;
+    }
+
+    private static void RollAffix(ItemAffix aff)
+    {
+        if (aff.IsSealed)
+        {
+            RollSealed(aff);
+            return;
+        }
+        if (ModSettings.ItemsDrop.AffixTiers.Enabled)
+        {
+            aff.affixTier = Roll(ModSettings.ItemsDrop.AffixTiers);
+        }
+        if (ModSettings.ItemsDrop.AffixValues.Enabled)
+        {
+            aff.affixRoll = Roll(ModSettings.ItemsDrop.AffixValues);
+        }
+    }
+
+    private static void RollSealed(ItemAffix aff)
+    {
+        if (ModSettings.ItemsDrop.SealTier.Enabled)
+        {
+            aff.affixTier = Roll(ModSettings.ItemsDrop.SealTier);
+        }
+        if (ModSettings.ItemsDrop.SealValue.Enabled)
+        {
+            aff.affixRoll = Roll(ModSettings.ItemsDrop.SealValue);
+        }
+    }
+
+    private static void RollEquipment(ItemDataUnpacked item)
+    {
+        if (item.isUnique() || item.isSet()) //Base item and Legendary only
+        {
+            return;
+        }
+        if (!RollsAffixes())
+        {
+            return;
+        }
+        foreach (ItemAffix aff in item.affixes)
+        {
+            RollAffix(aff);
+        }
+        item.RefreshIDAndValues();
+    }
+
+    private static void RollAffixValues(ItemDataUnpacked item)
+    {
+        if (!ModSettings.ItemsDrop.AffixValues.Enabled)
+        {
+            return;
+        }
+        foreach (ItemAffix aff in item.affixes)
+        {
+            aff.affixRoll = Roll(ModSettings.ItemsDrop.AffixValues);
+        }
+        item.RefreshIDAndValues();
     }
 
     [HarmonyPatch(typeof(GenerateItems), "DropItemAtPoint")]
@@ -54,221 +117,17 @@ public class Items_Drop_Affixs
             int __2
         )
         {
-            if ((CanRun()) && (__0.itemType < 100))
+            if (!CanRun() || __0.itemType >= 100)
             {
-                if (__0.itemType < 25)
-                {
-                    if ((!__0.isUnique()) && (!__0.isSet())) //Base item and Legendary
-                    {
-                        if (
-                            (Save_Manager.instance.data.Items.Drop.Enable_AffixTiers)
-                            || (Save_Manager.instance.data.Items.Drop.Enable_AffixValues)
-                            || (Save_Manager.instance.data.Items.Drop.Enable_SealTier)
-                            || (Save_Manager.instance.data.Items.Drop.Enable_SealValue)
-                        )
-                        {
-                            foreach (ItemAffix aff in __0.affixes)
-                            {
-                                if (!aff.IsSealed)
-                                {
-                                    if (Save_Manager.instance.data.Items.Drop.Enable_AffixTiers)
-                                    {
-                                        byte roll = 0;
-                                        if (
-                                            Save_Manager.instance.data.Items.Drop.AffixTiers_Min
-                                            == Save_Manager.instance.data.Items.Drop.AffixTiers_Max
-                                        )
-                                        {
-                                            roll = (byte)
-                                                Save_Manager
-                                                    .instance
-                                                    .data
-                                                    .Items
-                                                    .Drop
-                                                    .AffixTiers_Max;
-                                        }
-                                        else
-                                        {
-                                            roll = (byte)
-                                                Random.RandomRange(
-                                                    Save_Manager
-                                                        .instance
-                                                        .data
-                                                        .Items
-                                                        .Drop
-                                                        .AffixTiers_Min,
-                                                    Save_Manager
-                                                        .instance
-                                                        .data
-                                                        .Items
-                                                        .Drop
-                                                        .AffixTiers_Max
-                                                );
-                                        }
-                                        aff.affixTier = roll;
-                                    }
-                                    if (Save_Manager.instance.data.Items.Drop.Enable_AffixValues)
-                                    {
-                                        byte roll = 0;
-                                        if (
-                                            Save_Manager.instance.data.Items.Drop.AffixValues_Min
-                                            == Save_Manager.instance.data.Items.Drop.AffixValues_Max
-                                        )
-                                        {
-                                            roll = (byte)
-                                                Save_Manager
-                                                    .instance
-                                                    .data
-                                                    .Items
-                                                    .Drop
-                                                    .AffixValues_Max;
-                                        }
-                                        else
-                                        {
-                                            roll = (byte)
-                                                Random.RandomRange(
-                                                    Save_Manager
-                                                        .instance
-                                                        .data
-                                                        .Items
-                                                        .Drop
-                                                        .AffixValues_Min,
-                                                    Save_Manager
-                                                        .instance
-                                                        .data
-                                                        .Items
-                                                        .Drop
-                                                        .AffixValues_Max
-                                                );
-                                        }
-                                        aff.affixRoll = roll;
-                                    }
-                                }
-                                else
-                                {
-                                    if (Save_Manager.instance.data.Items.Drop.Enable_SealTier)
-                                    {
-                                        byte roll = 0;
-                                        if (
-                                            Save_Manager.instance.data.Items.Drop.SealTier_Min
-                                            == Save_Manager.instance.data.Items.Drop.SealTier_Max
-                                        )
-                                        {
-                                            roll = (byte)
-                                                Save_Manager.instance.data.Items.Drop.SealTier_Max;
-                                        }
-                                        else
-                                        {
-                                            roll = (byte)
-                                                Random.RandomRange(
-                                                    Save_Manager
-                                                        .instance
-                                                        .data
-                                                        .Items
-                                                        .Drop
-                                                        .SealTier_Min,
-                                                    Save_Manager
-                                                        .instance
-                                                        .data
-                                                        .Items
-                                                        .Drop
-                                                        .SealTier_Max
-                                                );
-                                        }
-                                        aff.affixTier = roll;
-                                    }
-                                    if (Save_Manager.instance.data.Items.Drop.Enable_SealValue)
-                                    {
-                                        byte roll = 0;
-                                        if (
-                                            Save_Manager.instance.data.Items.Drop.SealValue_Min
-                                            == Save_Manager.instance.data.Items.Drop.SealValue_Max
-                                        )
-                                        {
-                                            roll = (byte)
-                                                Save_Manager.instance.data.Items.Drop.SealValue_Max;
-                                        }
-                                        else
-                                        {
-                                            roll = (byte)
-                                                Random.RandomRange(
-                                                    Save_Manager
-                                                        .instance
-                                                        .data
-                                                        .Items
-                                                        .Drop
-                                                        .SealValue_Min,
-                                                    Save_Manager
-                                                        .instance
-                                                        .data
-                                                        .Items
-                                                        .Drop
-                                                        .SealValue_Max
-                                                );
-                                        }
-                                        aff.affixRoll = roll;
-                                    }
-                                }
-                            }
-                            __0.RefreshIDAndValues();
-                        }
-                    }
-                }
-                else if ((__0.itemType > 24) && (__0.itemType < 34)) //Idols
-                {
-                    if (Save_Manager.instance.data.Items.Drop.Enable_AffixValues)
-                    {
-                        foreach (ItemAffix aff in __0.affixes)
-                        {
-                            byte roll = 0;
-                            if (
-                                Save_Manager.instance.data.Items.Drop.AffixValues_Min
-                                == Save_Manager.instance.data.Items.Drop.AffixValues_Max
-                            )
-                            {
-                                roll = (byte)Save_Manager.instance.data.Items.Drop.AffixValues_Max;
-                            }
-                            else
-                            {
-                                roll = (byte)
-                                    Random.RandomRange(
-                                        Save_Manager.instance.data.Items.Drop.AffixValues_Min,
-                                        Save_Manager.instance.data.Items.Drop.AffixValues_Max
-                                    );
-                            }
-                            aff.affixRoll = roll;
-                        }
-                        __0.RefreshIDAndValues();
-                    }
-                }
-                else //New Items (have to check this)
-                {
-                    if (Save_Manager.instance.data.Items.Drop.Enable_AffixValues)
-                    {
-                        foreach (ItemAffix aff in __0.affixes)
-                        {
-                            byte roll = 0;
-                            if (
-                                Save_Manager.instance.data.Items.Drop.AffixValues_Min
-                                == Save_Manager.instance.data.Items.Drop.AffixValues_Max
-                            )
-                            {
-                                roll = (byte)Save_Manager.instance.data.Items.Drop.AffixValues_Max;
-                            }
-                            else
-                            {
-                                roll = (byte)
-                                    Random.RandomRange(
-                                        Save_Manager.instance.data.Items.Drop.AffixValues_Min,
-                                        Save_Manager.instance.data.Items.Drop.AffixValues_Max
-                                    );
-                            }
-                            aff.affixRoll = roll;
-                        }
-                        __0.RefreshIDAndValues();
-                    }
-                }
+                return;
             }
+            if (__0.itemType < 25)
+            {
+                RollEquipment(__0);
+                return;
+            }
+            //Idols (25-33) and new items (have to check this) roll affix values only
+            RollAffixValues(__0);
         }
     }
 }

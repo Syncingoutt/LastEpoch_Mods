@@ -1,4 +1,3 @@
-using System;
 using LastEpoch_Hud.Scripts.Core.ModUI;
 using LastEpoch_Hud.Scripts.ModUI.Shell;
 using UnityEngine;
@@ -16,26 +15,26 @@ internal static class SkillsSummonPage
         if (page == null)
             return;
         var card = page.AddCard("Summon", "Summon");
-        AddToggle(
+        page.AddToggle(
             card,
             "GodMode",
             "Summon God Mode",
-            () => Save_Manager.instance.data.Summon.Enable_GodMode,
-            v => Save_Manager.instance.data.Summon.Enable_GodMode = v
+            () => ModSettings.Summon.GodMode.Value,
+            ModSettings.Summon.GodMode.Set
         );
-        AddToggle(
+        page.AddToggle(
             card,
             "Forever",
             "Forever",
-            () => Save_Manager.instance.data.Summon.Enable_Forever,
-            v => Save_Manager.instance.data.Summon.Enable_Forever = v
+            () => ModSettings.Summon.Forever.Value,
+            ModSettings.Summon.Forever.Set
         );
-        AddToggle(
+        page.AddToggle(
             card,
             "DontCollide",
             "Don't Collide",
-            () => Save_Manager.instance.data.Summon.Enable_DontCollide,
-            v => Save_Manager.instance.data.Summon.Enable_DontCollide = v
+            () => ModSettings.Summon.DontCollide.Value,
+            ModSettings.Summon.DontCollide.Set
         );
     }
 
@@ -44,26 +43,4 @@ internal static class SkillsSummonPage
     public static void Hide() => page?.Hide();
 
     public static void Refresh() => page?.RefreshValues();
-
-    private static void AddToggle(
-        HudFormPage.Card card,
-        string id,
-        string label,
-        Func<bool> read,
-        Action<bool> write
-    ) =>
-        page.AddToggle(
-            card,
-            id,
-            label,
-            () => HasSave() && read(),
-            v =>
-            {
-                if (HasSave())
-                    write(v);
-            }
-        );
-
-    private static bool HasSave() =>
-        !Save_Manager.instance.IsNullOrDestroyed() && Save_Manager.instance.initialized;
 }

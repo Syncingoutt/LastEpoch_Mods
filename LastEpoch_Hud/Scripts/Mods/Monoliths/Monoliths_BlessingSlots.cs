@@ -1,29 +1,15 @@
-﻿using HarmonyLib;
+﻿using System;
+using HarmonyLib;
 using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
 
 namespace LastEpoch_Hud.Scripts.Mods.Monoliths;
 
 public class Monoliths_BlessingSlots
 {
     //public static MonolithRun Run = null;
-    public static bool CanRun()
-    {
-        if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
-        {
-            if (!Save_Manager.instance.data.IsNullOrDestroyed())
-            {
-                return Save_Manager.instance.data.Scenes.Monoliths.Enable_BlessingSlots;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
-    }
+    public static bool CanRun() =>
+        Scenes.IsGameScene() && ModSettings.ScenesMonoliths.BlessingSlots.Enabled;
 
     //Fix by Silver-D for LastEpoch v1.1.2 (see issue "Setting Blessings to 5 results in Null Reference Exception on reward panel")
     [HarmonyPatch(
@@ -41,15 +27,12 @@ public class Monoliths_BlessingSlots
             ref int __3
         )
         {
-            if (CanRun())
+            if (!CanRun())
             {
-                int blessingSlots = (int)Save_Manager.instance.data.Scenes.Monoliths.BlessingSlots;
-                if (__3 > blessingSlots)
-                {
-                    blessingSlots = __3;
-                } // in case we unlocked more slots due to difficulty/corruption, but we chose a lesser value for a minimum
-                __3 = blessingSlots;
+                return;
             }
+            // keep more slots unlocked by difficulty/corruption when the chosen value is lower
+            __3 = Math.Max(__3, (int)ModSettings.ScenesMonoliths.BlessingSlots.Value);
         }
     }
 
@@ -65,19 +48,16 @@ public class Monoliths_BlessingSlots
             ref int __3
         )
         {
-            if (CanRun())
+            if (!CanRun())
             {
-                int numStandardBlessings = 3;
-                int numExtraBlessings = (int)(
-                    Save_Manager.instance.data.Scenes.Monoliths.BlessingSlots - numStandardBlessings
-                );
-                if (__3 > numExtraBlessings)
-                {
-                    numExtraBlessings = __3;
-                } // in case we unlocked more slots due to difficulty/corruption, but we chose a lesser value for a minimum
-                __2 = numStandardBlessings;
-                __3 = numExtraBlessings;
+                return;
             }
+            const int standardBlessings = 3;
+            int extraBlessings = (int)(
+                ModSettings.ScenesMonoliths.BlessingSlots.Value - standardBlessings
+            );
+            __2 = standardBlessings;
+            __3 = Math.Max(__3, extraBlessings);
         }
     }
 

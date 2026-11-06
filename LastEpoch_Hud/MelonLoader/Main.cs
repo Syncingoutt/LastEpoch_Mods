@@ -275,7 +275,6 @@ public class Base
         );
         Object.DontDestroyOnLoad(base_object);
         base_object.AddComponent<Scripts.Refs_Manager>();
-        base_object.AddComponent<Scripts.Save_Manager>();
         base_object.AddComponent<Scripts.ModUI.Settings.SaveManager>();
         base_object.AddComponent<Scripts.Hud_Manager>();
         base_object.AddComponent<Scripts.Mods_Manager>();

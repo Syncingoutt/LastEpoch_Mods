@@ -1,4 +1,5 @@
 using System;
+using LastEpoch_Hud.Scripts.Core.ModUI.Sliders;
 using LastEpoch_Hud.Scripts.ModUI.Keybind;
 
 namespace LastEpoch_Hud.Scripts.ModUI.Settings;
@@ -153,9 +154,9 @@ public class RangeSetting
         ModSettings.Trace("RangeSetting.SetMin: before=" + Min + " requested=" + val);
         if (Min == val)
             return;
-        Min = val;
-        if (Min > Max)
-            Max = Min;
+        MinMaxPair pair = new MinMaxPair(Min, Max).WithMin(val);
+        Min = pair.Min;
+        Max = pair.Max;
         ModSettings.MarkDirty();
         Changed?.Invoke();
     }
@@ -165,9 +166,9 @@ public class RangeSetting
         ModSettings.Trace("RangeSetting.SetMax: before=" + Max + " requested=" + val);
         if (Max == val)
             return;
-        Max = val;
-        if (Max < Min)
-            Min = Max;
+        MinMaxPair pair = new MinMaxPair(Min, Max).WithMax(val);
+        Min = pair.Min;
+        Max = pair.Max;
         ModSettings.MarkDirty();
         Changed?.Invoke();
     }

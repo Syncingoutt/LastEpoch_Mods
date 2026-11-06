@@ -1,8 +1,20 @@
 namespace LastEpoch_Hud.Scripts.Core.ModUI.Sliders;
 
-/// <summary>Slider limits of the Skills menu sliders, copied from the legacy prefab.</summary>
+/// <summary>Slider limits of the Skills menu sliders, copied from the legacy prefab or the page.</summary>
 public static class SkillSliderLimits
 {
+    // Source: Slider_SpecializationSlots
+    public static readonly SliderRange SpecializationSlots = new(0f, 5f, false);
+
+    // Source: no prefab match; UtilitiesCharacterPage inline limits
+    public static readonly SliderRange SkillLevel = new(0f, 255f, true);
+
+    // Source: no prefab match; UtilitiesCharacterPage inline limits
+    public static readonly SliderRange PassivePoints = new(0f, 255f, true);
+
+    // Source: no prefab match; UtilitiesCharacterPage inline limits
+    public static readonly SliderRange PointMultiplier = new(0f, 10f, true);
+
     // Source: Slider_MaximumCompanions
     public static readonly SliderRange CompanionsMaximum = new(0f, 255f, false);
 

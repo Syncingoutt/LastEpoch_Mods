@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
 using UnityEngine;
 
 namespace LastEpoch_Hud.Scripts.Mods.Items.Drop;
@@ -8,25 +9,15 @@ public class Items_Drop_WeaverWill
 {
     public static bool CanRun()
     {
-        if ((Hud_Manager.IsPauseOpen()) && (ModUI.ForceDrop.ForceDropModel.Enabled))
+        if (Hud_Manager.IsPauseOpen() && ModUI.ForceDrop.ForceDropModel.Enabled)
         {
             return false;
         }
-        else if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
-        {
-            if (!Save_Manager.instance.data.IsNullOrDestroyed())
-            {
-                return Save_Manager.instance.data.Items.Drop.Enable_WeaverWill;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
+        if (!Scenes.IsGameScene())
         {
             return false;
         }
+        return ModSettings.ItemsDrop.WeaverWill.Enabled;
     }
 
     [HarmonyPatch(typeof(ItemData), "RollWeaversWill")]
@@ -44,19 +35,16 @@ public class Items_Drop_WeaverWill
             if (CanRun())
             {
                 int roll = 0;
-                if (
-                    Save_Manager.instance.data.Items.Drop.WeaverWill_Min
-                    == Save_Manager.instance.data.Items.Drop.WeaverWill_Max
-                )
+                if (ModSettings.ItemsDrop.WeaverWill.Min == ModSettings.ItemsDrop.WeaverWill.Max)
                 {
-                    roll = (int)Save_Manager.instance.data.Items.Drop.WeaverWill_Max;
+                    roll = (int)ModSettings.ItemsDrop.WeaverWill.Max;
                 }
                 else
                 {
                     roll = (int)
                         Random.RandomRange(
-                            Save_Manager.instance.data.Items.Drop.WeaverWill_Min,
-                            Save_Manager.instance.data.Items.Drop.WeaverWill_Max
+                            ModSettings.ItemsDrop.WeaverWill.Min,
+                            ModSettings.ItemsDrop.WeaverWill.Max
                         );
                 }
                 __result = roll;

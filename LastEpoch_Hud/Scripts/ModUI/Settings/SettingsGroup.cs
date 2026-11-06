@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using LastEpoch_Hud.Scripts.Core.ModUI.Settings;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
@@ -253,6 +254,13 @@ public class SettingsGroup
         return s;
     }
 
+    public TextSetting Text(string key, string defaultValue = "")
+    {
+        var s = new TextSetting(defaultValue);
+        entries.Add(new Entry(key, key, EntryType.Text, textSetting: s));
+        return s;
+    }
+
     // Resolves the viewport hierarchy and binds all settings to their prefab UI elements.
     // Handles both viewport-based and flat content layouts.
 
@@ -372,6 +380,18 @@ public class SettingsGroup
             LoadEntry(section, e);
     }
 
+    public bool HasEntry(string key)
+    {
+        foreach (Entry e in entries)
+        {
+            if (e.Key == key)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public bool HasMissingEntries(JObject root)
     {
         if (root[Name] is not JObject section)
@@ -420,6 +440,9 @@ public class SettingsGroup
             case EntryType.Keybind:
                 section[e.Key] = e.KeybindSetting.Value;
                 break;
+            case EntryType.Text:
+                section[e.Key] = e.TextSetting.Value;
+                break;
         }
     }
 
@@ -447,54 +470,51 @@ public class SettingsGroup
             case EntryType.Float:
                 if (token is JObject fo)
                 {
-                    e.FloatSetting.Enabled = fo.Value<bool>("Enabled");
-                    float fv = fo.Value<float>("Value");
-                    if (e.FloatSetting.HasLimits)
+                    FloatSetting fs = e.FloatSetting;
+                    SavedFloat sf = SavedEntryPart.ReadFloat(
+                        fo,
+                        fs.Enabled,
+                        fs.Value,
+                        fs.MinLimit,
+                        fs.MaxLimit,
+                        fs.HasLimits
+                    );
+                    if (sf.Clamped)
                     {
-                        float clamped = Mathf.Clamp(
-                            fv,
-                            e.FloatSetting.MinLimit,
-                            e.FloatSetting.MaxLimit
+                        WarnInvalid(
+                            e.Key,
+                            sf.Raw
+                                + " out of ["
+                                + fs.MinLimit
+                                + ","
+                                + fs.MaxLimit
+                                + "], clamped to "
+                                + sf.Value
                         );
-                        if (clamped != fv)
-                        {
-                            WarnInvalid(
-                                e.Key,
-                                fv
-                                    + " out of ["
-                                    + e.FloatSetting.MinLimit
-                                    + ","
-                                    + e.FloatSetting.MaxLimit
-                                    + "], clamped to "
-                                    + clamped
-                            );
-                            fv = clamped;
-                        }
                     }
-                    e.FloatSetting.Value = fv;
+                    fs.Enabled = sf.Enabled;
+                    fs.Value = sf.Value;
                 }
                 break;
             case EntryType.Range:
                 if (token is JObject ro)
                 {
-                    e.RangeSetting.Enabled = ro.Value<bool>("Enabled");
-                    float rmin = Mathf.Clamp(
-                        ro.Value<float>("Min"),
-                        e.RangeSetting.MinLimit,
-                        e.RangeSetting.MaxLimit
+                    RangeSetting rs = e.RangeSetting;
+                    SavedRange sr = SavedEntryPart.ReadRange(
+                        ro,
+                        rs.Enabled,
+                        rs.Min,
+                        rs.Max,
+                        rs.MinLimit,
+                        rs.MaxLimit
                     );
-                    float rmax = Mathf.Clamp(
-                        ro.Value<float>("Max"),
-                        e.RangeSetting.MinLimit,
-                        e.RangeSetting.MaxLimit
-                    );
-                    if (rmin > rmax)
+                    if (sr.Swapped)
                     {
-                        WarnInvalid(e.Key, "Min(" + rmin + ") > Max(" + rmax + "), swapping");
-                        (rmin, rmax) = (rmax, rmin);
+                        WarnInvalid(e.Key, "Min > Max, swapped to " + sr.Min + ".." + sr.Max);
                     }
-                    e.RangeSetting.Min = rmin;
-                    e.RangeSetting.Max = rmax;
+                    rs.Enabled = sr.Enabled;
+                    rs.Min = sr.Min;
+                    rs.Max = sr.Max;
                 }
                 break;
             case EntryType.Radio:
@@ -536,6 +556,14 @@ public class SettingsGroup
                 }
                 e.KeybindSetting.Value = kb;
                 break;
+            case EntryType.Text:
+                if (SavedEntryPart.TryReadText(token, out string text))
+                {
+                    e.TextSetting.Value = text;
+                    break;
+                }
+                WarnInvalid(e.Key, "not a string, kept '" + e.TextSetting.Value + "'");
+                break;
         }
     }
 
@@ -576,6 +604,7 @@ public class SettingsGroup
         Button,
         Header,
         Keybind,
+        Text,
     }
 
     private readonly struct Entry
@@ -594,6 +623,7 @@ public class SettingsGroup
         public readonly ActionBinding ActionBinding;
         public readonly HeaderSetting HeaderSetting;
         public readonly KeybindSetting KeybindSetting;
+        public readonly TextSetting TextSetting;
         public readonly FloatPaths? FloatPaths;
         public readonly RangePaths? RangePaths;
         public readonly KeybindPaths? KeybindPaths;
@@ -617,7 +647,8 @@ public class SettingsGroup
             FloatPaths? floatPaths = null,
             RangePaths? rangePaths = null,
             KeybindPaths? keybindPaths = null,
-            RadioPaths? radioPaths = null
+            RadioPaths? radioPaths = null,
+            TextSetting textSetting = null
         )
         {
             Key = key;
@@ -634,6 +665,7 @@ public class SettingsGroup
             ActionBinding = actionBinding;
             HeaderSetting = headerSetting;
             KeybindSetting = keybindSetting;
+            TextSetting = textSetting;
             FloatPaths = floatPaths;
             RangePaths = rangePaths;
             KeybindPaths = keybindPaths;

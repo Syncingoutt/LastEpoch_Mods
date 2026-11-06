@@ -2,6 +2,7 @@
 using Il2Cpp;
 using Il2CppLE.Factions;
 using LastEpoch_Hud.Scripts.Core.ModUI;
+using LastEpoch_Hud.Scripts.ModUI;
 using UnityEngine;
 
 namespace LastEpoch_Hud.Scripts.Mods.Factions.TheWoven;
@@ -14,8 +15,6 @@ public class Faction_Woven_TreePoints
     static ushort realSnapshot;
     static bool readingMax;
     static bool writing;
-
-    public const int SliderMax = 200;
 
     public static int GameMax()
     {
@@ -38,56 +37,41 @@ public class Faction_Woven_TreePoints
         return max;
     }
 
-    public static bool CanRun()
-    {
-        if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
-        {
-            return Save_Manager.instance.data.Factions.TheWoven.Enable_TreePoints;
-        }
-        else
-        {
-            return false;
-        }
-    }
+    public static bool CanRun() =>
+        Scenes.IsGameScene() && ModSettings.FactionsWoven.TreePoints.Enabled;
 
-    static bool MultiplierOn()
-    {
-        if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
-        {
-            return Save_Manager.instance.data.Factions.TheWoven.Enable_PointMultiplier;
-        }
-        else
-        {
-            return false;
-        }
-    }
+    private static bool MultiplierOn() =>
+        Scenes.IsGameScene() && ModSettings.FactionsWoven.PointMultiplier.Enabled;
 
     static bool Active()
     {
         return CanRun() || MultiplierOn();
     }
 
-    static int Multiplier()
-    {
-        return PointMultiplier.Clamp(Save_Manager.instance.data.Factions.TheWoven.PointMultiplier);
-    }
+    private static int Multiplier() =>
+        PointMultiplier.Clamp(ModSettings.FactionsWoven.PointMultiplier.Value);
 
     static int TargetPoints()
     {
-        int points;
+        int points = BasePoints();
+        if (!MultiplierOn())
+        {
+            return points;
+        }
+        return ClampPoints(points * Multiplier());
+    }
+
+    private static int BasePoints()
+    {
         if (CanRun())
         {
-            points = ClampPoints(Save_Manager.instance.data.Factions.TheWoven.TreePoints);
+            return ClampPoints((int)ModSettings.FactionsWoven.TreePoints.Value);
         }
-        else if (!TryRealEarned(out points))
+        if (TryRealEarned(out int points))
         {
-            points = hasRealSnapshot ? realSnapshot : 0;
+            return points;
         }
-        if (MultiplierOn())
-        {
-            points = ClampPoints(points * Multiplier());
-        }
-        return points;
+        return hasRealSnapshot ? realSnapshot : 0;
     }
 
     public static int ClampPoints(int points)
@@ -101,6 +85,16 @@ public class Faction_Woven_TreePoints
             return ushort.MaxValue;
         }
         return points;
+    }
+
+    public static void SyncTreePoints()
+    {
+        if (ModSettings.FactionsWoven.TreePoints.Enabled)
+        {
+            ApplyToPlayer();
+            return;
+        }
+        ReleaseToRealPoints();
     }
 
     public static void ReleaseToRealPoints()

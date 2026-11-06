@@ -1,22 +1,13 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
 
 namespace LastEpoch_Hud.Scripts.Mods.Monoliths;
 
 public class Monoliths_Islands
 {
-    public static bool CanRun()
-    {
-        bool r = false;
-        if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
-        {
-            if (!Save_Manager.instance.data.IsNullOrDestroyed())
-            {
-                r = Save_Manager.instance.data.Scenes.Monoliths.Enable_Islands;
-            }
-        }
-        return r;
-    }
+    public static bool CanRun() =>
+        Scenes.IsGameScene() && ModSettings.ScenesMonoliths.Islands.Value;
 
     [HarmonyPatch(typeof(EchoWeb), "islandCanBeRun")]
     public class EchoWeb_islandCanBeRun
@@ -24,10 +15,11 @@ public class Monoliths_Islands
         [HarmonyPostfix]
         static void Postfix(EchoWeb __instance, ref bool __result, EchoWebIsland __0)
         {
-            if ((Scenes.IsGameScene()) && (CanRun()))
+            if (!CanRun())
             {
-                __result = true;
+                return;
             }
+            __result = true;
         }
     }
 }

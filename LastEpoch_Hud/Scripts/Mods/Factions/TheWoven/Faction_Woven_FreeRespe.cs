@@ -1,20 +1,12 @@
-﻿using HarmonyLib;
+using HarmonyLib;
+using LastEpoch_Hud.Scripts.ModUI;
 
 namespace LastEpoch_Hud.Scripts.Mods.Factions.TheWoven;
 
 public class Faction_Woven_FreeRespe
 {
-    public static bool CanRun()
-    {
-        if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
-        {
-            return Save_Manager.instance.data.Factions.TheWoven.Enable_FreeRespe;
-        }
-        else
-        {
-            return false;
-        }
-    }
+    public static bool CanRun() =>
+        Scenes.IsGameScene() && ModSettings.FactionsWoven.FreeRespec.Value;
 
     [HarmonyPatch(typeof(Il2CppLE.Factions.TheWeaver), "GetMemoryAmberRespecCostForWeaverTree")]
     public class TheWeaver_GetMemoryAmberRespecCostForWeaverTree
@@ -22,14 +14,12 @@ public class Faction_Woven_FreeRespe
         [HarmonyPrefix]
         static bool Prefix(ref int __result)
         {
-            bool r = true;
-            if (CanRun())
+            if (!CanRun())
             {
-                __result = 0;
-                r = false;
+                return true;
             }
-
-            return r;
+            __result = 0;
+            return false;
         }
     }
 }
