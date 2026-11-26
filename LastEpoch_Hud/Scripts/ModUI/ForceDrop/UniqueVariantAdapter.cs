@@ -200,12 +200,36 @@ public static class UniqueVariantAdapter
                 );
     }
 
+    public static void MoveUniqueCorruptionLast(ItemData item)
+    {
+        if (item.IsNullOrDestroyed() || item.rarity != 9 || item.affixes.IsNullOrDestroyed())
+            return;
+        var seals = new List<ForceDropSeal>();
+        foreach (var affix in item.affixes)
+        {
+            if (affix.IsNullOrDestroyed())
+                return;
+            seals.Add(affix.IsSealedCorrupted ? ForceDropSeal.Corruption : ForceDropSeal.None);
+        }
+        var order = ForceDropPackingOrder.UniqueCorruptionLastIndices(seals);
+        bool changed = false;
+        for (int i = 0; i < order.Count; i++)
+            changed |= order[i] != i;
+        if (!changed)
+            return;
+        var sorted = new Il2CppSystem.Collections.Generic.List<ItemAffix>();
+        foreach (int i in order)
+            sorted.Add(item.affixes[i]);
+        item.affixes = sorted;
+    }
+
     public static void PrepareForPacking(
         ItemDataUnpacked item,
         IReadOnlyList<int> dedicatedIds = null,
         bool allowAdditionalVariants = false
     )
     {
+        MoveUniqueCorruptionLast(item);
         var entry = UniqueList.getUnique(item.uniqueID);
         if (!HasVariants(entry))
             return;

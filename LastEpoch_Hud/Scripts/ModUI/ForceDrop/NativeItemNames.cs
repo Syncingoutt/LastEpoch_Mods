@@ -67,7 +67,11 @@ internal static class NativeItemNames
             return result;
         var byType = new Dictionary<int, Category>();
         foreach (var category in categories.Values)
-            if (category.raw.IndexOf("blessing", StringComparison.OrdinalIgnoreCase) < 0)
+            // Shard item names are affix descriptions; keep them out of item/base search.
+            if (
+                !ItemList.isShard(category.baseType)
+                && category.raw.IndexOf("blessing", StringComparison.OrdinalIgnoreCase) < 0
+            )
                 byType[category.baseType] = category;
         foreach (var type in list.EquippableItems)
             if (byType.TryGetValue(type.baseTypeID, out var category))

@@ -47,28 +47,51 @@ public static class IllegalItemAdapter
         return !source.IsNullOrDestroyed();
     }
 
+    // Added affixes need Legendary serialization. A Set entry still owns its
+    // original piece identity; this can be reconstructed from the saved item.
+    static bool AdditionalSetPiece(ItemData item, out UniqueList.Entry source)
+    {
+        source = null;
+        if (
+            !item.IsNullOrDestroyed()
+            && item.rarity == 9
+            && !item.affixes.IsNullOrDestroyed()
+            && item.affixes.Count > 0
+            && !UniqueList.instance.IsNullOrDestroyed()
+        )
+        {
+            var own = UniqueList.getUnique(item.uniqueID);
+            if (!own.IsNullOrDestroyed() && own.isSetItem)
+            {
+                source = own;
+                return true;
+            }
+        }
+        return ForeignSetPiece(item, out source);
+    }
+
     public static void VerifyMembership(ItemDataUnpacked item)
     {
         if (item.rarity < 7 || UniqueList.instance.IsNullOrDestroyed())
             return;
         var own = UniqueList.getUnique(item.uniqueID);
-        if (own.IsNullOrDestroyed() || own.isSetItem)
+        if (own.IsNullOrDestroyed())
             return;
         int count = 0;
         foreach (var affix in item.affixes)
             if (affix.specialAffixType == AffixList.SpecialAffixType.Set)
                 count++;
-        if (count == 0)
+        if (!own.isSetItem && count == 0)
             return;
+        UniqueList.Entry source = own;
         if (
-            count != 1
-            || !ForeignSetPiece(item, out var source)
+            (!own.isSetItem && (count != 1 || !AdditionalSetPiece(item, out source)))
             || !item.grantsSetBonus()
             || item.getSetItemUniqueId() != source.uniqueID
             || item.SetId != source.setID
         )
             throw new InvalidOperationException(
-                "A unique can represent one Set-piece identity; Set membership did not survive packing."
+                "Set-piece identity did not survive packing; no item was dropped."
             );
     }
 
@@ -94,14 +117,144 @@ public static class IllegalItemAdapter
         }
     }
 
+    [HarmonyPatch(typeof(Il2CppLE.UI.Tooltips.ItemTooltipContentBuilder), "GetItemTooltipInfo")]
+    static class SetTooltipContent
+    {
+        [HarmonyPostfix]
+        static void Postfix(
+            ItemDataUnpacked __0,
+            TooltipItemManager.SlotType __1,
+            Il2CppLE.UI.Tooltips.ItemTooltipInfo __result
+        )
+        {
+            if (__result.IsNullOrDestroyed() || !AdditionalSetPiece(__0, out var source))
+                return;
+            Il2CppLE.UI.Tooltips.ItemTooltipContentBuilder.SetSetItemInfo(__result, __0, source);
+            Il2CppLE.UI.Tooltips.ItemTooltipContentBuilder.SetSlotTypeOnAllModifiers(__result, __1);
+        }
+    }
+
+    // The native dispatcher inlines default content for ordinary display mode.
+    // Patch its final result too, so every legacy layout receives set bonus text.
+    [HarmonyPatch(typeof(TooltipItemManager), nameof(TooltipItemManager.CreateTooltipContent))]
+    static class DispatchedSetTooltipContent
+    {
+        [HarmonyPostfix]
+        static void Postfix(
+            TooltipItemManager.ItemTooltipParameters __0,
+            ref UITooltipItem.ItemTooltipInfo __result
+        )
+        {
+            if (!__0.IsNullOrDestroyed())
+                AddLegacySetBonus(__0.Item, __0.TooltipMode, __0.SlotType, ref __result);
+        }
+    }
+
+    // The game retains the older content path for some tooltip layouts.
+    [HarmonyPatch(typeof(TooltipItemManager), "CreateTooltipDefaultContent")]
+    static class LegacySetTooltipContent
+    {
+        [HarmonyPostfix]
+        static void Postfix(
+            ItemDataUnpacked __0,
+            TooltipMode __1,
+            TooltipItemManager.SlotType __2,
+            ref UITooltipItem.ItemTooltipInfo __result
+        ) => AddLegacySetBonus(__0, __1, __2, ref __result);
+    }
+
+    [HarmonyPatch(typeof(TooltipItemManager), "CreateTooltipFullContent")]
+    static class FullSetTooltipContent
+    {
+        [HarmonyPostfix]
+        static void Postfix(
+            ItemDataUnpacked __0,
+            TooltipMode __1,
+            TooltipItemManager.SlotType __2,
+            ref UITooltipItem.ItemTooltipInfo __result
+        ) => AddLegacySetBonus(__0, __1, __2, ref __result);
+    }
+
+    // Keep the registered native row pool. Dense illegal set combinations can
+    // exceed it, so retain overflow text in the final existing row.
+    [HarmonyPatch(typeof(UITooltipItem), nameof(UITooltipItem.UpdateAffixesText))]
+    static class SetTooltipRows
+    {
+        [HarmonyPrefix]
+        static void Prefix(
+            UITooltipItem __instance,
+            ItemData __0,
+            ref UITooltipItem.ItemTooltipInfo __1
+        )
+        {
+            if (
+                !AdditionalSetPiece(__0, out _)
+                || __1.uniqueAffixesText.IsNullOrDestroyed()
+                || __instance.uniqueAffixesText.IsNullOrDestroyed()
+            )
+                return;
+            int capacity = __instance.uniqueAffixesText.Count;
+            if (capacity <= 0 || __1.uniqueAffixesText.Count <= capacity)
+                return;
+            var lines = new Il2CppSystem.Collections.Generic.List<Il2CppSystem.ValueTuple<
+                string,
+                bool
+            >>();
+            for (int i = 0; i < capacity - 1; i++)
+                lines.Add(__1.uniqueAffixesText[i]);
+            var overflow = new System.Text.StringBuilder();
+            var final = __1.uniqueAffixesText[capacity - 1];
+            for (int i = capacity - 1; i < __1.uniqueAffixesText.Count; i++)
+            {
+                if (overflow.Length > 0)
+                    overflow.Append("\n\n");
+                overflow.Append(__1.uniqueAffixesText[i].Item1);
+            }
+            lines.Add(new Il2CppSystem.ValueTuple<string, bool>(overflow.ToString(), final.Item2));
+            __1.uniqueAffixesText = lines;
+        }
+    }
+
+    static void AddLegacySetBonus(
+        ItemDataUnpacked item,
+        TooltipMode mode,
+        TooltipItemManager.SlotType slot,
+        ref UITooltipItem.ItemTooltipInfo info
+    )
+    {
+        if (!AdditionalSetPiece(item, out var source))
+            return;
+        var manager = ItemContainersManager.Instance;
+        int count = manager.IsNullOrDestroyed() ? 0 : manager.getGearCountForSetID(source.setID);
+        var bonuses = TooltipItemManager.GetSetBonus(item, source, mode, slot, count);
+        if (bonuses.IsNullOrDestroyed())
+            return;
+        var lines = new Il2CppSystem.Collections.Generic.List<Il2CppSystem.ValueTuple<
+            string,
+            bool
+        >>();
+        if (!info.uniqueAffixesText.IsNullOrDestroyed())
+            foreach (var line in info.uniqueAffixesText)
+                lines.Add(line);
+        foreach (string bonus in bonuses)
+        {
+            bool present = false;
+            foreach (var line in lines)
+                present |= line.Item1 == bonus;
+            if (!present)
+                lines.Add(new Il2CppSystem.ValueTuple<string, bool>(bonus, true));
+        }
+        info.uniqueAffixesText = lines;
+    }
+
     static HashSet<ushort> EquippedSetPieces(
         ItemContainersManager manager,
         byte setId,
-        out bool hasForeign
+        out bool hasAdditional
     )
     {
         var pieces = new HashSet<ushort>();
-        hasForeign = false;
+        hasAdditional = false;
         if (
             manager.IsNullOrDestroyed()
             || manager.equipment.IsNullOrDestroyed()
@@ -117,12 +270,12 @@ public static class IllegalItemAdapter
                 || item.IsNullOrDestroyed()
             )
                 continue;
-            if (ForeignSetPiece(item, out var source))
+            if (AdditionalSetPiece(item, out var source))
             {
                 if (source.setID == setId)
                 {
                     pieces.Add(source.uniqueID);
-                    hasForeign = true;
+                    hasAdditional = true;
                 }
             }
             else if (item.grantsSetBonus())
@@ -148,8 +301,8 @@ public static class IllegalItemAdapter
         [HarmonyPostfix]
         static void Postfix(ItemContainersManager __instance, byte __0, ref int __result)
         {
-            var pieces = EquippedSetPieces(__instance, __0, out bool hasForeign);
-            if (!hasForeign)
+            var pieces = EquippedSetPieces(__instance, __0, out bool hasAdditional);
+            if (!hasAdditional)
                 return;
             // Preserve the existing explicit "remove set requirements" feature.
             if (
@@ -173,8 +326,8 @@ public static class IllegalItemAdapter
             var source = UniqueList.getUnique(__0);
             if (source.IsNullOrDestroyed() || !source.isSetItem)
                 return;
-            var pieces = EquippedSetPieces(__instance, source.setID, out bool hasForeign);
-            if (hasForeign && pieces.Contains(__0))
+            var pieces = EquippedSetPieces(__instance, source.setID, out bool hasAdditional);
+            if (hasAdditional && pieces.Contains(__0))
                 __result = true;
         }
     }
@@ -186,7 +339,7 @@ public static class IllegalItemAdapter
         static void Postfix(ItemDataUnpacked __instance)
         {
             // Native equipment code can read the cached field directly.
-            if (ForeignSetPiece(__instance, out var source))
+            if (AdditionalSetPiece(__instance, out var source))
                 __instance.SetId = source.setID;
         }
     }
@@ -199,7 +352,7 @@ public static class IllegalItemAdapter
         [HarmonyPostfix]
         static void Postfix(ItemData __instance, ref bool __result)
         {
-            if (ForeignSetPiece(__instance, out _))
+            if (AdditionalSetPiece(__instance, out _))
                 __result = true;
         }
     }
@@ -210,7 +363,7 @@ public static class IllegalItemAdapter
         [HarmonyPostfix]
         static void Postfix(ItemData __instance, ref ushort __result)
         {
-            if (ForeignSetPiece(__instance, out var source))
+            if (AdditionalSetPiece(__instance, out var source))
                 __result = source.uniqueID;
         }
     }
@@ -221,7 +374,7 @@ public static class IllegalItemAdapter
         [HarmonyPostfix]
         static void Postfix(ItemDataUnpacked __instance, ref int __result)
         {
-            if (ForeignSetPiece(__instance, out var source))
+            if (AdditionalSetPiece(__instance, out var source))
                 __result = source.setID;
         }
     }

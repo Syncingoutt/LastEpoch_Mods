@@ -71,7 +71,6 @@ public static class ForceDropBuilder
     static Text variantHeader,
         variantDescription;
     static ushort rageUniqueId;
-    static int rageMetadataId = -1;
 
     static string corruptionName = "None";
     static Number corruptionTier,
@@ -108,8 +107,7 @@ public static class ForceDropBuilder
     static Dictionary<int, NativeItemNames.ItemChoice> nativeItems =
         new Dictionary<int, NativeItemNames.ItemChoice>();
     static bool corrupted,
-        allowIllegal,
-        metadataLogged;
+        allowIllegal;
     static float nextCorruptionCheck;
     static string result = "";
     static Button illegalModeButton;
@@ -186,28 +184,6 @@ public static class ForceDropBuilder
             rageUniqueId = (ushort)FD.ItemUniqueId;
         }
         ragePage.SetActive(showRage);
-        if (showRage && rageMetadataId != FD.ItemUniqueId)
-        {
-            rageMetadataId = FD.ItemUniqueId;
-            Main.logger_instance.Msg(
-                "Unique variant native pool: unique="
-                    + rageEntry.uniqueID
-                    + ", specific="
-                    + rageEntry.dropsSpecificLegendaryAffixes
-                    + ", count="
-                    + rageEntry.droppableLegendaryAffixCount
-                    + ", excludesSlotLimits="
-                    + rageEntry.excludeSpecificAffixesFromPrefixSuffixLimits
-                    + ", pool="
-                    + (
-                        rageEntry.droppableLegendaryAffixes.IsNullOrDestroyed()
-                            ? "null"
-                            : rageEntry.droppableLegendaryAffixes.Count.ToString()
-                    )
-                    + ", resolved="
-                    + UniqueVariantAdapter.Catalog(rageEntry).Count
-            );
-        }
         // Keep the exclusive modifier next to the item preview and outside the affix grid.
         bool twoVariants = variantCount == 2;
         Rect(ragePage, .04f, .28f, .96f, twoVariants ? .54f : .45f);
@@ -248,33 +224,7 @@ public static class ForceDropBuilder
         if (forging.mode != null)
             forging.mode.interactable = !corrupted;
         RefreshPotentialControls();
-        for (int slot = 0; slot < rows.Length; slot++)
-        {
-            var context = LegalContext(slot);
-            bool enchantment = !allowIllegal && context.IsHereticalIdol && (slot == 1 || slot == 3);
-            bool available = allowIllegal
-                ? FD.ItemType < 100
-                : ForceDropLegalRules.SlotAllowed(
-                    slot,
-                    context.IsIdol,
-                    context.IsUnique,
-                    context.IsSet,
-                    context.IsHereticalIdol
-                );
-            LocaleRegistry.Apply(
-                rows[slot].slotLabel,
-                allowIllegal && slot < 4 ? "Affix " + (slot + 1)
-                    : enchantment ? "Enchantment " + (slot == 1 ? 1 : 2)
-                    : slot == 4 ? "Sealed"
-                    : slot == 5 ? "Primordial"
-                    : slot < 2 ? "Prefix " + (slot + 1)
-                    : "Suffix " + (slot - 1)
-            );
-            rows[slot].select.interactable = available;
-            rows[slot].tier.input.interactable = available;
-            rows[slot].roll.input.interactable = available && !rows[slot].roll.random;
-            rows[slot].roll.mode.interactable = available;
-        }
+        RefreshAffixControls();
         RefreshPreview();
     }
 
@@ -458,6 +408,37 @@ public static class ForceDropBuilder
         public Text selectedLabel;
         public Number tier,
             roll;
+    }
+
+    static void RefreshAffixControls()
+    {
+        for (int slot = 0; slot < rows.Length; slot++)
+        {
+            var context = LegalContext(slot);
+            bool enchantment = !allowIllegal && context.IsHereticalIdol && (slot == 1 || slot == 3);
+            bool available = allowIllegal
+                ? FD.ItemType < 100
+                : ForceDropLegalRules.SlotAllowed(
+                    slot,
+                    context.IsIdol,
+                    context.IsUnique,
+                    context.IsSet,
+                    context.IsHereticalIdol
+                );
+            LocaleRegistry.Apply(
+                rows[slot].slotLabel,
+                allowIllegal && slot < 4 ? "Affix " + (slot + 1)
+                    : enchantment ? "Enchantment " + (slot == 1 ? 1 : 2)
+                    : slot == 4 ? "Sealed"
+                    : slot == 5 ? "Primordial"
+                    : slot < 2 ? "Prefix " + (slot + 1)
+                    : "Suffix " + (slot - 1)
+            );
+            rows[slot].select.interactable = available;
+            rows[slot].tier.input.interactable = available;
+            rows[slot].roll.input.interactable = available && !rows[slot].roll.random;
+            rows[slot].roll.mode.interactable = available;
+        }
     }
 
     static void Build()
@@ -737,7 +718,6 @@ public static class ForceDropBuilder
         HudStyler.NormalizeSelectableGraphics(root);
         HudStyler.ApplyFontScale(root);
         RefreshItems();
-        LogCorruptionMetadata();
     }
 
     static void Preset(bool random)
@@ -765,6 +745,7 @@ public static class ForceDropBuilder
                 n.input.interactable = !n.random;
             }
         RefreshPotentialControls();
+        RefreshAffixControls();
     }
 
     static bool CreatesLegendary()
@@ -1078,22 +1059,6 @@ public static class ForceDropBuilder
             );
         }
         choices.Sort(CompareAffixChoices);
-        Main.logger_instance.Msg(
-            (
-                allowIllegal
-                    ? "Force Drop illegal corruption pool: base="
-                    : "Force Drop legal corruption pool: base="
-            )
-                + FD.ItemType
-                + ", subtype="
-                + FD.ItemSubtype
-                + ", unique="
-                + FD.ItemUniqueId
-                + ", choices="
-                + (choices.Count - 1)
-                + ", status="
-                + corruptionPoolError
-        );
         OpenPicker("Corrupted affix", true);
     }
 
@@ -1162,6 +1127,18 @@ public static class ForceDropBuilder
 
     static void AffixPicker(int slot)
     {
+        var slotContext = LegalContext(slot);
+        if (
+            !allowIllegal
+            && !ForceDropLegalRules.SlotAllowed(
+                slot,
+                slotContext.IsIdol,
+                slotContext.IsUnique,
+                slotContext.IsSet,
+                slotContext.IsHereticalIdol
+            )
+        )
+            return;
         choices.Clear();
         choices.Add(
             new Choice
@@ -1179,38 +1156,9 @@ public static class ForceDropBuilder
         var list = AffixList.get();
         if (list.IsNullOrDestroyed())
             return;
-        var exclusions = new Dictionary<string, int>();
         foreach (var a in ForceDropCatalog.Definitions())
-        {
-            string reason = AddAffixChoice(a, slot);
-            if (reason.Length > 0)
-            {
-                exclusions.TryGetValue(reason, out int count);
-                exclusions[reason] = count + 1;
-            }
-        }
-        var excluded = new StringBuilder();
-        foreach (var pair in exclusions)
-            excluded.Append(pair.Key).Append('=').Append(pair.Value).Append(';');
+            AddAffixChoice(a, slot);
         choices.Sort(CompareAffixChoices);
-        Main.logger_instance.Msg(
-            (
-                allowIllegal
-                    ? "Force Drop illegal affix pool: base="
-                    : "Force Drop legal affix pool: base="
-            )
-                + FD.ItemType
-                + ", subtype="
-                + FD.ItemSubtype
-                + ", unique="
-                + FD.ItemUniqueId
-                + ", slot="
-                + slot
-                + ", choices="
-                + (choices.Count - 1)
-                + ", excluded="
-                + excluded
-        );
         bool idolEnchantment = LegalContext(slot).IsHereticalIdol && (slot == 1 || slot == 3);
         OpenPicker(
             allowIllegal && slot < 4 ? "Affix " + (slot + 1)
@@ -1338,13 +1286,10 @@ public static class ForceDropBuilder
 
     static int RowMaximum(int slot, AffixList.Affix definition)
     {
-        // Native storage has independent regular and Primordial seals.
-        // A regular seal stays within T1-T7; the Primordial slot is T8 only.
-        if (slot == 4)
-            return 7;
-        if (slot == 5)
-            return 8;
-        return RouteMaximum;
+        return ForceDropModeRules.MaximumSlotTier(
+            slot,
+            allowIllegal ? ForceDropMode.Illegal : ForceDropMode.Legal
+        );
     }
 
     static void RefreshTierLimits()
@@ -1494,6 +1439,12 @@ public static class ForceDropBuilder
             return "The selected item does not match its category. Choose it again.";
         var rageEntry = SelectedRageEntry();
         int variantCount = UniqueVariantAdapter.VariantCount(rageEntry);
+        int totalAffixes = variantCount + (corrupted && corruptionId >= 0 ? 1 : 0);
+        foreach (var row in rows)
+            if (row.id >= 0)
+                totalAffixes++;
+        if (FD.ItemRarity >= 7 && totalAffixes > 7)
+            return "Legendary saved data supports seven affixes total, including exclusive modifiers.";
         if (variantCount > 0)
         {
             if (!UniqueVariantAdapter.HasVariants(rageEntry))
@@ -1782,6 +1733,7 @@ public static class ForceDropBuilder
             picker.SetActive(false);
         RefreshTierLimits();
         RefreshIllegalButton();
+        RefreshAffixControls();
     }
 
     static void RefreshIllegalButton()
@@ -2636,49 +2588,6 @@ public static class ForceDropBuilder
                 }
             );
         return n;
-    }
-
-    static void LogCorruptionMetadata()
-    {
-        if (metadataLogged)
-            return;
-        metadataLogged = true;
-        foreach (var nested in typeof(AffixList).GetNestedTypes())
-            if (
-                nested.IsEnum
-                && nested.Name.IndexOf("special", StringComparison.OrdinalIgnoreCase) >= 0
-            )
-                Main.logger_instance.Msg(
-                    "Force Drop " + nested.Name + ": " + string.Join(", ", Enum.GetNames(nested))
-                );
-        Main.logger_instance.Msg(
-            "Force Drop affix types: "
-                + string.Join(", ", Enum.GetNames(typeof(AffixList.AffixType)))
-        );
-        foreach (var member in typeof(AffixList).GetMembers())
-            if (
-                member.MemberType == System.Reflection.MemberTypes.Field
-                || member.MemberType == System.Reflection.MemberTypes.Property
-            )
-                Main.logger_instance.Msg("Force Drop catalog API: " + member);
-        foreach (
-            var type in new[]
-            {
-                typeof(ItemData),
-                typeof(ItemDataUnpacked),
-                typeof(ItemAffix),
-                typeof(AffixList),
-                typeof(AffixList.Affix),
-                typeof(AffixList.SingleAffix),
-                typeof(AffixList.MultiAffix),
-            }
-        )
-        foreach (var member in type.GetMembers())
-            if (
-                member.Name.IndexOf("corrupt", StringComparison.OrdinalIgnoreCase) >= 0
-                || member.Name.IndexOf("special", StringComparison.OrdinalIgnoreCase) >= 0
-            )
-                Main.logger_instance.Msg("Force Drop corruption API: " + type.Name + "." + member);
     }
 
     [HarmonyPatch(typeof(Button), "Press")]

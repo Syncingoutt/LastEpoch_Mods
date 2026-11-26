@@ -12,6 +12,11 @@ public static class ForceDropModeRules
             ? ForceDropSeal.Primordial
             : seal;
 
+    public static int MaximumSlotTier(int slot, ForceDropMode mode) =>
+        slot == 5 ? 8
+        : mode == ForceDropMode.Illegal ? 8
+        : 7;
+
     public static int MaximumTier(int definitionTierCount, ForceDropMode mode) =>
         ForceDropTierRules.MaximumDisplayTier(
             definitionTierCount,
