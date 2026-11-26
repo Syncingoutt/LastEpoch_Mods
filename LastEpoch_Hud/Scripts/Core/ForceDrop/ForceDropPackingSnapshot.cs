@@ -99,12 +99,13 @@ public sealed class ForceDropPackingSnapshot
         // the live base count; after decoding, verify the complete affix list.
         if (Sockets < 0 || Sockets > byte.MaxValue)
             return "Socket count is outside the packed range";
-        // Native corruption insertion excludes its new sealed affix from the
-        // live base-item count. No other nonzero count mismatch is accepted.
+        // Unchecked regular/corruption insertion can exclude both newly added
+        // seals from the live base count. The serialized affix list remains exact.
         if (
             !UsesUniqueStorage
             && Sockets != Affixes.Count
             && !(UsesCorruptionStorage && Sockets == Affixes.Count - 1)
+            && !(RegularSeal && Sockets == Affixes.Count - 1 - (UsesCorruptionStorage ? 1 : 0))
             && !(decoded && Sockets == 0)
         )
             return "Socket count does not match the affix count (sockets="

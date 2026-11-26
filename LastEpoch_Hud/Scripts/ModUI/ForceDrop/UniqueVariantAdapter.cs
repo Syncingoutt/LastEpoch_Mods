@@ -28,21 +28,34 @@ public static class UniqueVariantAdapter
             || entry.droppableLegendaryAffixes.Count == 0
         )
             return 0;
-        // Fixed FakeUniqueMod pools use the same native representation. Exulis
-        // instead has tiered Corrupted modifiers and needs its own selection
-        // route; do not misrepresent those as fixed T1 unique modifiers.
+        bool fixedPool = true,
+            corruptionPool = true;
         foreach (int id in entry.droppableLegendaryAffixes)
         {
             var definition = ForceDropCatalog.Find(id);
-            if (
-                definition.IsNullOrDestroyed()
-                || definition.specialAffixType != AffixList.SpecialAffixType.FakeUniqueMod
-            )
+            if (definition.IsNullOrDestroyed())
                 return 0;
+            fixedPool &= definition.specialAffixType == AffixList.SpecialAffixType.FakeUniqueMod;
+            corruptionPool &= CorruptedAffixAdapter.IsCorruption(definition);
         }
+        if (
+            (!fixedPool && !corruptionPool)
+            || (corruptionPool && entry.droppableLegendaryAffixCount != 2)
+        )
+            return 0;
         return entry.droppableLegendaryAffixCount >= 1 && entry.droppableLegendaryAffixCount <= 2
             ? entry.droppableLegendaryAffixCount
             : 0;
+    }
+
+    public static bool HasTieredCorruptionPool(UniqueList.Entry entry)
+    {
+        if (VariantCount(entry) == 0)
+            return false;
+        foreach (int id in entry.droppableLegendaryAffixes)
+            if (!CorruptedAffixAdapter.IsCorruption(ForceDropCatalog.Find(id)))
+                return false;
+        return true;
     }
 
     public static bool HasVariants(UniqueList.Entry entry)
@@ -74,11 +87,7 @@ public static class UniqueVariantAdapter
         foreach (var id in entry.droppableLegendaryAffixes)
         {
             var definition = ForceDropCatalog.Find(id);
-            if (
-                !definition.IsNullOrDestroyed()
-                && !CorruptedAffixAdapter.IsCorruption(definition)
-                && !result.Exists(a => a.affixId == id)
-            )
+            if (!definition.IsNullOrDestroyed() && !result.Exists(a => a.affixId == id))
                 result.Add(definition);
         }
         return result;
@@ -86,7 +95,19 @@ public static class UniqueVariantAdapter
 
     public static void Apply(ItemDataUnpacked item, params int[] ids) => Apply(item, false, ids);
 
-    public static void Apply(ItemDataUnpacked item, bool allowAdditionalVariants, params int[] ids)
+    public static void Apply(
+        ItemDataUnpacked item,
+        bool allowAdditionalVariants,
+        params int[] ids
+    ) => Apply(item, allowAdditionalVariants, null, null, ids);
+
+    public static void Apply(
+        ItemDataUnpacked item,
+        bool allowAdditionalVariants,
+        IReadOnlyList<int> tiers,
+        IReadOnlyList<int> rolls,
+        params int[] ids
+    )
     {
         var entry = UniqueList.getUnique(item.uniqueID);
         var catalog = Catalog(entry);
@@ -101,14 +122,41 @@ public static class UniqueVariantAdapter
             throw new InvalidOperationException("Choose every exclusive unique modifier");
         var selected = new HashSet<int>();
         var additions = new List<ItemAffix>();
+        if (
+            (tiers != null && tiers.Count != ids.Length)
+            || (rolls != null && rolls.Count != ids.Length)
+        )
+            throw new InvalidOperationException(
+                "Unique modifier values do not match the selection."
+            );
+        bool tiered = HasTieredCorruptionPool(entry);
+        int selectedIndex = 0;
         foreach (int id in ids)
         {
+            int tier = tiers == null ? 0 : tiers[selectedIndex];
+            int roll = rolls == null ? 255 : rolls[selectedIndex];
+            selectedIndex++;
             var definition = catalog.Find(a => a.affixId == id);
             if (definition.IsNullOrDestroyed() || !selected.Add(id))
                 throw new InvalidOperationException(
-                    "Choose distinct modifiers from this unique's native fixed pool"
+                    "Choose distinct modifiers from this unique's native pool"
                 );
-            var affix = new ItemAffix((ushort)id, 0, 255, item.itemType, SealedAffixType.None);
+            if (
+                (tiered && (tier < 0 || tier >= ForceDropCatalog.MaximumTier(definition, 7)))
+                || roll < 0
+                || roll > 255
+                || (!tiered && (tier != 0 || roll != 255))
+            )
+                throw new InvalidOperationException(
+                    "Invalid tier or roll for this unique's native pool."
+                );
+            var affix = new ItemAffix(
+                (ushort)id,
+                (byte)tier,
+                (byte)roll,
+                item.itemType,
+                SealedAffixType.None
+            );
             if (
                 affix.affixId != id
                 || affix.specialAffixType != definition.specialAffixType
@@ -149,7 +197,7 @@ public static class UniqueVariantAdapter
         item.sockets = (byte)item.affixes.Count;
         PrepareForPacking(item, ids, allowAdditionalVariants);
         item.RefreshIDAndValues();
-        VerifySelection(item, allowAdditionalVariants, ids);
+        VerifySelection(item, allowAdditionalVariants, tiers, rolls, ids);
         var remaining = new List<string>();
         foreach (var saved in item.affixes)
             if (!selected.Contains(saved.affixId))
@@ -200,12 +248,36 @@ public static class UniqueVariantAdapter
                 );
     }
 
+    public static void MoveUniqueCorruptionLast(ItemData item)
+    {
+        if (item.IsNullOrDestroyed() || item.rarity != 9 || item.affixes.IsNullOrDestroyed())
+            return;
+        var seals = new List<ForceDropSeal>();
+        foreach (var affix in item.affixes)
+        {
+            if (affix.IsNullOrDestroyed())
+                return;
+            seals.Add(affix.IsSealedCorrupted ? ForceDropSeal.Corruption : ForceDropSeal.None);
+        }
+        var order = ForceDropPackingOrder.UniqueCorruptionLastIndices(seals);
+        bool changed = false;
+        for (int i = 0; i < order.Count; i++)
+            changed |= order[i] != i;
+        if (!changed)
+            return;
+        var sorted = new Il2CppSystem.Collections.Generic.List<ItemAffix>();
+        foreach (int i in order)
+            sorted.Add(item.affixes[i]);
+        item.affixes = sorted;
+    }
+
     public static void PrepareForPacking(
         ItemDataUnpacked item,
         IReadOnlyList<int> dedicatedIds = null,
         bool allowAdditionalVariants = false
     )
     {
+        MoveUniqueCorruptionLast(item);
         var entry = UniqueList.getUnique(item.uniqueID);
         if (!HasVariants(entry))
             return;
@@ -283,6 +355,14 @@ public static class UniqueVariantAdapter
         ItemDataUnpacked item,
         bool allowAdditionalVariants,
         params int[] ids
+    ) => VerifySelection(item, allowAdditionalVariants, null, null, ids);
+
+    public static void VerifySelection(
+        ItemDataUnpacked item,
+        bool allowAdditionalVariants,
+        IReadOnlyList<int> tiers,
+        IReadOnlyList<int> rolls,
+        params int[] ids
     )
     {
         var entry = UniqueList.getUnique(item.uniqueID);
@@ -324,8 +404,9 @@ public static class UniqueVariantAdapter
                 || definition.IsNullOrDestroyed()
                 || saved.specialAffixType != definition.specialAffixType
                 || saved.sealedAffixType != SealedAffixType.None
-                || saved.affixTier != 0
-                || saved.affixRoll != 255
+                || saved.affixTier != (tiers == null ? 0 : tiers[Array.IndexOf(ids, saved.affixId)])
+                || saved.affixRoll
+                    != (rolls == null ? 255 : rolls[Array.IndexOf(ids, saved.affixId)])
             )
                 throw new InvalidOperationException(
                     "Unique variant packing changed a selected modifier; no item was dropped"
