@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
 
 namespace LastEpoch_Hud.Scripts.Mods.Skills;
 
@@ -18,11 +19,7 @@ public class Skills_Use
             bool __4
         )
         {
-            if (
-                (Scenes.IsGameScene())
-                && (!__1.IsNullOrDestroyed())
-                && (!Save_Manager.instance.IsNullOrDestroyed())
-            )
+            if ((Scenes.IsGameScene()) && (!__1.IsNullOrDestroyed()))
             {
                 //Ability
                 Ability ability = null;
@@ -37,21 +34,21 @@ public class Skills_Use
 
                 if (!ability.IsNullOrDestroyed())
                 {
-                    if (Save_Manager.instance.data.Skills.Enable_RemoveChannelCost)
+                    if (ModSettings.SkillsGeneral.RemoveChannelCost.Value)
                     {
                         ability.channelCost = 0f;
                     }
-                    if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
+                    if (ModSettings.SkillsGeneral.RemoveManaCost.Value)
                     {
                         ability.manaCost = 0f;
                         ability.minimumManaCost = 0f;
                         ability.manaCostPerDistance = 0f;
                     }
-                    if (Save_Manager.instance.data.Skills.Enable_NoManaRegenWhileChanneling)
+                    if (ModSettings.SkillsGeneral.ManaRegenWhileChanneling.Value)
                     {
                         ability.noManaRegenWhileChanneling = false;
                     }
-                    if (Save_Manager.instance.data.Skills.Enable_StopWhenOutOfMana)
+                    if (ModSettings.SkillsGeneral.ContinueWhenOutOfMana.Value)
                     {
                         ability.stopWhenOutOfMana = false;
                     }
@@ -60,24 +57,17 @@ public class Skills_Use
                         && (ability.moveOrAttackFallback == Ability.MoveOrAttackFallback.Move)
                     )
                     {
-                        if (Save_Manager.instance.data.Skills.MovementSkills.Enable_NoTarget)
+                        if (ModSettings.SkillsMovement.NoTarget.Value)
                         {
                             ability.playerRequiresTarget = false;
                             ability.requiredEnemyTargetMustBeAccessible = false;
                         }
-                        if (
-                            Save_Manager
-                                .instance
-                                .data
-                                .Skills
-                                .MovementSkills
-                                .Enable_ImmuneDuringMovement
-                        )
+                        if (ModSettings.SkillsMovement.ImmuneDuringMovement.Value)
                         {
                             ability.immuneDuringMovement = true;
                             ability.cannotDieDuringMovement = true;
                         }
-                        if (Save_Manager.instance.data.Skills.MovementSkills.Disable_SimplePath)
+                        if (ModSettings.SkillsMovement.IgnoreSimplePath.Value)
                         {
                             ability.limitRangeForPlayers = false;
                             ability.requireSimplePath = false;
@@ -103,7 +93,7 @@ public class Skills_Use
                     //ErasingStrike : Fix ManaCost
                     if (il2cpp_type.ToString() == "ErasingStrikeMutator")
                     {
-                        if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
+                        if (ModSettings.SkillsGeneral.RemoveManaCost.Value)
                         {
                             var ab = __1.TryCast<ErasingStrikeMutator>();
                             if (!ab.IsNullOrDestroyed())
@@ -125,7 +115,7 @@ public class Skills_Use
                     //Holy Aura : Fix ManaCost
                     if (il2cpp_type.ToString() == "HolyAuraMutator")
                     {
-                        if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
+                        if (ModSettings.SkillsGeneral.RemoveManaCost.Value)
                         {
                             var ab = __1.TryCast<HolyAuraMutator>();
                             if (!ab.IsNullOrDestroyed())
@@ -140,7 +130,7 @@ public class Skills_Use
                     //Warpath : Fix Channel Cost
                     if (il2cpp_type.ToString() == "WarpathMutator")
                     {
-                        if (Save_Manager.instance.data.Skills.Enable_RemoveChannelCost)
+                        if (ModSettings.SkillsGeneral.RemoveChannelCost.Value)
                         {
                             var ab = __1.TryCast<WarpathMutator>();
                             if (!ab.IsNullOrDestroyed())
@@ -154,7 +144,7 @@ public class Skills_Use
                     //Smite : Fix ManaCost
                     if (il2cpp_type.ToString() == "SmiteMutator")
                     {
-                        if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
+                        if (ModSettings.SkillsGeneral.RemoveManaCost.Value)
                         {
                             var ab = __1.TryCast<SmiteMutator>();
                             if (!ab.IsNullOrDestroyed())
@@ -168,7 +158,7 @@ public class Skills_Use
                     //Judgement : Fix ManaCost
                     if (il2cpp_type.ToString() == "JudgementMutator")
                     {
-                        if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
+                        if (ModSettings.SkillsGeneral.RemoveManaCost.Value)
                         {
                             var ab = __1.TryCast<JudgementMutator>();
                             if (!ab.IsNullOrDestroyed())
@@ -181,7 +171,7 @@ public class Skills_Use
                     }
                     if (il2cpp_type.ToString() == "JudgementAoEMutator")
                     {
-                        if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
+                        if (ModSettings.SkillsGeneral.RemoveManaCost.Value)
                         {
                             var ab = __1.TryCast<JudgementAoEMutator>();
                             if (!ab.IsNullOrDestroyed())
@@ -194,7 +184,7 @@ public class Skills_Use
                     //Sigil of Hope : Fix ManaCost
                     if (il2cpp_type.ToString() == "SigilsOfHopeMutator")
                     {
-                        if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
+                        if (ModSettings.SkillsGeneral.RemoveManaCost.Value)
                         {
                             var ab = __1.TryCast<SigilsOfHopeMutator>();
                             if (!ab.IsNullOrDestroyed())
@@ -208,7 +198,7 @@ public class Skills_Use
                     //Meteor : Fix ManaCost
                     if (il2cpp_type.ToString() == "MeteorMutator")
                     {
-                        if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
+                        if (ModSettings.SkillsGeneral.RemoveManaCost.Value)
                         {
                             var ab = __1.TryCast<MeteorMutator>();
                             if (!ab.IsNullOrDestroyed())
@@ -220,44 +210,27 @@ public class Skills_Use
                     //Companions
                     else if (il2cpp_type.ToString() == "SummonWolfMutator")
                     {
-                        if (Save_Manager.instance.data.Skills.Companion.Wolf.Enable_SummonLimit)
+                        if (ModSettings.SkillsCompanions.WolfSummonLimit.Enabled)
                         {
                             var ab = __1.TryCast<SummonWolfMutator>();
                             if (!ab.IsNullOrDestroyed())
                             {
-                                ab.wolfLimit = Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Companion
-                                    .Wolf
-                                    .SummonLimit;
+                                ab.wolfLimit = (int)
+                                    ModSettings.SkillsCompanions.WolfSummonLimit.Value;
                             }
                         }
                     }
                     else if (il2cpp_type.ToString() == "SummonScorpionMutator")
                     {
-                        if (
-                            Save_Manager.instance.data.Skills.Companion.Scorpion.Enable_BabyQuantity
-                        )
+                        if (ModSettings.SkillsCompanions.ScorpionBabyQuantity.Enabled)
                         {
                             var ab = __1.TryCast<SummonScorpionMutator>();
                             if (!ab.IsNullOrDestroyed())
                             {
-                                ab.babyScorpionQuantity = Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Companion
-                                    .Scorpion
-                                    .BabyQuantity;
-                                ab.babyScorpionsToSpawnOnAbilityActivation = Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Companion
-                                    .Scorpion
-                                    .BabyQuantity;
+                                int babies = (int)
+                                    ModSettings.SkillsCompanions.ScorpionBabyQuantity.Value;
+                                ab.babyScorpionQuantity = babies;
+                                ab.babyScorpionsToSpawnOnAbilityActivation = babies;
                                 //ab.increasedBabySpawnRate = 1;
                             }
                         }
@@ -268,89 +241,31 @@ public class Skills_Use
                         var ab = __1.TryCast<SummonSkeletonMutator>();
                         if (!ab.IsNullOrDestroyed())
                         {
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Skeletons
-                                    .Enable_additionalSkeletonsFromPassives
-                            )
+                            if (ModSettings.SkillsMinions.SkeletonFromPassives.Enabled)
                             {
-                                ab.additionalSkeletonsFromPassives = Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Skeletons
-                                    .additionalSkeletonsFromPassives;
+                                ab.additionalSkeletonsFromPassives = (int)
+                                    ModSettings.SkillsMinions.SkeletonFromPassives.Value;
                                 ab.onlySummonOneWarrior = false;
                             }
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Skeletons
-                                    .Enable_additionalSkeletonsFromSkillTree
-                            )
+                            if (ModSettings.SkillsMinions.SkeletonFromSkillTree.Enabled)
                             {
-                                ab.additionalSkeletonsFromSkillTree = Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Skeletons
-                                    .additionalSkeletonsFromSkillTree;
+                                ab.additionalSkeletonsFromSkillTree = (int)
+                                    ModSettings.SkillsMinions.SkeletonFromSkillTree.Value;
                                 ab.onlySummonOneWarrior = false;
                             }
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Skeletons
-                                    .Enable_additionalSkeletonsPerCast
-                            )
+                            if (ModSettings.SkillsMinions.SkeletonPerCast.Enabled)
                             {
-                                ab.additionalSkeletonsPerCast = Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Skeletons
-                                    .additionalSkeletonsPerCast;
+                                ab.additionalSkeletonsPerCast = (int)
+                                    ModSettings.SkillsMinions.SkeletonPerCast.Value;
                             }
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Skeletons
-                                    .Enable_chanceToResummonOnDeath
-                            )
+                            if (ModSettings.SkillsMinions.SkeletonResummonChance.Enabled)
                             {
-                                ab.chanceToResummonOnDeath = Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Skeletons
-                                    .chanceToResummonOnDeath;
+                                ab.chanceToResummonOnDeath = ModSettings
+                                    .SkillsMinions
+                                    .SkeletonResummonChance
+                                    .Value;
                             }
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Skeletons
-                                    .Enable_forceArcher
-                            )
+                            if (ModSettings.SkillsMinions.SkeletonForceArcher.Value)
                             {
                                 ab.cannotSummonArchers = false;
                                 ab.cannotSummonWarriors = true;
@@ -361,15 +276,7 @@ public class Skills_Use
                                 ab.forceWarrior = false;
                                 ab.forceArcher = true;
                             }
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Skeletons
-                                    .Enable_forceBrawler
-                            )
+                            if (ModSettings.SkillsMinions.SkeletonForceBrawler.Value)
                             {
                                 ab.cannotSummonArchers = true;
                                 ab.cannotSummonWarriors = true;
@@ -380,15 +287,7 @@ public class Skills_Use
                                 ab.forceArcher = false;
                                 ab.forceBrawler = true;
                             }
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Skeletons
-                                    .Enable_forceRogue
-                            )
+                            if (ModSettings.SkillsMinions.SkeletonForceRogue.Value)
                             {
                                 ab.cannotSummonArchers = true;
                                 ab.cannotSummonWarriors = true;
@@ -399,15 +298,7 @@ public class Skills_Use
                                 ab.forceBrawler = false;
                                 ab.forceRogue = true;
                             }
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Skeletons
-                                    .Enable_forceWarrior
-                            )
+                            if (ModSettings.SkillsMinions.SkeletonForceWarrior.Value)
                             {
                                 ab.cannotSummonArchers = true;
                                 ab.cannotSummonWarriors = false;
@@ -425,83 +316,30 @@ public class Skills_Use
                         var ab = __1.TryCast<SummonWraithMutator>();
                         if (!ab.IsNullOrDestroyed())
                         {
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Wraiths
-                                    .Enable_additionalMaxWraiths
-                            )
+                            if (ModSettings.SkillsMinions.WraithMaximum.Enabled)
                             {
-                                ab.additionalMaxWraiths = Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Wraiths
-                                    .additionalMaxWraiths;
+                                ab.additionalMaxWraiths = (int)
+                                    ModSettings.SkillsMinions.WraithMaximum.Value;
                             }
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Wraiths
-                                    .Enable_delayedWraiths
-                            )
+                            if (ModSettings.SkillsMinions.WraithDelayed.Enabled)
                             {
-                                ab.delayedWraiths = Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Wraiths
-                                    .delayedWraiths; //Wraiths per cast
+                                ab.delayedWraiths = (int)
+                                    ModSettings.SkillsMinions.WraithDelayed.Value; //Wraiths per cast
                             }
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Wraiths
-                                    .Enable_limitedTo2Wraiths
-                            )
+                            if (ModSettings.SkillsMinions.WraithNoLimit.Value)
                             {
                                 ab.limitedTo2Wraiths = false;
                             }
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Wraiths
-                                    .Enable_wraithsDoNotDecay
-                            )
+                            if (ModSettings.SkillsMinions.WraithNoDecay.Value)
                             {
                                 ab.wraithsDoNotDecay = true;
                             }
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Wraiths
-                                    .Enable_increasedCastSpeed
-                            )
+                            if (ModSettings.SkillsMinions.WraithCastSpeed.Enabled)
                             {
-                                ab.increasedCastSpeed = Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Wraiths
-                                    .increasedCastSpeed;
+                                ab.increasedCastSpeed = ModSettings
+                                    .SkillsMinions
+                                    .WraithCastSpeed
+                                    .Value;
                             }
                         }
                     }
@@ -510,144 +348,53 @@ public class Skills_Use
                         var ab = __1.TryCast<SummonMageMutator>();
                         if (!ab.IsNullOrDestroyed())
                         {
-                            //remove in LastEpoch 1.2
-                            /*if (Save_Manager.instance.data.Skills.Minions.Mages.Enable_additionalSkeletonsFromItems)
+                            if (ModSettings.SkillsMinions.MageFromPassives.Enabled)
                             {
-                                __1.TryCast<SummonMageMutator>().additionalSkeletonsFromItems = Save_Manager.instance.data.Skills.Minions.Mages.additionalSkeletonsFromItems;
-                            }*/
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Mages
-                                    .Enable_additionalSkeletonsFromPassives
-                            )
-                            {
-                                ab.additionalSkeletonsFromPassives = Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Mages
-                                    .additionalSkeletonsFromPassives;
+                                ab.additionalSkeletonsFromPassives = (int)
+                                    ModSettings.SkillsMinions.MageFromPassives.Value;
                             }
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Mages
-                                    .Enable_additionalSkeletonsFromSkillTree
-                            )
+                            if (ModSettings.SkillsMinions.MageFromSkillTree.Enabled)
                             {
-                                ab.additionalSkeletonsFromSkillTree = Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Mages
-                                    .additionalSkeletonsFromSkillTree;
+                                ab.additionalSkeletonsFromSkillTree = (int)
+                                    ModSettings.SkillsMinions.MageFromSkillTree.Value;
                             }
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Mages
-                                    .Enable_additionalSkeletonsPerCast
-                            )
+                            if (ModSettings.SkillsMinions.MagePerCast.Enabled)
                             {
-                                ab.additionalSkeletonsPerCast = Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Mages
-                                    .additionalSkeletonsPerCast;
+                                ab.additionalSkeletonsPerCast = (int)
+                                    ModSettings.SkillsMinions.MagePerCast.Value;
                             }
-                            //if (Config.Data.mods_config.character.minions.mage.Enable_onlySummonOneMage)
-                            //{
-                            //    ability_mutator.TryCast<SummonMageMutator>().onlySummonOneMage = false;
-                            //}
-                            if (Save_Manager.instance.data.Skills.Minions.Mages.Enable_singleSummon)
+                            if (ModSettings.SkillsMinions.MageNoSingleSummon.Value)
                             {
                                 ab.singleSummon = false;
                             }
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Mages
-                                    .Enable_forceCryomancer
-                            )
+                            if (ModSettings.SkillsMinions.MageForceCryomancer.Value)
                             {
                                 ab.forceDeathKnight = false;
                                 ab.forcePyromancer = false;
                                 ab.forceNoCryo = false;
                                 ab.forceCryomancer = true;
                             }
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Mages
-                                    .Enable_forceDeathKnight
-                            )
+                            if (ModSettings.SkillsMinions.MageForceDeathKnight.Value)
                             {
                                 ab.forcePyromancer = false;
                                 ab.forceCryomancer = false;
                                 ab.forceDeathKnight = true;
                             }
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Mages
-                                    .Enable_forcePyromancer
-                            )
+                            if (ModSettings.SkillsMinions.MageForcePyromancer.Value)
                             {
                                 ab.forceCryomancer = false;
                                 ab.forceDeathKnight = false;
                                 ab.forceNoPyro = false;
                                 ab.forcePyromancer = true;
                             }
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Mages
-                                    .Enable_chanceForTwoExtraProjectiles
-                            )
+                            if (ModSettings.SkillsMinions.MageProjectileChance.Enabled)
                             {
-                                ab.chanceForTwoExtraProjectiles = Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Mages
-                                    .chanceForTwoExtraProjectiles;
+                                ab.chanceForTwoExtraProjectiles = ModSettings
+                                    .SkillsMinions
+                                    .MageProjectileChance
+                                    .Value;
                             }
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .Mages
-                                    .Enable_doubleProjectiles
-                            )
+                            if (ModSettings.SkillsMinions.MageDoubleProjectiles.Value)
                             {
                                 ab.doubleProjectiles = true;
                             }
@@ -659,63 +406,30 @@ public class Skills_Use
                         var ab = __1.TryCast<SummonBoneGolemMutator>();
                         if (!ab.IsNullOrDestroyed())
                         {
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .BoneGolems
-                                    .Enable_increasedFireAuraArea
-                            )
+                            if (ModSettings.SkillsMinions.BoneGolemFireAura.Enabled)
                             {
-                                ab.increasedFireAuraArea = Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .BoneGolems
-                                    .increasedFireAuraArea;
+                                ab.increasedFireAuraArea = ModSettings
+                                    .SkillsMinions
+                                    .BoneGolemFireAura
+                                    .Value;
                             }
-                            if (Save_Manager.instance.data.Skills.Minions.BoneGolems.Enable_twins)
+                            if (ModSettings.SkillsMinions.BoneGolemTwins.Value)
                             {
                                 ab.twins = true;
                             }
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .BoneGolems
-                                    .Enable_undeadArmorAura
-                            )
+                            if (ModSettings.SkillsMinions.BoneGolemArmorAura.Enabled)
                             {
-                                ab.undeadArmorAura = Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .BoneGolems
-                                    .undeadArmorAura;
+                                ab.undeadArmorAura = ModSettings
+                                    .SkillsMinions
+                                    .BoneGolemArmorAura
+                                    .Value;
                             }
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .BoneGolems
-                                    .Enable_undeadMovespeedAura
-                            )
+                            if (ModSettings.SkillsMinions.BoneGolemMoveSpeedAura.Enabled)
                             {
-                                ab.undeadMovespeedAura = Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .BoneGolems
-                                    .undeadMovespeedAura;
+                                ab.undeadMovespeedAura = ModSettings
+                                    .SkillsMinions
+                                    .BoneGolemMoveSpeedAura
+                                    .Value;
                             }
                         }
                     }
@@ -724,59 +438,26 @@ public class Skills_Use
                         var ab = __1.TryCast<SummonVolatileZombieMutator>();
                         if (!ab.IsNullOrDestroyed())
                         {
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .VolatileZombies
-                                    .Enable_chanceToCastFromMinionDeath
-                            )
+                            if (ModSettings.SkillsMinions.ZombieMinionDeathChance.Enabled)
                             {
-                                ab.chanceToCastFromMinionDeath = Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .VolatileZombies
-                                    .chanceToCastFromMinionDeath;
+                                ab.chanceToCastFromMinionDeath = ModSettings
+                                    .SkillsMinions
+                                    .ZombieMinionDeathChance
+                                    .Value;
                             }
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .VolatileZombies
-                                    .Enable_chanceToCastInfernalShadeOnDeath
-                            )
+                            if (ModSettings.SkillsMinions.ZombieInfernalShadeChance.Enabled)
                             {
-                                ab.chanceToCastInfernalShadeOnDeath = Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .VolatileZombies
-                                    .chanceToCastInfernalShadeOnDeath;
+                                ab.chanceToCastInfernalShadeOnDeath = ModSettings
+                                    .SkillsMinions
+                                    .ZombieInfernalShadeChance
+                                    .Value;
                             }
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .VolatileZombies
-                                    .Enable_chanceToCastMarrowShardsOnDeath
-                            )
+                            if (ModSettings.SkillsMinions.ZombieMarrowShardsChance.Enabled)
                             {
-                                ab.chanceToCastMarrowShardsOnDeath = Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .VolatileZombies
-                                    .chanceToCastMarrowShardsOnDeath;
+                                ab.chanceToCastMarrowShardsOnDeath = ModSettings
+                                    .SkillsMinions
+                                    .ZombieMarrowShardsChance
+                                    .Value;
                             }
                         }
                     }
@@ -785,85 +466,39 @@ public class Skills_Use
                         var ab = __1.TryCast<DreadShadeMutator>();
                         if (!ab.IsNullOrDestroyed())
                         {
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .DreadShades
-                                    .Enable_DisableLimit
-                            )
+                            if (ModSettings.SkillsMinions.DreadShadeNoLimit.Value)
                             {
                                 ab.limitTo1DreadShade = false;
                             }
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .DreadShades
-                                    .Enable_Duration
-                            )
+                            if (ModSettings.SkillsMinions.DreadShadeDuration.Enabled)
                             {
-                                ab.increasedDuration = Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .DreadShades
-                                    .Duration;
+                                ab.increasedDuration = ModSettings
+                                    .SkillsMinions
+                                    .DreadShadeDuration
+                                    .Value;
                             }
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .DreadShades
-                                    .Enable_DisableHealthDrain
-                            )
+                            if (ModSettings.SkillsMinions.DreadShadeNoHealthDrain.Value)
                             {
                                 ab.noHealthDrain = true;
                             }
-                            if (Save_Manager.instance.data.Skills.Minions.DreadShades.Enable_Max)
+                            if (ModSettings.SkillsMinions.DreadShadeMaximum.Enabled)
                             {
-                                ab.addedMaxShades = Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .DreadShades
-                                    .max;
+                                ab.addedMaxShades = (int)
+                                    ModSettings.SkillsMinions.DreadShadeMaximum.Value;
                             }
-                            if (
-                                Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .DreadShades
-                                    .Enable_ReduceDecay
-                            )
+                            if (ModSettings.SkillsMinions.DreadShadeDecay.Enabled)
                             {
-                                ab.reducedDecayRate = Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .DreadShades
-                                    .decay;
+                                ab.reducedDecayRate = ModSettings
+                                    .SkillsMinions
+                                    .DreadShadeDecay
+                                    .Value;
                             }
-                            if (Save_Manager.instance.data.Skills.Minions.DreadShades.Enable_Radius)
+                            if (ModSettings.SkillsMinions.DreadShadeRadius.Enabled)
                             {
-                                ab.increasedRadius = Save_Manager
-                                    .instance
-                                    .data
-                                    .Skills
-                                    .Minions
-                                    .DreadShades
-                                    .radius;
+                                ab.increasedRadius = ModSettings
+                                    .SkillsMinions
+                                    .DreadShadeRadius
+                                    .Value;
                             }
                         }
                     }
@@ -872,7 +507,7 @@ public class Skills_Use
                         var ab = __1.TryCast<FlameWardMutator>();
                         if (!ab.IsNullOrDestroyed())
                         {
-                            if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
+                            if (ModSettings.SkillsGeneral.RemoveManaCost.Value)
                             {
                                 ab.addedManaCost = 0f;
                             }
@@ -892,13 +527,9 @@ public class Skills_Use
             bool __4
         )
         {
-            if (
-                (Scenes.IsGameScene())
-                && (!__1.IsNullOrDestroyed())
-                && (!Save_Manager.instance.IsNullOrDestroyed())
-            )
+            if ((Scenes.IsGameScene()) && (!__1.IsNullOrDestroyed()))
             {
-                if (Save_Manager.instance.data.Skills.Enable_RemoveCooldown)
+                if (ModSettings.SkillsGeneral.RemoveCooldown.Value)
                 {
                     __1.RemoveCooldown();
                 }
@@ -914,9 +545,9 @@ public class Skills_Use
         //static void Prefix(float __0, Il2Cpp.Actor __1, UnityEngine.Vector3 __2, UnityEngine.Vector3 __3, Il2Cpp.AbilityAnimation __4, int __5, Il2Cpp.AbilityObjectConstructor __6, Il2Cpp.Ability __7, UnityEngine.Vector3 __8, UnityEngine.Vector3 __9, float __10, Il2Cpp.UseType __11, Il2CppSystem.Collections.Generic.List<Il2Cpp.Stats.Stat> __12, byte __13, bool __14, ref bool __15, ref int __16)
         static void Prefix(ref bool __15, ref int __16)
         {
-            if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
+            if (Scenes.IsGameScene())
             {
-                if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
+                if (ModSettings.SkillsGeneral.RemoveManaCost.Value)
                 {
                     __15 = false; //consumesMana
                     //__16 = 0; //manaConsumed

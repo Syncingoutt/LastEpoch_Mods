@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
 using UnityEngine;
 
 namespace LastEpoch_Hud.Scripts.Mods.Items.Drop;
@@ -8,25 +9,15 @@ public class Items_Drop_Implicits
 {
     public static bool CanRun()
     {
-        if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
-        {
-            if ((Hud_Manager.IsPauseOpen()) && (ModUI.ForceDrop.ForceDropModel.Enabled))
-            {
-                return false;
-            }
-            else if (!Save_Manager.instance.data.IsNullOrDestroyed())
-            {
-                return Save_Manager.instance.data.Items.Drop.Enable_Implicits;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
+        if (Hud_Manager.IsPauseOpen() && ModUI.ForceDrop.ForceDropModel.Enabled)
         {
             return false;
         }
+        if (!Scenes.IsGameScene())
+        {
+            return false;
+        }
+        return ModSettings.ItemsDrop.Implicits.Enabled;
     }
 
     [HarmonyPatch(typeof(ItemData), "randomiseImplicitRolls")]
@@ -40,19 +31,16 @@ public class Items_Drop_Implicits
                 for (int z = 0; z < __instance.implicitRolls.Count; z++)
                 {
                     byte roll = 0;
-                    if (
-                        Save_Manager.instance.data.Items.Drop.Implicits_Min
-                        == Save_Manager.instance.data.Items.Drop.Implicits_Max
-                    )
+                    if (ModSettings.ItemsDrop.Implicits.Min == ModSettings.ItemsDrop.Implicits.Max)
                     {
-                        roll = (byte)Save_Manager.instance.data.Items.Drop.Implicits_Max;
+                        roll = (byte)ModSettings.ItemsDrop.Implicits.Max;
                     }
                     else
                     {
                         roll = (byte)
                             Random.RandomRange(
-                                Save_Manager.instance.data.Items.Drop.Implicits_Min,
-                                Save_Manager.instance.data.Items.Drop.Implicits_Max
+                                ModSettings.ItemsDrop.Implicits.Min,
+                                ModSettings.ItemsDrop.Implicits.Max
                             );
                     }
                     __instance.implicitRolls[z] = roll;

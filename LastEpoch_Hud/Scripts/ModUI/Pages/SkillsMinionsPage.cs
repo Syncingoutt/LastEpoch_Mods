@@ -1,6 +1,6 @@
-using System;
 using LastEpoch_Hud.Scripts.Core.ModUI;
 using LastEpoch_Hud.Scripts.Core.ModUI.Sliders;
+using LastEpoch_Hud.Scripts.ModUI.Settings;
 using LastEpoch_Hud.Scripts.ModUI.Shell;
 using UnityEngine;
 
@@ -38,130 +38,41 @@ internal static class SkillsMinionsPage
             "SkeletonPassive",
             "Additional Skeletons From Passives",
             SkillSliderLimits.SkeletonFromPassives,
-            () =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .Skeletons
-                    .Enable_additionalSkeletonsFromPassives,
-            v =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .Skeletons
-                    .Enable_additionalSkeletonsFromPassives = v,
-            () =>
-                Save_Manager.instance.data.Skills.Minions.Skeletons.additionalSkeletonsFromPassives,
-            v =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .Skeletons
-                    .additionalSkeletonsFromPassives = (int)v
+            ModSettings.SkillsMinions.SkeletonFromPassives
         );
         AddSlider(
             c,
             "SkeletonTree",
             "Additional Skeletons From Skill Tree",
             SkillSliderLimits.SkeletonFromSkillTree,
-            () =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .Skeletons
-                    .Enable_additionalSkeletonsFromSkillTree,
-            v =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .Skeletons
-                    .Enable_additionalSkeletonsFromSkillTree = v,
-            () =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .Skeletons
-                    .additionalSkeletonsFromSkillTree,
-            v =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .Skeletons
-                    .additionalSkeletonsFromSkillTree = (int)v
+            ModSettings.SkillsMinions.SkeletonFromSkillTree
         );
         AddSlider(
             c,
             "SkeletonPerCast",
             "Additional Skeletons Per Cast",
             SkillSliderLimits.SkeletonPerCast,
-            () =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .Skeletons
-                    .Enable_additionalSkeletonsPerCast,
-            v =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .Skeletons
-                    .Enable_additionalSkeletonsPerCast = v,
-            () => Save_Manager.instance.data.Skills.Minions.Skeletons.additionalSkeletonsPerCast,
-            v =>
-                Save_Manager.instance.data.Skills.Minions.Skeletons.additionalSkeletonsPerCast =
-                    (int)v
+            ModSettings.SkillsMinions.SkeletonPerCast
         );
         AddSlider(
             c,
             "SkeletonResummon",
             "Chance To Resummon On Death",
             SkillSliderLimits.SkeletonResummonChance,
-            () =>
-                Save_Manager.instance.data.Skills.Minions.Skeletons.Enable_chanceToResummonOnDeath,
-            v =>
-                Save_Manager.instance.data.Skills.Minions.Skeletons.Enable_chanceToResummonOnDeath =
-                    v,
-            () => Save_Manager.instance.data.Skills.Minions.Skeletons.chanceToResummonOnDeath,
-            v => Save_Manager.instance.data.Skills.Minions.Skeletons.chanceToResummonOnDeath = v
+            ModSettings.SkillsMinions.SkeletonResummonChance
         );
-        AddToggle(
-            c,
-            "ForceArcher",
-            "Force Archer",
-            () => Save_Manager.instance.data.Skills.Minions.Skeletons.Enable_forceArcher,
-            v => Save_Manager.instance.data.Skills.Minions.Skeletons.Enable_forceArcher = v
-        );
+        AddToggle(c, "ForceArcher", "Force Archer", ModSettings.SkillsMinions.SkeletonForceArcher);
         AddToggle(
             c,
             "ForceBrawler",
             "Force Brawler",
-            () => Save_Manager.instance.data.Skills.Minions.Skeletons.Enable_forceBrawler,
-            v => Save_Manager.instance.data.Skills.Minions.Skeletons.Enable_forceBrawler = v
+            ModSettings.SkillsMinions.SkeletonForceBrawler
         );
         AddToggle(
             c,
             "ForceWarrior",
             "Force Warrior",
-            () => Save_Manager.instance.data.Skills.Minions.Skeletons.Enable_forceWarrior,
-            v => Save_Manager.instance.data.Skills.Minions.Skeletons.Enable_forceWarrior = v
+            ModSettings.SkillsMinions.SkeletonForceWarrior
         );
     }
 
@@ -173,44 +84,33 @@ internal static class SkillsMinionsPage
             "WraithMax",
             "Additional Maximum Wraiths",
             SkillSliderLimits.WraithMaximum,
-            () => Save_Manager.instance.data.Skills.Minions.Wraiths.Enable_additionalMaxWraiths,
-            v => Save_Manager.instance.data.Skills.Minions.Wraiths.Enable_additionalMaxWraiths = v,
-            () => Save_Manager.instance.data.Skills.Minions.Wraiths.additionalMaxWraiths,
-            v => Save_Manager.instance.data.Skills.Minions.Wraiths.additionalMaxWraiths = (int)v
+            ModSettings.SkillsMinions.WraithMaximum
         );
         AddSlider(
             c,
             "WraithDelay",
             "Delayed Wraiths",
             SkillSliderLimits.WraithDelayed,
-            () => Save_Manager.instance.data.Skills.Minions.Wraiths.Enable_delayedWraiths,
-            v => Save_Manager.instance.data.Skills.Minions.Wraiths.Enable_delayedWraiths = v,
-            () => Save_Manager.instance.data.Skills.Minions.Wraiths.delayedWraiths,
-            v => Save_Manager.instance.data.Skills.Minions.Wraiths.delayedWraiths = (int)v
+            ModSettings.SkillsMinions.WraithDelayed
         );
         AddSlider(
             c,
             "WraithCastSpeed",
             "Increased Cast Speed",
             SkillSliderLimits.WraithCastSpeed,
-            () => Save_Manager.instance.data.Skills.Minions.Wraiths.Enable_increasedCastSpeed,
-            v => Save_Manager.instance.data.Skills.Minions.Wraiths.Enable_increasedCastSpeed = v,
-            () => Save_Manager.instance.data.Skills.Minions.Wraiths.increasedCastSpeed,
-            v => Save_Manager.instance.data.Skills.Minions.Wraiths.increasedCastSpeed = v
+            ModSettings.SkillsMinions.WraithCastSpeed
         );
         AddToggle(
             c,
             "WraithNoLimit",
             "Disable Limit To 2 Wraiths",
-            () => Save_Manager.instance.data.Skills.Minions.Wraiths.Enable_limitedTo2Wraiths,
-            v => Save_Manager.instance.data.Skills.Minions.Wraiths.Enable_limitedTo2Wraiths = v
+            ModSettings.SkillsMinions.WraithNoLimit
         );
         AddToggle(
             c,
             "WraithNoDecay",
             "Wraiths Do Not Decay",
-            () => Save_Manager.instance.data.Skills.Minions.Wraiths.Enable_wraithsDoNotDecay,
-            v => Save_Manager.instance.data.Skills.Minions.Wraiths.Enable_wraithsDoNotDecay = v
+            ModSettings.SkillsMinions.WraithNoDecay
         );
     }
 
@@ -222,123 +122,53 @@ internal static class SkillsMinionsPage
             "MagePassive",
             "Additional Mages From Passives",
             SkillSliderLimits.MageFromPassives,
-            () =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .Mages
-                    .Enable_additionalSkeletonsFromPassives,
-            v =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .Mages
-                    .Enable_additionalSkeletonsFromPassives = v,
-            () => Save_Manager.instance.data.Skills.Minions.Mages.additionalSkeletonsFromPassives,
-            v =>
-                Save_Manager.instance.data.Skills.Minions.Mages.additionalSkeletonsFromPassives =
-                    (int)v
+            ModSettings.SkillsMinions.MageFromPassives
         );
         AddSlider(
             c,
             "MageItems",
             "Additional Mages From Items",
             SkillSliderLimits.MageFromItems,
-            () =>
-                Save_Manager.instance.data.Skills.Minions.Mages.Enable_additionalSkeletonsFromItems,
-            v =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .Mages
-                    .Enable_additionalSkeletonsFromItems = v,
-            () => Save_Manager.instance.data.Skills.Minions.Mages.additionalSkeletonsFromItems,
-            v =>
-                Save_Manager.instance.data.Skills.Minions.Mages.additionalSkeletonsFromItems =
-                    (int)v
+            ModSettings.SkillsMinions.MageFromItems
         );
         AddSlider(
             c,
             "MageTree",
             "Additional Mages From Skill Tree",
             SkillSliderLimits.MageFromSkillTree,
-            () =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .Mages
-                    .Enable_additionalSkeletonsFromSkillTree,
-            v =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .Mages
-                    .Enable_additionalSkeletonsFromSkillTree = v,
-            () => Save_Manager.instance.data.Skills.Minions.Mages.additionalSkeletonsFromSkillTree,
-            v =>
-                Save_Manager.instance.data.Skills.Minions.Mages.additionalSkeletonsFromSkillTree =
-                    (int)v
+            ModSettings.SkillsMinions.MageFromSkillTree
         );
         AddSlider(
             c,
             "MagePerCast",
             "Additional Mages Per Cast",
             SkillSliderLimits.MagePerCast,
-            () => Save_Manager.instance.data.Skills.Minions.Mages.Enable_additionalSkeletonsPerCast,
-            v =>
-                Save_Manager.instance.data.Skills.Minions.Mages.Enable_additionalSkeletonsPerCast =
-                    v,
-            () => Save_Manager.instance.data.Skills.Minions.Mages.additionalSkeletonsPerCast,
-            v => Save_Manager.instance.data.Skills.Minions.Mages.additionalSkeletonsPerCast = (int)v
+            ModSettings.SkillsMinions.MagePerCast
         );
         AddSlider(
             c,
             "MageProjectile",
             "Chance For Two Extra Projectiles",
             SkillSliderLimits.MageProjectileChance,
-            () =>
-                Save_Manager.instance.data.Skills.Minions.Mages.Enable_chanceForTwoExtraProjectiles,
-            v =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .Mages
-                    .Enable_chanceForTwoExtraProjectiles = v,
-            () => Save_Manager.instance.data.Skills.Minions.Mages.chanceForTwoExtraProjectiles,
-            v => Save_Manager.instance.data.Skills.Minions.Mages.chanceForTwoExtraProjectiles = v
+            ModSettings.SkillsMinions.MageProjectileChance
         );
         AddToggle(
             c,
             "Cryomancer",
             "Force Cryomancer",
-            () => Save_Manager.instance.data.Skills.Minions.Mages.Enable_forceCryomancer,
-            v => Save_Manager.instance.data.Skills.Minions.Mages.Enable_forceCryomancer = v
+            ModSettings.SkillsMinions.MageForceCryomancer
         );
         AddToggle(
             c,
             "DeathKnight",
             "Force Death Knight",
-            () => Save_Manager.instance.data.Skills.Minions.Mages.Enable_forceDeathKnight,
-            v => Save_Manager.instance.data.Skills.Minions.Mages.Enable_forceDeathKnight = v
+            ModSettings.SkillsMinions.MageForceDeathKnight
         );
         AddToggle(
             c,
             "Pyromancer",
             "Force Pyromancer",
-            () => Save_Manager.instance.data.Skills.Minions.Mages.Enable_forcePyromancer,
-            v => Save_Manager.instance.data.Skills.Minions.Mages.Enable_forcePyromancer = v
+            ModSettings.SkillsMinions.MageForcePyromancer
         );
     }
 
@@ -350,95 +180,45 @@ internal static class SkillsMinionsPage
             "GolemsPerSkeletons",
             "Added Golems Per 4 Skeletons",
             SkillSliderLimits.BoneGolemPerSkeletons,
-            () =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .BoneGolems
-                    .Enable_addedGolemsPer4Skeletons,
-            v =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .BoneGolems
-                    .Enable_addedGolemsPer4Skeletons = v,
-            () => Save_Manager.instance.data.Skills.Minions.BoneGolems.addedGolemsPer4Skeletons,
-            v =>
-                Save_Manager.instance.data.Skills.Minions.BoneGolems.addedGolemsPer4Skeletons =
-                    (int)v
+            ModSettings.SkillsMinions.BoneGolemPerSkeletons
         );
         AddSlider(
             c,
             "Resurrect",
             "Self Resurrect Chance",
             SkillSliderLimits.BoneGolemResurrectChance,
-            () => Save_Manager.instance.data.Skills.Minions.BoneGolems.Enable_selfResurrectChance,
-            v =>
-                Save_Manager.instance.data.Skills.Minions.BoneGolems.Enable_selfResurrectChance = v,
-            () => Save_Manager.instance.data.Skills.Minions.BoneGolems.selfResurrectChance,
-            v => Save_Manager.instance.data.Skills.Minions.BoneGolems.selfResurrectChance = v
+            ModSettings.SkillsMinions.BoneGolemResurrectChance
         );
         AddSlider(
             c,
             "FireAura",
             "Increased Fire Aura Area",
             SkillSliderLimits.BoneGolemFireAura,
-            () => Save_Manager.instance.data.Skills.Minions.BoneGolems.Enable_increasedFireAuraArea,
-            v =>
-                Save_Manager.instance.data.Skills.Minions.BoneGolems.Enable_increasedFireAuraArea =
-                    v,
-            () => Save_Manager.instance.data.Skills.Minions.BoneGolems.increasedFireAuraArea,
-            v => Save_Manager.instance.data.Skills.Minions.BoneGolems.increasedFireAuraArea = v
+            ModSettings.SkillsMinions.BoneGolemFireAura
         );
         AddSlider(
             c,
             "ArmorAura",
             "Undead Armor Aura",
             SkillSliderLimits.BoneGolemArmorAura,
-            () => Save_Manager.instance.data.Skills.Minions.BoneGolems.Enable_undeadArmorAura,
-            v => Save_Manager.instance.data.Skills.Minions.BoneGolems.Enable_undeadArmorAura = v,
-            () => Save_Manager.instance.data.Skills.Minions.BoneGolems.undeadArmorAura,
-            v => Save_Manager.instance.data.Skills.Minions.BoneGolems.undeadArmorAura = v
+            ModSettings.SkillsMinions.BoneGolemArmorAura
         );
         AddSlider(
             c,
             "MoveSpeedAura",
             "Undead Movement Speed Aura",
             SkillSliderLimits.BoneGolemMoveSpeedAura,
-            () => Save_Manager.instance.data.Skills.Minions.BoneGolems.Enable_undeadMovespeedAura,
-            v =>
-                Save_Manager.instance.data.Skills.Minions.BoneGolems.Enable_undeadMovespeedAura = v,
-            () => Save_Manager.instance.data.Skills.Minions.BoneGolems.undeadMovespeedAura,
-            v => Save_Manager.instance.data.Skills.Minions.BoneGolems.undeadMovespeedAura = v
+            ModSettings.SkillsMinions.BoneGolemMoveSpeedAura
         );
         AddSlider(
             c,
             "MoveSpeed",
             "Increased Movement Speed",
             SkillSliderLimits.BoneGolemMoveSpeed,
-            () => Save_Manager.instance.data.Skills.Minions.BoneGolems.Enable_increasedMoveSpeed,
-            v => Save_Manager.instance.data.Skills.Minions.BoneGolems.Enable_increasedMoveSpeed = v,
-            () => Save_Manager.instance.data.Skills.Minions.BoneGolems.increasedMoveSpeed,
-            v => Save_Manager.instance.data.Skills.Minions.BoneGolems.increasedMoveSpeed = v
+            ModSettings.SkillsMinions.BoneGolemMoveSpeed
         );
-        AddToggle(
-            c,
-            "Twins",
-            "Twins",
-            () => Save_Manager.instance.data.Skills.Minions.BoneGolems.Enable_twins,
-            v => Save_Manager.instance.data.Skills.Minions.BoneGolems.Enable_twins = v
-        );
-        AddToggle(
-            c,
-            "Slam",
-            "Has Slam Attack",
-            () => Save_Manager.instance.data.Skills.Minions.BoneGolems.Enable_hasSlamAttack,
-            v => Save_Manager.instance.data.Skills.Minions.BoneGolems.Enable_hasSlamAttack = v
-        );
+        AddToggle(c, "Twins", "Twins", ModSettings.SkillsMinions.BoneGolemTwins);
+        AddToggle(c, "Slam", "Has Slam Attack", ModSettings.SkillsMinions.BoneGolemSlamAttack);
     }
 
     private static void BuildVolatileZombies()
@@ -449,114 +229,21 @@ internal static class SkillsMinionsPage
             "ZombieMinionDeath",
             "Chance To Cast From Minion Death",
             SkillSliderLimits.ZombieMinionDeathChance,
-            () =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .VolatileZombies
-                    .Enable_chanceToCastFromMinionDeath,
-            v =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .VolatileZombies
-                    .Enable_chanceToCastFromMinionDeath = v,
-            () =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .VolatileZombies
-                    .chanceToCastFromMinionDeath,
-            v =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .VolatileZombies
-                    .chanceToCastFromMinionDeath = v
+            ModSettings.SkillsMinions.ZombieMinionDeathChance
         );
         AddSlider(
             c,
             "ZombieInfernalShade",
             "Infernal Shade Chance On Death",
             SkillSliderLimits.ZombieInfernalShadeChance,
-            () =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .VolatileZombies
-                    .Enable_chanceToCastInfernalShadeOnDeath,
-            v =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .VolatileZombies
-                    .Enable_chanceToCastInfernalShadeOnDeath = v,
-            () =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .VolatileZombies
-                    .chanceToCastInfernalShadeOnDeath,
-            v =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .VolatileZombies
-                    .chanceToCastInfernalShadeOnDeath = v
+            ModSettings.SkillsMinions.ZombieInfernalShadeChance
         );
         AddSlider(
             c,
             "ZombieMarrowShards",
             "Marrow Shards Chance On Death",
             SkillSliderLimits.ZombieMarrowShardsChance,
-            () =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .VolatileZombies
-                    .Enable_chanceToCastMarrowShardsOnDeath,
-            v =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .VolatileZombies
-                    .Enable_chanceToCastMarrowShardsOnDeath = v,
-            () =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .VolatileZombies
-                    .chanceToCastMarrowShardsOnDeath,
-            v =>
-                Save_Manager
-                    .instance
-                    .data
-                    .Skills
-                    .Minions
-                    .VolatileZombies
-                    .chanceToCastMarrowShardsOnDeath = v
+            ModSettings.SkillsMinions.ZombieMarrowShardsChance
         );
     }
 
@@ -568,54 +255,40 @@ internal static class SkillsMinionsPage
             "DreadDuration",
             "Duration",
             SkillSliderLimits.DreadShadeDuration,
-            () => Save_Manager.instance.data.Skills.Minions.DreadShades.Enable_Duration,
-            v => Save_Manager.instance.data.Skills.Minions.DreadShades.Enable_Duration = v,
-            () => Save_Manager.instance.data.Skills.Minions.DreadShades.Duration,
-            v => Save_Manager.instance.data.Skills.Minions.DreadShades.Duration = v
+            ModSettings.SkillsMinions.DreadShadeDuration
         );
         AddSlider(
             c,
             "DreadMax",
             "Maximum Dread Shades",
             SkillSliderLimits.DreadShadeMaximum,
-            () => Save_Manager.instance.data.Skills.Minions.DreadShades.Enable_Max,
-            v => Save_Manager.instance.data.Skills.Minions.DreadShades.Enable_Max = v,
-            () => Save_Manager.instance.data.Skills.Minions.DreadShades.max,
-            v => Save_Manager.instance.data.Skills.Minions.DreadShades.max = (int)v
+            ModSettings.SkillsMinions.DreadShadeMaximum
         );
         AddSlider(
             c,
             "DreadDecay",
             "Reduced Decay",
             SkillSliderLimits.DreadShadeDecay,
-            () => Save_Manager.instance.data.Skills.Minions.DreadShades.Enable_ReduceDecay,
-            v => Save_Manager.instance.data.Skills.Minions.DreadShades.Enable_ReduceDecay = v,
-            () => Save_Manager.instance.data.Skills.Minions.DreadShades.decay,
-            v => Save_Manager.instance.data.Skills.Minions.DreadShades.decay = v
+            ModSettings.SkillsMinions.DreadShadeDecay
         );
         AddSlider(
             c,
             "DreadRadius",
             "Radius",
             SkillSliderLimits.DreadShadeRadius,
-            () => Save_Manager.instance.data.Skills.Minions.DreadShades.Enable_Radius,
-            v => Save_Manager.instance.data.Skills.Minions.DreadShades.Enable_Radius = v,
-            () => Save_Manager.instance.data.Skills.Minions.DreadShades.radius,
-            v => Save_Manager.instance.data.Skills.Minions.DreadShades.radius = v
+            ModSettings.SkillsMinions.DreadShadeRadius
         );
         AddToggle(
             c,
             "DreadNoLimit",
             "Disable Summon Limit",
-            () => Save_Manager.instance.data.Skills.Minions.DreadShades.Enable_DisableLimit,
-            v => Save_Manager.instance.data.Skills.Minions.DreadShades.Enable_DisableLimit = v
+            ModSettings.SkillsMinions.DreadShadeNoLimit
         );
         AddToggle(
             c,
             "DreadNoDrain",
             "Disable Health Drain",
-            () => Save_Manager.instance.data.Skills.Minions.DreadShades.Enable_DisableHealthDrain,
-            v => Save_Manager.instance.data.Skills.Minions.DreadShades.Enable_DisableHealthDrain = v
+            ModSettings.SkillsMinions.DreadShadeNoHealthDrain
         );
     }
 
@@ -623,30 +296,18 @@ internal static class SkillsMinionsPage
         HudFormPage.Card card,
         string id,
         string label,
-        Func<bool> read,
-        Action<bool> write
-    ) =>
-        page.AddToggle(
-            card,
-            id,
-            label,
-            () => HasSave() && read(),
-            v =>
-            {
-                if (HasSave())
-                    write(v);
-            }
-        );
+        BoolSetting setting
+    )
+    {
+        page.AddToggle(card, id, label, () => setting.Value, setting.Set);
+    }
 
     private static void AddSlider(
         HudFormPage.Card card,
         string id,
         string label,
         SliderRange range,
-        Func<bool> readEnabled,
-        Action<bool> writeEnabled,
-        Func<float> read,
-        Action<float> write
+        FloatSetting setting
     )
     {
         page.AddToggleSlider(
@@ -657,21 +318,10 @@ internal static class SkillsMinionsPage
             range.Min,
             range.Max,
             range.WholeNumbers,
-            () => HasSave() && readEnabled(),
-            v =>
-            {
-                if (HasSave())
-                    writeEnabled(v);
-            },
-            () => HasSave() ? read() : range.Min,
-            v =>
-            {
-                if (HasSave())
-                    write(v);
-            }
+            () => setting.Enabled,
+            setting.SetEnabled,
+            () => setting.Value,
+            setting.SetValue
         );
     }
-
-    private static bool HasSave() =>
-        !Save_Manager.instance.IsNullOrDestroyed() && Save_Manager.instance.initialized;
 }

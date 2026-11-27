@@ -390,14 +390,6 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
 
                 return result;
             }
-            /*private static UniqueList.LegendaryType LegendaryType()
-            {
-                UniqueList.LegendaryType legendaryType = UniqueList.LegendaryType.LegendaryPotential;
-                if (Save_Manager.instance.data.Items.Headhunter.WeaverWill) { legendaryType = UniqueList.LegendaryType.WeaversWill; }
-
-                return legendaryType;
-            }*/
-
             [HarmonyPatch(typeof(InventoryItemUI), "SetImageSpritesAndColours")]
             public class InventoryItemUI_SetImageSpritesAndColours
             {

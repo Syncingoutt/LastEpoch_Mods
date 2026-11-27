@@ -1,6 +1,7 @@
 using System;
 using Il2Cpp;
 using LastEpoch_Hud.Scripts.Core.CustomItems;
+using LastEpoch_Hud.Scripts.ModUI.Settings;
 
 namespace LastEpoch_Hud.Scripts.Mods.Items.CustomItems;
 
@@ -46,8 +47,7 @@ public sealed class CustomUniqueRegistrar
     private static bool GameReady()
     {
         return Locales.current != Locales.Selected.Unknow
-            && !Save_Manager.instance.IsNullOrDestroyed()
-            && Save_Manager.instance.initialized
+            && SaveManager.IsLoaded
             && !Refs_Manager.item_list.IsNullOrDestroyed()
             && !Refs_Manager.unique_list.IsNullOrDestroyed();
     }

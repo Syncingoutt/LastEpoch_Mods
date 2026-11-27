@@ -1,13 +1,15 @@
 using System.Collections.Generic;
 using LastEpoch_Hud.Scripts.Core.ModUI;
+using LastEpoch_Hud.Scripts.Core.ModUI.Sliders;
+using LastEpoch_Hud.Scripts.ModUI.Settings;
 using LastEpoch_Hud.Scripts.ModUI.Shell;
 using UnityEngine;
 
 namespace LastEpoch_Hud.Scripts.ModUI.Pages;
 
 /// <summary>
-/// Save bindings for Utilities &gt; Buffs. Values are shown in the same percentage
-/// units as the legacy labels while retaining every original raw slider range.
+/// Bindings for Utilities &gt; Buffs. Values are shown in the same percentage
+/// units as the legacy labels, derived from the stored limits.
 /// State resets on HUD re-bind (Build).
 /// </summary>
 internal static class UtilitiesBuffsPage
@@ -24,209 +26,89 @@ internal static class UtilitiesBuffsPage
             "Buffs",
             new List<HudSliderCard.Definition>
             {
-                Scaled(
+                Buff(
                     "MoveSpeed",
                     "Move Speed",
-                    20f,
-                    () => Save_Manager.instance.data.Character.PermanentBuffs.Enable_MoveSpeed_Buff,
-                    () => Save_Manager.instance.data.Character.PermanentBuffs.MoveSpeed_Buff_Value,
-                    (enabled, value) =>
-                    {
-                        Save_Manager.instance.data.Character.PermanentBuffs.Enable_MoveSpeed_Buff =
-                            enabled;
-                        Save_Manager.instance.data.Character.PermanentBuffs.MoveSpeed_Buff_Value =
-                            value;
-                    }
+                    ModSettings.PermanentBuffs.MoveSpeed,
+                    BuffPercentScale.Fraction
                 ),
-                Scaled(
+                Buff(
                     "Damage",
                     "Damage",
-                    255f,
-                    () => Save_Manager.instance.data.Character.PermanentBuffs.Enable_Damage_Buff,
-                    () => Save_Manager.instance.data.Character.PermanentBuffs.Damage_Buff_Value,
-                    (enabled, value) =>
-                    {
-                        Save_Manager.instance.data.Character.PermanentBuffs.Enable_Damage_Buff =
-                            enabled;
-                        Save_Manager.instance.data.Character.PermanentBuffs.Damage_Buff_Value =
-                            value;
-                    }
+                    ModSettings.PermanentBuffs.Damage,
+                    BuffPercentScale.Fraction
                 ),
-                Scaled(
+                Buff(
                     "AreaOfEffect",
                     "Area of Effect",
-                    100f,
-                    () => Save_Manager.instance.data.Character.PermanentBuffs.Enable_AoE_Buff,
-                    () => Save_Manager.instance.data.Character.PermanentBuffs.AoE_Buff_Value,
-                    (enabled, value) =>
-                    {
-                        Save_Manager.instance.data.Character.PermanentBuffs.Enable_AoE_Buff =
-                            enabled;
-                        Save_Manager.instance.data.Character.PermanentBuffs.AoE_Buff_Value = value;
-                    }
+                    ModSettings.PermanentBuffs.AreaOfEffect,
+                    BuffPercentScale.Fraction
                 ),
-                Scaled(
+                Buff(
                     "AttackSpeed",
                     "Attack Speed",
-                    10f,
-                    () =>
-                        Save_Manager.instance.data.Character.PermanentBuffs.Enable_AttackSpeed_Buff,
-                    () =>
-                        Save_Manager.instance.data.Character.PermanentBuffs.AttackSpeed_Buff_Value,
-                    (enabled, value) =>
-                    {
-                        Save_Manager
-                            .instance
-                            .data
-                            .Character
-                            .PermanentBuffs
-                            .Enable_AttackSpeed_Buff = enabled;
-                        Save_Manager.instance.data.Character.PermanentBuffs.AttackSpeed_Buff_Value =
-                            value;
-                    }
+                    ModSettings.PermanentBuffs.AttackSpeed,
+                    BuffPercentScale.Fraction
                 ),
-                Scaled(
+                Buff(
                     "CastingSpeed",
                     "Casting Speed",
-                    10f,
-                    () => Save_Manager.instance.data.Character.PermanentBuffs.Enable_CastSpeed_Buff,
-                    () => Save_Manager.instance.data.Character.PermanentBuffs.CastSpeed_Buff_Value,
-                    (enabled, value) =>
-                    {
-                        Save_Manager.instance.data.Character.PermanentBuffs.Enable_CastSpeed_Buff =
-                            enabled;
-                        Save_Manager.instance.data.Character.PermanentBuffs.CastSpeed_Buff_Value =
-                            value;
-                    }
+                    ModSettings.PermanentBuffs.CastSpeed,
+                    BuffPercentScale.Fraction
                 ),
-                CriticalChance(),
-                Scaled(
+                Buff(
+                    "CriticalChance",
+                    "Critical Chance",
+                    ModSettings.PermanentBuffs.CriticalChance,
+                    BuffPercentScale.CriticalChance
+                ),
+                Buff(
                     "CriticalMultiplier",
                     "Critical Multiplier",
-                    255f,
-                    () =>
-                        Save_Manager
-                            .instance
-                            .data
-                            .Character
-                            .PermanentBuffs
-                            .Enable_CriticalMultiplier_Buff,
-                    () =>
-                        Save_Manager
-                            .instance
-                            .data
-                            .Character
-                            .PermanentBuffs
-                            .CriticalMultiplier_Buff_Value,
-                    (enabled, value) =>
-                    {
-                        Save_Manager
-                            .instance
-                            .data
-                            .Character
-                            .PermanentBuffs
-                            .Enable_CriticalMultiplier_Buff = enabled;
-                        Save_Manager
-                            .instance
-                            .data
-                            .Character
-                            .PermanentBuffs
-                            .CriticalMultiplier_Buff_Value = value;
-                    }
+                    ModSettings.PermanentBuffs.CriticalMultiplier,
+                    BuffPercentScale.Fraction
                 ),
-                Scaled(
+                Buff(
                     "HealthRegen",
                     "Health Regeneration",
-                    10f,
-                    () =>
-                        Save_Manager.instance.data.Character.PermanentBuffs.Enable_HealthRegen_Buff,
-                    () =>
-                        Save_Manager.instance.data.Character.PermanentBuffs.HealthRegen_Buff_Value,
-                    (enabled, value) =>
-                    {
-                        Save_Manager
-                            .instance
-                            .data
-                            .Character
-                            .PermanentBuffs
-                            .Enable_HealthRegen_Buff = enabled;
-                        Save_Manager.instance.data.Character.PermanentBuffs.HealthRegen_Buff_Value =
-                            value;
-                    }
+                    ModSettings.PermanentBuffs.HealthRegen,
+                    BuffPercentScale.Fraction
                 ),
-                Scaled(
+                Buff(
                     "ManaRegen",
                     "Mana Regeneration",
-                    10f,
-                    () => Save_Manager.instance.data.Character.PermanentBuffs.Enable_ManaRegen_Buff,
-                    () => Save_Manager.instance.data.Character.PermanentBuffs.ManaRegen_Buff_Value,
-                    (enabled, value) =>
-                    {
-                        Save_Manager.instance.data.Character.PermanentBuffs.Enable_ManaRegen_Buff =
-                            enabled;
-                        Save_Manager.instance.data.Character.PermanentBuffs.ManaRegen_Buff_Value =
-                            value;
-                    }
+                    ModSettings.PermanentBuffs.ManaRegen,
+                    BuffPercentScale.Fraction
                 ),
-                Direct(
+                Buff(
                     "Strength",
                     "Strength",
-                    () => Save_Manager.instance.data.Character.PermanentBuffs.Enable_Str_Buff,
-                    () => Save_Manager.instance.data.Character.PermanentBuffs.Str_Buff_Value,
-                    (enabled, value) =>
-                    {
-                        Save_Manager.instance.data.Character.PermanentBuffs.Enable_Str_Buff =
-                            enabled;
-                        Save_Manager.instance.data.Character.PermanentBuffs.Str_Buff_Value = value;
-                    }
+                    ModSettings.PermanentBuffs.Strength,
+                    BuffPercentScale.Direct
                 ),
-                Direct(
+                Buff(
                     "Intelligence",
                     "Intelligence",
-                    () => Save_Manager.instance.data.Character.PermanentBuffs.Enable_Int_Buff,
-                    () => Save_Manager.instance.data.Character.PermanentBuffs.Int_Buff_Value,
-                    (enabled, value) =>
-                    {
-                        Save_Manager.instance.data.Character.PermanentBuffs.Enable_Int_Buff =
-                            enabled;
-                        Save_Manager.instance.data.Character.PermanentBuffs.Int_Buff_Value = value;
-                    }
+                    ModSettings.PermanentBuffs.Intelligence,
+                    BuffPercentScale.Direct
                 ),
-                Direct(
+                Buff(
                     "Dexterity",
                     "Dexterity",
-                    () => Save_Manager.instance.data.Character.PermanentBuffs.Enable_Dex_Buff,
-                    () => Save_Manager.instance.data.Character.PermanentBuffs.Dex_Buff_Value,
-                    (enabled, value) =>
-                    {
-                        Save_Manager.instance.data.Character.PermanentBuffs.Enable_Dex_Buff =
-                            enabled;
-                        Save_Manager.instance.data.Character.PermanentBuffs.Dex_Buff_Value = value;
-                    }
+                    ModSettings.PermanentBuffs.Dexterity,
+                    BuffPercentScale.Direct
                 ),
-                Direct(
+                Buff(
                     "Vitality",
                     "Vitality",
-                    () => Save_Manager.instance.data.Character.PermanentBuffs.Enable_Vit_Buff,
-                    () => Save_Manager.instance.data.Character.PermanentBuffs.Vit_Buff_Value,
-                    (enabled, value) =>
-                    {
-                        Save_Manager.instance.data.Character.PermanentBuffs.Enable_Vit_Buff =
-                            enabled;
-                        Save_Manager.instance.data.Character.PermanentBuffs.Vit_Buff_Value = value;
-                    }
+                    ModSettings.PermanentBuffs.Vitality,
+                    BuffPercentScale.Direct
                 ),
-                Direct(
+                Buff(
                     "Attunement",
                     "Attunement",
-                    () => Save_Manager.instance.data.Character.PermanentBuffs.Enable_Att_Buff,
-                    () => Save_Manager.instance.data.Character.PermanentBuffs.Att_Buff_Value,
-                    (enabled, value) =>
-                    {
-                        Save_Manager.instance.data.Character.PermanentBuffs.Enable_Att_Buff =
-                            enabled;
-                        Save_Manager.instance.data.Character.PermanentBuffs.Att_Buff_Value = value;
-                    }
+                    ModSettings.PermanentBuffs.Attunement,
+                    BuffPercentScale.Direct
                 ),
             }
         );
@@ -234,47 +116,17 @@ internal static class UtilitiesBuffsPage
 
     public static void Show()
     {
-        if (!Save_Manager.instance.IsNullOrDestroyed())
-            UpdateMasterEnable();
+        UpdateMasterEnable();
         page?.Show();
     }
 
     public static void Hide() => page?.Hide();
 
-    private static HudSliderCard.Definition Scaled(
-        string id,
-        string label,
-        float rawMaximum,
-        System.Func<bool> enabled,
-        System.Func<float> read,
-        System.Action<bool, float> write
-    )
-    {
-        return Buff(
-            id,
-            label,
-            rawMaximum * 100f,
-            enabled,
-            () => read() * 100f,
-            (isEnabled, percentage) => write(isEnabled, percentage / 100f)
-        );
-    }
-
-    private static HudSliderCard.Definition Direct(
-        string id,
-        string label,
-        System.Func<bool> enabled,
-        System.Func<float> read,
-        System.Action<bool, float> write
-    ) => Buff(id, label, 255f, enabled, read, write);
-
     private static HudSliderCard.Definition Buff(
         string id,
         string label,
-        float maximum,
-        System.Func<bool> enabled,
-        System.Func<float> read,
-        System.Action<bool, float> write
+        FloatSetting setting,
+        BuffPercentScale scale
     )
     {
         return new HudSliderCard.Definition
@@ -282,75 +134,40 @@ internal static class UtilitiesBuffsPage
             Id = id,
             Label = label,
             Unit = "%",
-            Minimum = 0f,
-            Maximum = maximum,
+            Minimum = BuffPercent.ToPercent(scale, setting.MinLimit),
+            Maximum = BuffPercent.ToPercent(scale, setting.MaxLimit),
             WholeNumbers = true,
-            Read = () => Save_Manager.instance.IsNullOrDestroyed() ? 0f : read(),
+            Read = () => BuffPercent.ToPercent(scale, setting.Value),
             Write = value =>
             {
-                if (Save_Manager.instance.IsNullOrDestroyed())
-                    return;
-                write(enabled(), value);
+                setting.SetValue(
+                    BuffPercent.ToStored(scale, value, setting.MinLimit, setting.MaxLimit)
+                );
                 UpdateMasterEnable();
             },
-            ReadEnabled = () =>
-                !Save_Manager.instance.IsNullOrDestroyed()
-                && Save_Manager.instance.data.Character.PermanentBuffs.Enable_Mod
-                && enabled(),
+            ReadEnabled = () => ModSettings.PermanentBuffs.EnableMod.Value && setting.Enabled,
             WriteEnabled = isEnabled =>
             {
-                if (Save_Manager.instance.IsNullOrDestroyed())
-                    return;
-                write(isEnabled, read());
+                setting.SetEnabled(isEnabled);
                 UpdateMasterEnable();
             },
         };
     }
 
-    private static HudSliderCard.Definition CriticalChance()
-    {
-        return Buff(
-            "CriticalChance",
-            "Critical Chance",
-            96f,
-            () => Save_Manager.instance.data.Character.PermanentBuffs.Enable_CriticalChance_Buff,
-            () =>
-            {
-                float raw = Save_Manager
-                    .instance
-                    .data
-                    .Character
-                    .PermanentBuffs
-                    .CriticalChance_Buff_Value;
-                return raw > 0f ? raw * 100f + 1f : 0f;
-            },
-            (enabled, percentage) =>
-            {
-                Save_Manager.instance.data.Character.PermanentBuffs.Enable_CriticalChance_Buff =
-                    enabled;
-                Save_Manager.instance.data.Character.PermanentBuffs.CriticalChance_Buff_Value =
-                    Mathf.Clamp((percentage - 1f) / 100f, 0f, 0.95f);
-            }
-        );
-    }
-
     private static void UpdateMasterEnable()
     {
-        var buffs = Save_Manager.instance.data.Character.PermanentBuffs;
-        Save_Manager.instance.data.Character.PermanentBuffs.Enable_Mod =
-            buffs.Enable_MoveSpeed_Buff
-            || buffs.Enable_CastSpeed_Buff
-            || buffs.Enable_AttackSpeed_Buff
-            || buffs.Enable_Damage_Buff
-            || buffs.Enable_ManaRegen_Buff
-            || buffs.Enable_HealthRegen_Buff
-            || buffs.Enable_CriticalChance_Buff
-            || buffs.Enable_CriticalMultiplier_Buff
-            || buffs.Enable_Str_Buff
-            || buffs.Enable_Int_Buff
-            || buffs.Enable_Dex_Buff
-            || buffs.Enable_Vit_Buff
-            || buffs.Enable_Att_Buff
-            || buffs.Enable_AoE_Buff;
+        ModSettings.PermanentBuffs.EnableMod.Set(AnyBuffEnabled());
+    }
+
+    private static bool AnyBuffEnabled()
+    {
+        foreach (FloatSetting buff in ModSettings.PermanentBuffs.Buffs)
+        {
+            if (buff.Enabled)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

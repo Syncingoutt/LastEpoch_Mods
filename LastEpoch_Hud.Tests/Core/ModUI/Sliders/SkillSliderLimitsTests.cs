@@ -4,7 +4,7 @@ namespace LastEpoch_Hud.Tests.Core.ModUI.Sliders;
 
 public sealed class SkillSliderLimitsTests
 {
-    private const int RangeCount = 28;
+    private const int RangeCount = 32;
 
     [Fact]
     public void EveryRange_HasMinBelowMax()

@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
 
 namespace LastEpoch_Hud.Scripts.Mods.Items.Requirements;
 
@@ -129,21 +130,7 @@ public class Items_Req_Set
     }*/
     private static bool CanRun()
     {
-        if (!Save_Manager.instance.IsNullOrDestroyed()) //&& (!Refs_Manager.set_bonuses_list.IsNullOrDestroyed()))
-        {
-            if (Save_Manager.instance.initialized) // && (!Refs_Manager.set_bonuses_list.entries.IsNullOrDestroyed()))
-            {
-                return Save_Manager.instance.data.Items.Req.set;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
+        return ModSettings.ItemsRequirements.Set.Value;
     }
 
     [HarmonyPatch(typeof(ItemContainersManager), "getGearCountForSetID")]

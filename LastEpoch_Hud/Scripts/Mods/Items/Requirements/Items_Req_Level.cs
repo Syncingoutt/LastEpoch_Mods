@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
 
 namespace LastEpoch_Hud.Scripts.Mods.Items.Requirements;
 
@@ -17,24 +18,8 @@ public class Items_Req_Level
 
     private static bool CanRun()
     {
-        if (
-            (!Save_Manager.instance.IsNullOrDestroyed())
-            && (!Refs_Manager.item_list.IsNullOrDestroyed())
-        )
-        {
-            if (Save_Manager.instance.initialized)
-            {
-                return Save_Manager.instance.data.Items.Req.level;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
+        return ModSettings.ItemsRequirements.Level.Value
+            && !Refs_Manager.item_list.IsNullOrDestroyed();
     }
 
     [HarmonyPatch(typeof(ItemData), "CalculateLevelAndClassRequirement")]

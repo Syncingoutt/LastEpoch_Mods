@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
 
 namespace LastEpoch_Hud.Scripts.Mods.Skills;
 
@@ -7,21 +8,7 @@ public class Passives_SpendPoints
 {
     public static bool CanRun()
     {
-        if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
-        {
-            if (!Save_Manager.instance.data.IsNullOrDestroyed())
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
+        return Scenes.IsGameScene();
     }
 
     [HarmonyPatch(typeof(LocalTreeData), "tryToSpendPassivePoint")]
@@ -44,7 +31,7 @@ public class Passives_SpendPoints
             if (CanRun())
             {
                 backup_masteries_level = __instance.masteryLevels;
-                if ((!__result) && (Save_Manager.instance.data.Skills.Disable_NodeRequirement))
+                if ((!__result) && (ModSettings.SkillsGeneral.RemoveNodeRequirements.Value))
                 {
                     Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<byte> results =
                         new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<byte>(4);

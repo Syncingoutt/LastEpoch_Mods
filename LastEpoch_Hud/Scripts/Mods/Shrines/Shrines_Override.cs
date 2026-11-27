@@ -1,5 +1,7 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using LastEpoch_Hud.Scripts.Core;
+using LastEpoch_Hud.Scripts.ModUI;
 using UnityEngine;
 
 namespace LastEpoch_Hud.Scripts.Mods.Shrines;
@@ -49,24 +51,7 @@ public class Shrines_Override
         40 : Distant Damage Reduction Shrine
     */
 
-    public static bool CanRun()
-    {
-        if (!Save_Manager.instance.IsNullOrDestroyed())
-        {
-            if (!Save_Manager.instance.data.IsNullOrDestroyed())
-            {
-                return Save_Manager.instance.data.modsNotInHud.Shrines_Override;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
-    }
+    public static bool CanRun() => ModSettings.ModsNotInHud.ShrinesOverride.Enabled;
 
     [HarmonyPatch(
         typeof(ShrinesManager),
@@ -78,18 +63,20 @@ public class Shrines_Override
         [HarmonyPrefix]
         static void Prefix(ref int __0)
         {
-            if (CanRun())
+            if (!CanRun())
             {
-                int id = Save_Manager.instance.data.modsNotInHud.Shrines_Override_id;
-                if (
-                    !ShrineList.get().IsNullOrDestroyed()
-                    && id >= 0
-                    && id < ShrineList.get().entries.Count
-                )
-                {
-                    __0 = id;
-                }
+                return;
             }
+            var shrines = ShrineList.get();
+            if (shrines.IsNullOrDestroyed())
+            {
+                return;
+            }
+            __0 = ShrineOverrideId.Resolve(
+                ModSettings.ModsNotInHud.ShrinesOverride.Value,
+                shrines.entries.Count,
+                __0
+            );
         }
     }
 }

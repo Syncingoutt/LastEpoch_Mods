@@ -1,4 +1,6 @@
-﻿using MelonLoader;
+﻿using LastEpoch_Hud.Scripts.ModUI;
+using LastEpoch_Hud.Scripts.ModUI.Settings;
+using MelonLoader;
 using UnityEngine;
 
 namespace LastEpoch_Hud.Scripts;
@@ -35,8 +37,6 @@ public class Mods_Manager : MonoBehaviour
     GameObject teleport_to_scene_obj = null;
 
     bool initialized = false;
-    bool enable = false;
-    public bool change = false;
 
     void Awake()
     {
@@ -251,39 +251,67 @@ public class Mods_Manager : MonoBehaviour
 
         initialized = true;
         Main.logger_instance?.Msg("Mods Manager : Mods initialized");
+        Subscribe();
     }
 
-    void Update() //This function will be removed soon (when i have time to do it ^^)
+    private void Subscribe()
     {
-        if (!Save_Manager.instance.IsNullOrDestroyed())
-        {
-            if (Save_Manager.instance.initialized)
-            {
-                if ((!enable) || (change))
-                {
-                    change = false;
-                    Enable();
-                }
-            }
-        }
+        ModSettings.CharacterCheats.GodMode.Changed += OnGodModeChanged;
+        ModSettings.CharacterCheats.LowLife.Changed += OnLowLifeChanged;
+        ModSettings.CharacterCheats.AutoPot.Changed += OnAutoPotChanged;
     }
 
-    void Enable() //This function will be removed soon (when i have time to do it ^^)
+    private void OnDestroy()
     {
-        if (initialized)
+        ModSettings.CharacterCheats.GodMode.Changed -= OnGodModeChanged;
+        ModSettings.CharacterCheats.LowLife.Changed -= OnLowLifeChanged;
+        ModSettings.CharacterCheats.AutoPot.Changed -= OnAutoPotChanged;
+    }
+
+    private void OnGodModeChanged(bool value)
+    {
+        if (!initialized)
         {
-            enable = true;
-            character_godmode_obj.SetActive(
-                Save_Manager.instance.data.Character.Cheats.Enable_GodMode
-            );
-            character_lowlife_obj.SetActive(
-                Save_Manager.instance.data.Character.Cheats.Enable_LowLife
-            );
-            character_autopotion_obj.SetActive(
-                Save_Manager.instance.data.Character.Cheats.Enable_AutoPot
-            );
-            items_autosell_timer_obj.SetActive(true); // worker also services debounced AutoStore-on-drop
-            Mods.Items.Requirements.Items_Update.Reqs(); //Used to update item req
+            return;
         }
+        character_godmode_obj.SetActive(value);
+    }
+
+    private void OnLowLifeChanged(bool value)
+    {
+        if (!initialized)
+        {
+            return;
+        }
+        character_lowlife_obj.SetActive(value);
+    }
+
+    private void OnAutoPotChanged()
+    {
+        if (!initialized)
+        {
+            return;
+        }
+        character_autopotion_obj.SetActive(ModSettings.CharacterCheats.AutoPot.Enabled);
+    }
+
+    // Runs until the saved settings and the item list are ready, then applies them once.
+    private void Update()
+    {
+        if (!initialized || !SaveManager.IsLoaded || Refs_Manager.item_list.IsNullOrDestroyed())
+        {
+            return;
+        }
+        ApplyStartup();
+        enabled = false;
+    }
+
+    private void ApplyStartup()
+    {
+        character_godmode_obj.SetActive(ModSettings.CharacterCheats.GodMode.Value);
+        character_lowlife_obj.SetActive(ModSettings.CharacterCheats.LowLife.Value);
+        character_autopotion_obj.SetActive(ModSettings.CharacterCheats.AutoPot.Enabled);
+        items_autosell_timer_obj.SetActive(true); // worker also services debounced AutoStore-on-drop
+        Mods.Items.Requirements.Items_Update.Reqs(); // applies saved requirement removal
     }
 }

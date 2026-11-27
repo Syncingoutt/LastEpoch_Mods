@@ -79,9 +79,6 @@ public class Character_TpSafe : MonoBehaviour
             || Time.unscaledTime < retryAfter
             || !Scenes.IsGameScene()
             || scene == Destination
-            || Save_Manager.instance.IsNullOrDestroyed()
-            || !Save_Manager.instance.initialized
-            || Save_Manager.instance.data.IsNullOrDestroyed()
             || Refs_Manager.game_uibase.IsNullOrDestroyed()
             || Refs_Manager.player_actor.IsNullOrDestroyed()
             || Refs_Manager.player_data.IsNullOrDestroyed()

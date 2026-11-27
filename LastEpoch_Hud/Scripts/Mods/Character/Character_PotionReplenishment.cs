@@ -1,4 +1,6 @@
-﻿using MelonLoader;
+using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
+using MelonLoader;
 using UnityEngine;
 
 namespace LastEpoch_Hud.Scripts.Mods.Character;
@@ -20,24 +22,23 @@ public class Character_PotionReplenishment : MonoBehaviour
 
     void Update()
     {
-        if (
-            (Scenes.IsGameScene())
-            && (!Save_Manager.instance.IsNullOrDestroyed())
-            && (!Refs_Manager.health_potion.IsNullOrDestroyed())
-        )
+        if (!ModSettings.ModsNotInHud.PotionReplenishment.Value)
         {
-            if (Save_Manager.instance.data.modsNotInHud.Enable_PotionResplenishment)
-            {
-                if (
-                    Refs_Manager.health_potion.currentCharges
-                    < Refs_Manager.health_potion.maxCharges
-                )
-                {
-                    Refs_Manager.health_potion.currentCharges = Refs_Manager
-                        .health_potion
-                        .maxCharges;
-                }
-            }
+            return;
         }
+        if (!Scenes.IsGameScene())
+        {
+            return;
+        }
+        HealthPotion potion = Refs_Manager.health_potion;
+        if (potion.IsNullOrDestroyed())
+        {
+            return;
+        }
+        if (potion.currentCharges >= potion.maxCharges)
+        {
+            return;
+        }
+        potion.currentCharges = potion.maxCharges;
     }
 }

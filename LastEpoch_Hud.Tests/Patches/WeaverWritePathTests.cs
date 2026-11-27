@@ -8,15 +8,24 @@ namespace LastEpoch_Hud.Tests.Patches;
 public sealed class WeaverWritePathTests
 {
     private const string PageType = "LastEpoch_Hud.Scripts.ModUI.Pages.UtilitiesCharacterPage";
-    private const string SaveManagerType = "LastEpoch_Hud.Scripts.Save_Manager";
-    private const string WovenType = "LastEpoch_Hud.Scripts.Save_Manager/Data/TheWoven";
+    private const string WovenSettingsType =
+        "LastEpoch_Hud.Scripts.ModUI.ModSettings/FactionsWoven";
+    private const string WovenModsNamespace = "LastEpoch_Hud.Scripts.Mods.Factions.TheWoven";
+    private const string SettingsNamespace = "LastEpoch_Hud.Scripts.ModUI.Settings";
 
-    private static readonly string[] _wovenFields =
+    private static readonly string[] _wovenModTypes =
     {
-        "Enable_TreePoints",
-        "TreePoints",
-        "Enable_PointMultiplier",
-        "PointMultiplier",
+        WovenModsNamespace + ".Faction_Woven_TreePoints",
+        WovenModsNamespace + ".Faction_Woven_FreeRespe",
+    };
+
+    private static readonly string[] _setterNames =
+    {
+        "Set",
+        "SetEnabled",
+        "SetValue",
+        "set_Value",
+        "set_Enabled",
     };
 
     [Fact]
@@ -37,33 +46,64 @@ public sealed class WeaverWritePathTests
     }
 
     [Fact]
-    public void WovenTreeSettings_AreWrittenOnlyByCharacterPage()
+    public void WovenSettings_AreUsedOnlyByPageAndWovenMods()
+    {
+        GameEnvironment.SkipWithoutModBuild();
+        using var module = ModuleDefinition.ReadModule(GameEnvironment.ModDll);
+
+        var users = module
+            .GetTypes()
+            .Where(type => type.FullName != WovenSettingsType)
+            .SelectMany(type => type.Methods)
+            .Where(method => method.HasBody && LoadsWovenSetting(method))
+            .Select(method => OutermostType(method.DeclaringType).FullName)
+            .ToHashSet();
+
+        Assert.Equal(new HashSet<string>(_wovenModTypes) { PageType }, users);
+    }
+
+    [Fact]
+    public void WovenMods_NeverWriteSettings()
     {
         GameEnvironment.SkipWithoutModBuild();
         using var module = ModuleDefinition.ReadModule(GameEnvironment.ModDll);
 
         var writers = module
             .GetTypes()
+            .Where(type => OutermostType(type).Namespace == WovenModsNamespace)
             .SelectMany(type => type.Methods)
-            .Where(method => method.HasBody && WritesWovenField(method))
-            .Select(method => OutermostType(method.DeclaringType).FullName)
-            .ToHashSet();
+            .Where(method => method.HasBody && CallsSettingSetter(method))
+            .Select(method => method.FullName)
+            .ToList();
 
-        Assert.Contains(PageType, writers);
-        Assert.Subset(new HashSet<string> { PageType, SaveManagerType }, writers);
+        Assert.Empty(writers);
     }
 
-    private static bool WritesWovenField(MethodDefinition method)
+    private static bool LoadsWovenSetting(MethodDefinition method)
     {
         return method.Body.Instructions.Any(instruction =>
-            instruction.OpCode == OpCodes.Stfld
+            instruction.OpCode == OpCodes.Ldsfld
             && instruction.Operand is FieldReference field
-            && field.DeclaringType.FullName == WovenType
-            && _wovenFields.Contains(field.Name)
+            && field.DeclaringType.FullName == WovenSettingsType
         );
     }
 
-    private static TypeDefinition OutermostType(TypeDefinition type)
+    private static bool CallsSettingSetter(MethodDefinition method)
+    {
+        return method.Body.Instructions.Any(instruction =>
+            IsCallLike(instruction.OpCode)
+            && instruction.Operand is MethodReference called
+            && _setterNames.Contains(called.Name)
+            && OutermostType(called.DeclaringType).Namespace == SettingsNamespace
+        );
+    }
+
+    private static bool IsCallLike(OpCode code)
+    {
+        return code == OpCodes.Call || code == OpCodes.Callvirt || code == OpCodes.Ldftn;
+    }
+
+    private static TypeReference OutermostType(TypeReference type)
     {
         while (type.DeclaringType != null)
         {

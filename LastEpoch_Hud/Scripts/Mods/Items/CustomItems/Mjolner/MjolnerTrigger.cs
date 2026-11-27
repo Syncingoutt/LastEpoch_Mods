@@ -1,5 +1,6 @@
 using Il2Cpp;
 using LastEpoch_Hud.Scripts.Core.CustomItems.Mjolner;
+using LastEpoch_Hud.Scripts.ModUI;
 using MelonLoader;
 using UnityEngine;
 
@@ -50,17 +51,14 @@ internal static class MjolnerTrigger
         }
 
         _trigger = true;
+        double cooldown = MjolnerSocketedCooldown.Milliseconds(
+            ModSettings.Mjolner.SocketedCooldown.Value
+        );
         for (int i = 0; i < Abilities.Length; i++)
         {
             if (Abilities[i].IsNullOrDestroyed() || i >= _times.Length)
             {
                 continue;
-            }
-
-            double cooldown = Save_Manager.instance.data.Items.Mjolner.SocketedCooldown;
-            if (cooldown < 250)
-            {
-                cooldown = 250;
             }
 
             if ((System.DateTime.Now - _times[i]).TotalMilliseconds <= cooldown)
@@ -82,10 +80,9 @@ internal static class MjolnerTrigger
             return false;
         }
 
-        Save_Manager.Data.Mjolner mjolner = Save_Manager.instance.data.Items.Mjolner;
         return MjolnerTriggerChance.Procs(
-            mjolner.MinTriggerChance,
-            mjolner.MaxTriggerChance,
+            ModSettings.Mjolner.MinTriggerChance.Value,
+            ModSettings.Mjolner.MaxTriggerChance.Value,
             Random.value,
             Random.value
         );
@@ -122,10 +119,9 @@ internal static class MjolnerTrigger
 
     private static bool IsSocketedSkill(string abilityName)
     {
-        Save_Manager.Data.Mjolner mjolner = Save_Manager.instance.data.Items.Mjolner;
-        return abilityName == mjolner.SockectedSkill_0
-            || abilityName == mjolner.SockectedSkill_1
-            || abilityName == mjolner.SockectedSkill_2;
+        return abilityName == ModSettings.Mjolner.SocketedSkill0.Value
+            || abilityName == ModSettings.Mjolner.SocketedSkill1.Value
+            || abilityName == ModSettings.Mjolner.SocketedSkill2.Value;
     }
 
     private static void CastFree(Ability ability, Actor hitActor)

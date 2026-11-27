@@ -87,19 +87,13 @@ public class AutoLootDropPatch
 
     private static AutoLootSettings ReadSettings()
     {
-        if (Save_Manager.instance.IsNullOrDestroyed())
-        {
-            return default;
-        }
-
-        Save_Manager.Data.Pickup pickup = Save_Manager.instance.data.Items.Pickup;
         return new AutoLootSettings(
-            pickup.Enable_AutoPickup_Keys,
-            pickup.Enable_AutoPickup_WovenEchoes,
-            pickup.Enable_AutoPickup_Materials,
-            pickup.Enable_AutoPickup_FromFilter,
-            pickup.Enable_AutoSell_FromFilter,
-            pickup.Enable_AutoShatter_FromFilter
+            ModSettings.ItemsPickup.AutoPickupKeys.Value,
+            ModSettings.ItemsPickup.AutoPickupWovenEchoes.Value,
+            ModSettings.ItemsPickup.AutoPickupMaterials.Value,
+            ModSettings.ItemsPickup.AutoPickupFromFilter.Value,
+            ModSettings.ItemsPickup.AutoSellFromFilter.Value,
+            ModSettings.ItemsPickup.AutoShatterFromFilter.Value
         );
     }
 

@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2CppLE.UI.Minimap;
+using LastEpoch_Hud.Scripts.ModUI;
 using UnityEngine;
 
 namespace LastEpoch_Hud.Scripts.Mods.Minimap;
@@ -8,24 +9,9 @@ internal class Minimap_FogOfWar
 {
     private const float FallbackRevealRadius = 10000f;
 
-    public static bool CanRun()
-    {
-        if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
-        {
-            if (!Save_Manager.instance.data.IsNullOrDestroyed())
-            {
-                return Save_Manager.instance.data.Scenes.Minimap.Enable_RemoveFogOfWar;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
-    }
+    /// <summary>True in a game scene with Remove Fog Of War on.</summary>
+    public static bool CanRun() =>
+        Scenes.IsGameScene() && ModSettings.ScenesMinimap.RemoveFogOfWar.Value;
 
     private static float GetRevealRadius(Il2CppLE.UI.Minimap.Minimap minimap)
     {

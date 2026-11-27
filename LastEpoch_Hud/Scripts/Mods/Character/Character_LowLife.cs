@@ -1,4 +1,5 @@
-﻿using MelonLoader;
+﻿using LastEpoch_Hud.Scripts.ModUI;
+using MelonLoader;
 using UnityEngine;
 
 namespace LastEpoch_Hud.Scripts.Mods.Character;
@@ -22,21 +23,7 @@ public class Character_LowLife : MonoBehaviour
 
     bool CanRun()
     {
-        if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
-        {
-            if (!Save_Manager.instance.data.IsNullOrDestroyed())
-            {
-                return Save_Manager.instance.data.Character.Cheats.Enable_LowLife;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
+        return Scenes.IsGameScene() && ModSettings.CharacterCheats.LowLife.Value;
     }
 
     void Update()

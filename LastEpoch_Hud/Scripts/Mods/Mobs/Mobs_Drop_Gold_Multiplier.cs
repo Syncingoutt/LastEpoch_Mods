@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
 
 namespace LastEpoch_Hud.Scripts.Mods.Mobs;
 
@@ -7,21 +8,7 @@ public class Mobs_Drop_Gold_Multiplier
 {
     public static bool CanRun()
     {
-        if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
-        {
-            if (!Save_Manager.instance.data.IsNullOrDestroyed())
-            {
-                return Save_Manager.instance.data.Character.Cheats.Enable_GoldDropMultiplier;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
+        return Scenes.IsGameScene() && ModSettings.CharacterMultipliers.GoldDropMultiplier.Enabled;
     }
 
     [HarmonyPatch(typeof(DeathItemDrop), "Start")]
@@ -32,12 +19,10 @@ public class Mobs_Drop_Gold_Multiplier
         {
             if (CanRun())
             {
-                __instance.goldMultiplier = Save_Manager
-                    .instance
-                    .data
-                    .Character
-                    .Cheats
-                    .GoldDropMultiplier;
+                __instance.goldMultiplier = ModSettings
+                    .CharacterMultipliers
+                    .GoldDropMultiplier
+                    .Value;
             }
         }
     }
@@ -77,7 +62,7 @@ public class Mobs_Drop_Gold_Multiplier
                 && ((__5 == ItemDrop.BaseDropRates.Enemy) || (__5 == ItemDrop.BaseDropRates.Chest))
             )
             {
-                __7 = Save_Manager.instance.data.Character.Cheats.GoldDropMultiplier;
+                __7 = ModSettings.CharacterMultipliers.GoldDropMultiplier.Value;
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using LastEpoch_Hud.Scripts.ModUI;
 using UnityEngine;
 
 namespace LastEpoch_Hud.Scripts.Mods.Items.Pickup;
@@ -8,21 +9,7 @@ public class Items_Drop_Notifications
 {
     public static bool CanRun()
     {
-        if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
-        {
-            if (!Save_Manager.instance.data.IsNullOrDestroyed())
-            {
-                return Save_Manager.instance.data.Items.Pickup.Enable_HideMaterialsNotifications;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
+        return ModSettings.ItemsPickup.HideMaterialsNotifications.Value && Scenes.IsGameScene();
     }
 
     [HarmonyPatch(typeof(Notifications), "MaterialAdded")]

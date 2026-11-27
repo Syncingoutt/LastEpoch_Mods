@@ -152,12 +152,10 @@ public static class IllegalItemAdapter
             if (!hasForeign)
                 return;
             // Preserve the existing explicit "remove set requirements" feature.
-            if (
-                !Save_Manager.instance.IsNullOrDestroyed()
-                && Save_Manager.instance.initialized
-                && Save_Manager.instance.data.Items.Req.set
-            )
+            if (ModSettings.ItemsRequirements.Set.Value)
+            {
                 return;
+            }
             __result = pieces.Count;
         }
     }

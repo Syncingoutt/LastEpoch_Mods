@@ -2,6 +2,8 @@
 using Il2Cpp;
 using Il2CppTMPro;
 using LastEpoch_Hud.Scripts.Core.Items;
+using LastEpoch_Hud.Scripts.ModUI;
+using LastEpoch_Hud.Scripts.ModUI.Settings;
 using UnityEngine;
 
 namespace LastEpoch_Hud.Scripts.Mods.Items.Drop;
@@ -20,20 +22,11 @@ public class Items_Drop_Rarity
 
     public static bool CanRun()
     {
-        bool res = false;
-        if ((Hud_Manager.IsPauseOpen()) && (ModUI.ForceDrop.ForceDropModel.Enabled))
+        if (Hud_Manager.IsPauseOpen() && ModUI.ForceDrop.ForceDropModel.Enabled)
         {
             return false;
         }
-        else if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
-        {
-            if (!Save_Manager.instance.data.IsNullOrDestroyed())
-            {
-                res = true;
-            }
-        }
-
-        return res;
+        return Scenes.IsGameScene();
     }
 
     public static void Update_ColorAndTexture()
@@ -112,91 +105,63 @@ public class Items_Drop_Rarity
         [HarmonyPrefix]
         static bool Prefix(ref byte __result, int __0)
         {
-            if (CanRun())
-            {
-                if (Save_Manager.instance.data.Items.Drop.Enable_ForceUnique)
-                {
-                    __result = 7;
-                    return false;
-                }
-                else if (Save_Manager.instance.data.Items.Drop.Enable_ForceSet)
-                {
-                    __result = 8;
-                    return false;
-                }
-                else if (Save_Manager.instance.data.Items.Drop.Enable_ForceLegendary)
-                {
-                    // Rarity 9 is not a valid legendary conversion by itself.
-                    // It leaves the game's generated base with an unrelated
-                    // unique ID (commonly Calamity). Never persist these drops.
-                    Save_Manager.instance.data.Items.Drop.Enable_ForceLegendary = false;
-                    if (!warnedUnsafeLegendary)
-                    {
-                        warnedUnsafeLegendary = true;
-                        Main.logger_instance?.Warning(
-                            "Force Legendary is temporarily disabled: the old rarity-9 override creates malformed items. Use Force Drop's explicit item construction instead."
-                        );
-                    }
-                    return true;
-                }
-                else
-                {
-                    return true;
-                }
-            }
-            else
+            if (!CanRun())
             {
                 return true;
             }
+            if (ModSettings.ItemsDrop.ForceUnique.Value)
+            {
+                __result = 7;
+                return false;
+            }
+            if (ModSettings.ItemsDrop.ForceSet.Value)
+            {
+                __result = 8;
+                return false;
+            }
+            if (!ModSettings.ItemsDrop.ForceLegendary.Value)
+            {
+                return true;
+            }
+            // Rarity 9 is not a valid legendary conversion by itself.
+            // It leaves the game's generated base with an unrelated
+            // unique ID (commonly Calamity). Never persist these drops.
+            ModSettings.ItemsDrop.ForceLegendary.Set(false);
+            if (!warnedUnsafeLegendary)
+            {
+                warnedUnsafeLegendary = true;
+                Main.logger_instance?.Warning(
+                    "Force Legendary is temporarily disabled: the old rarity-9 override creates malformed items. Use Force Drop's explicit item construction instead."
+                );
+            }
+            return true;
         }
 
         [HarmonyPostfix]
         static void Postfix(ref byte __result, int __0)
         {
-            if (CanRun())
+            RangeSetting count = ModSettings.ItemsDrop.AffixCount;
+            if (__result >= 7 || !count.Enabled || !CanRun())
             {
-                if ((__result < 7) && (Save_Manager.instance.data.Items.Drop.Enable_AffixCount))
-                {
-                    int min = DropAffixCount.ToWhole(
-                        Save_Manager.instance.data.Items.Drop.AffixCount_Min
-                    );
-                    int max = DropAffixCount.ToWhole(
-                        Save_Manager.instance.data.Items.Drop.AffixCount_Max
-                    );
-                    if ((min != 0) || (max != 4))
-                    {
-                        if (min < 0)
-                        {
-                            min = 0;
-                            Save_Manager.instance.data.Items.Drop.AffixCount_Min = 0f;
-                        }
-                        else if (min > 6)
-                        {
-                            min = 6;
-                            Save_Manager.instance.data.Items.Drop.AffixCount_Min = 6f;
-                        }
-                        if (max < 0)
-                        {
-                            max = 0;
-                            Save_Manager.instance.data.Items.Drop.AffixCount_Max = 0f;
-                        }
-                        else if (max > 6)
-                        {
-                            max = 6;
-                            Save_Manager.instance.data.Items.Drop.AffixCount_Max = 6f;
-                        }
-
-                        if (min == max)
-                        {
-                            __result = (byte)min;
-                        }
-                        else
-                        {
-                            __result = (byte)UnityEngine.Random.RandomRangeInt(min, (max + 1));
-                        }
-                    }
-                }
+                return;
             }
+            AffixCountBounds bounds = DropAffixCount.Bounds(count.Min, count.Max);
+            if (!bounds.Overrides)
+            {
+                return;
+            }
+            if (bounds.Min != DropAffixCount.ToWhole(count.Min))
+            {
+                count.SetMin(bounds.Min);
+            }
+            if (bounds.Max != DropAffixCount.ToWhole(count.Max))
+            {
+                count.SetMax(bounds.Max);
+            }
+            __result =
+                bounds.Min == bounds.Max
+                    ? (byte)bounds.Min
+                    : (byte)UnityEngine.Random.RandomRangeInt(bounds.Min, bounds.Max + 1);
         }
     }
 
